@@ -3,8 +3,8 @@ package com.basset.core.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-object HomeScreen
+object Home
 
 @Serializable
-object OperationsScreen
+object Operations
 

@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Basset</string>
+
+    <string name="more_options">More options</string>
+    <string name="file_upload_fab">Upload file</string>
+    <string name="app_logo">App\'s logo</string>
+    <string name="settings_menu_item">Settings</string>
+    <string name="about_menu_item">About</string>
+
+    <string name="settings_theme_label">Theme</string>
+    <string name="settings_theme_alert_title">Choose theme</string>
+    <string name="settings_theme_system_option">System default</string>
+    <string name="settings_theme_light_option">Light</string>
+    <string name="settings_theme_dark_option">Dark</string>
+
+    <string name="settings_action_toast">Reopen app to see changes</string>
+
+    <string name="settings_dynamic_color_label">Personalize colors (Dynamic Colors)</string>
+
+    <string name="settings_lang_label">App Language</string>
+    <string name="settings_lang_alert_title">Choose language</string>
+
+    <string name="operation_alert_title">Choose operation</string>
+    <string name="operation_compress">Compress</string>
+    <string name="operation_convert">Convert</string>
+    <string name="operation_remove_background">Remove Background</string>
+    <string name="operation_trim">Trim</string>
 </resources>

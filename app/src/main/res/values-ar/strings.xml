@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">بسيط</string>
+    <string name="more_options">المزيد من الخيارات</string>
+    <string name="file_upload_fab">رفع الملف</string>
+    <string name="app_logo">شعار التطبيق</string>
+    <string name="settings_menu_item">الإعدادات</string>
+    <string name="about_menu_item">عن التطبيق</string>
+
+    <string name="settings_theme_label">المظهر</string>
+    <string name="settings_theme_alert_title">اختيار مظهر</string>
+    <string name="settings_theme_system_option">الوضع الافتراضي للنظام</string>
+    <string name="settings_theme_light_option">فاتح</string>
+    <string name="settings_theme_dark_option">داكن</string>
+
+    <string name="settings_action_toast">أعد تشغيل التطبيق لتظهر التغييرات</string>
+
+    <string name="settings_dynamic_color_label">تخصيص الألوان (الألوان الديناميكية)</string>
+
+    <string name="settings_lang_label">لغة التطبيق</string>
+    <string name="settings_lang_alert_title">المظهر</string>
+
+    <string name="operation_alert_title">اختيار العملية</string>
+    <string name="operation_compress">ضغط</string>
+    <string name="operation_convert">تحويل الصيغة</string>
+    <string name="operation_remove_background">إزالة الخلفية</string>
+    <string name="operation_trim">قص</string>
+</resources>
