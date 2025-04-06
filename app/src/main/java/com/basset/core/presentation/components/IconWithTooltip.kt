@@ -37,6 +37,7 @@ fun IconWithTooltip(
                 shape = MaterialTheme.shapes.extraSmall,
             ) {
                 Text(
+                    color = MaterialTheme.colorScheme.background,
                     text = text,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     style = MaterialTheme.typography.bodyMedium

@@ -99,6 +99,7 @@ fun SettingsBottomSheet(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
                             .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 16.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -114,7 +115,7 @@ fun SettingsBottomSheet(
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
-                                        .clip(RoundedCornerShape(25.dp))
+                                        .clip(RoundedCornerShape(8.dp))
                                         .height(56.dp)
                                         .selectable(
                                             selected = (text == state.theme),
