@@ -18,7 +18,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        resConfigs("en", "ar")
+        androidResources.localeFilters += listOf("en", "ar")
     }
 
     buildTypes {
@@ -44,7 +44,7 @@ android {
 
 dependencies {
     implementation(files("../app/libs/ffmpeg-kit-full-gpl.aar"))
-    implementation("com.arthenica:smart-exception-java:0.2.1")
+    implementation(libs.smart.exception.java)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
