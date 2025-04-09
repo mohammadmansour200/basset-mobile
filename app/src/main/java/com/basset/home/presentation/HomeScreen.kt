@@ -120,7 +120,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ThemeViewModel = koinVi
                     }
                 ) {
                     IconWithTooltip(
-                        icon = ImageVector.vectorResource(R.drawable.find_in_page),
+                        icon = ImageVector.vectorResource(R.drawable.folder_open),
                         text = stringResource(R.string.file_upload_fab),
                         iconModifier = Modifier.size(28.dp),
                         surfaceColor = accentColor
