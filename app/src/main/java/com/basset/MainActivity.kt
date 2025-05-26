@@ -10,10 +10,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.basset.core.navigation.Home
-import com.basset.core.navigation.Operations
+import androidx.navigation.toRoute
+import com.basset.core.navigation.HomeRoute
+import com.basset.core.navigation.OperationRoute
 import com.basset.home.presentation.HomeScreen
 import com.basset.home.presentation.ThemeViewModel
+import com.basset.operations.presentation.OperationScreen
 import com.basset.ui.theme.AppTheme
 import com.basset.ui.theme.isDarkMode
 import org.koin.androidx.compose.koinViewModel
@@ -35,11 +37,15 @@ class MainActivity : AppCompatActivity() {
                 dynamicColor = state.dynamicColorsEnabled
             ) {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = Home) {
-                    composable<Home> {
-                        HomeScreen()
+
+                NavHost(navController = navController, startDestination = HomeRoute) {
+                    composable<HomeRoute> {
+                        HomeScreen(onGoToOperation = { it -> navController.navigate(it) })
                     }
-                    composable<Operations> { }
+                    composable<OperationRoute> { it ->
+                        val passedData: OperationRoute = it.toRoute()
+                        OperationScreen(passedData = passedData)
+                    }
                 }
             }
         }

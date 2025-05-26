@@ -1,5 +1,6 @@
 package com.basset.home.presentation.components
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.basset.R
+import com.basset.core.navigation.OperationRoute
 
 enum class MimeType {
     AUDIO, IMAGE, VIDEO
@@ -30,10 +33,12 @@ enum class OperationType {
     COMPRESS, CONVERT, BG_REMOVE, CUT
 }
 
-data class Operation(val text: String, val icon: Int, val operationType: OperationType)
+data class OperationButtonData(val text: String, val icon: Int, val operationType: OperationType)
 
 @Composable
-fun OperationsButton(actions: List<Operation>, mimeType: MimeType) {
+fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,9 +54,92 @@ fun OperationsButton(actions: List<Operation>, mimeType: MimeType) {
 
         val textButtonModifier = Modifier
             .fillMaxWidth()
+
+        val type = context.contentResolver.getType(uri)
+
+        val mimeType = when {
+            type!!.contains("video", ignoreCase = true) -> MimeType.VIDEO
+            type.contains("audio", ignoreCase = true) -> MimeType.AUDIO
+            else -> MimeType.IMAGE
+        }
+
+        val actions = when (mimeType) {
+            MimeType.IMAGE -> {
+                // Handle image files
+                listOf(
+                    OperationButtonData(
+                        stringResource(R.string.operation_compress),
+                        R.drawable.compress,
+                        operationType = OperationType.COMPRESS
+                    ),
+                    OperationButtonData(
+                        stringResource(R.string.operation_convert),
+                        R.drawable.convert_image,
+                        operationType = OperationType.CONVERT
+                    ),
+                    OperationButtonData(
+                        stringResource(R.string.operation_remove_background),
+                        R.drawable.background_remove,
+                        operationType = OperationType.BG_REMOVE
+                    )
+                )
+            }
+
+            MimeType.AUDIO -> {
+                // Handle audio files
+                listOf(
+                    OperationButtonData(
+                        stringResource(R.string.operation_trim),
+                        R.drawable.cut,
+                        operationType = OperationType.CUT
+                    ),
+                    OperationButtonData(
+                        stringResource(R.string.operation_compress),
+                        R.drawable.compress,
+                        operationType = OperationType.COMPRESS
+                    ),
+                    OperationButtonData(
+                        stringResource(R.string.operation_convert),
+                        R.drawable.convert_audio,
+                        operationType = OperationType.CONVERT
+                    )
+                )
+            }
+
+            MimeType.VIDEO -> {
+                // Handle video files
+                listOf(
+                    OperationButtonData(
+                        stringResource(R.string.operation_trim),
+                        R.drawable.cut,
+                        operationType = OperationType.CUT
+                    ),
+                    OperationButtonData(
+                        stringResource(R.string.operation_compress),
+                        R.drawable.compress,
+                        operationType = OperationType.COMPRESS
+                    ),
+                    OperationButtonData(
+                        stringResource(R.string.operation_convert),
+                        R.drawable.convert_video,
+                        operationType = OperationType.CONVERT
+                    )
+                )
+            }
+        }
+
+
         actions.forEachIndexed { i, action ->
             TextButton(
-                onClick = { TODO() },
+                onClick = {
+                    onGoToOperation(
+                        OperationRoute(
+                            mimeType = mimeType,
+                            uri = uri.toString(),
+                            operationType = action.operationType
+                        )
+                    )
+                },
                 modifier =
                     when (i) {
                         0 -> textButtonModifier
@@ -80,6 +168,7 @@ fun OperationsButton(actions: List<Operation>, mimeType: MimeType) {
                 shape = MaterialTheme.shapes.extraSmall,
                 contentPadding = PaddingValues()
             ) {
+
                 ListItem(
                     leadingContent = {
                         Icon(

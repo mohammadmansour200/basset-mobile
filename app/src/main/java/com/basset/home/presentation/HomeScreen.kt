@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -45,12 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.basset.R
+import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.components.IconWithTooltip
 import com.basset.home.presentation.components.BottomSheetType
-import com.basset.home.presentation.components.MimeType
-import com.basset.home.presentation.components.Operation
-import com.basset.home.presentation.components.OperationType
-import com.basset.home.presentation.components.OperationsButton
+import com.basset.home.presentation.components.OperationsButtons
 import com.basset.home.presentation.components.SheetContent
 import com.basset.ui.theme.AppTheme
 import com.basset.ui.theme.isDarkMode
@@ -58,9 +55,11 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, viewModel: ThemeViewModel = koinViewModel()) {
-    val context = LocalContext.current
-
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ThemeViewModel = koinViewModel(),
+    onGoToOperation: (OperationRoute) -> Unit = {}
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -156,98 +155,24 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ThemeViewModel = koinVi
                     color = AlertDialogDefaults.containerColor,
                     tonalElevation = AlertDialogDefaults.TonalElevation,
                 ) {
-                    val mimeType = context.contentResolver.getType(it)
-                    when {
-                        mimeType?.contains("image", ignoreCase = true) == true -> {
-                            // Handle image files
-                            OperationsButton(
-                                actions = listOf(
-                                    Operation(
-                                        stringResource(R.string.operation_compress),
-                                        R.drawable.compress,
-                                        operationType = OperationType.COMPRESS
-                                    ),
-                                    Operation(
-                                        stringResource(R.string.operation_convert),
-                                        R.drawable.convert_image,
-                                        operationType = OperationType.CONVERT
-                                    ),
-                                    Operation(
-                                        stringResource(R.string.operation_remove_background),
-                                        R.drawable.background_remove,
-                                        operationType = OperationType.BG_REMOVE
-                                    )
-                                ),
-                                mimeType = MimeType.IMAGE
-                            )
-                        }
-
-                        mimeType?.contains("audio", ignoreCase = true) == true -> {
-                            // Handle audio files
-                            OperationsButton(
-                                actions = listOf(
-                                    Operation(
-                                        stringResource(R.string.operation_trim),
-                                        R.drawable.cut,
-                                        operationType = OperationType.CUT
-                                    ),
-                                    Operation(
-                                        stringResource(R.string.operation_compress),
-                                        R.drawable.compress,
-                                        operationType = OperationType.COMPRESS
-                                    ),
-                                    Operation(
-                                        stringResource(R.string.operation_convert),
-                                        R.drawable.convert_audio,
-                                        operationType = OperationType.CONVERT
-                                    )
-                                ),
-                                mimeType = MimeType.AUDIO
-                            )
-                        }
-
-                        mimeType?.contains("video", ignoreCase = true) == true -> {
-                            // Handle video files
-                            OperationsButton(
-                                actions = listOf(
-                                    Operation(
-                                        stringResource(R.string.operation_trim),
-                                        R.drawable.cut,
-                                        operationType = OperationType.CUT
-                                    ),
-                                    Operation(
-                                        stringResource(R.string.operation_compress),
-                                        R.drawable.compress,
-                                        operationType = OperationType.COMPRESS
-                                    ),
-                                    Operation(
-                                        stringResource(R.string.operation_convert),
-                                        R.drawable.convert_video,
-                                        operationType = OperationType.CONVERT
-                                    )
-                                ),
-                                mimeType = MimeType.VIDEO
-                            )
-                        }
-
-                    }
+                    OperationsButtons(it, onGoToOperation = onGoToOperation)
                 }
             }
         }
+    }
 
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-            ) {
-                currentBottomSheet?.let {
-                    SheetContent(
-                        bottomSheetType = it,
-                        settingsState = state,
-                        settingsOnAction = { viewModel.onAction(it) }
-                    )
-                }
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+        ) {
+            currentBottomSheet?.let {
+                SheetContent(
+                    bottomSheetType = it,
+                    settingsState = state,
+                    settingsOnAction = { viewModel.onAction(it) }
+                )
             }
         }
     }
