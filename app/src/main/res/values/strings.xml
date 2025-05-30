@@ -24,5 +24,8 @@
     <string name="operation_compress">Compress</string>
     <string name="operation_convert">Convert</string>
     <string name="operation_remove_background">Remove Background</string>
-    <string name="operation_trim">Trim</string>
+    <string name="operation_cut">Cut</string>
+    <string name="back_btn">Go back</string>
+    <string name="preview_image">Preview Image</string>
+    <string name="unknown_author">Unknown Author</string>
 </resources>

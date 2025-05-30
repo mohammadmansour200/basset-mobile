@@ -155,7 +155,10 @@ fun HomeScreen(
                     color = AlertDialogDefaults.containerColor,
                     tonalElevation = AlertDialogDefaults.TonalElevation,
                 ) {
-                    OperationsButtons(it, onGoToOperation = onGoToOperation)
+                    OperationsButtons(it, onGoToOperation = { it ->
+                        pickedFile = null
+                        onGoToOperation(it)
+                    })
                 }
             }
         }

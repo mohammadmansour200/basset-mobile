@@ -43,8 +43,15 @@ class MainActivity : AppCompatActivity() {
                         HomeScreen(onGoToOperation = { it -> navController.navigate(it) })
                     }
                     composable<OperationRoute> { it ->
-                        val passedData: OperationRoute = it.toRoute()
-                        OperationScreen(passedData = passedData)
+                        val pickedFile: OperationRoute = it.toRoute()
+                        OperationScreen(
+                            pickedFile = pickedFile,
+                            themeState = state,
+                            onGoBack = {
+                                navController.navigate(HomeRoute) {
+                                    popUpTo(HomeRoute)
+                                }
+                            })
                     }
                 }
             }

@@ -60,10 +60,12 @@ fun SettingsBottomSheet(
     Column {
         //Theme settings
         var showDialog by remember { mutableStateOf(false) }
-        fun localizedRadioLabel(label: String) = when (label) {
-            "dark" -> R.string.settings_theme_dark_option
-            "light" -> R.string.settings_theme_light_option
-            else -> R.string.settings_theme_system_option
+        val localizedRadioLabel = { label: String ->
+            when (label) {
+                "dark" -> R.string.settings_theme_dark_option
+                "light" -> R.string.settings_theme_light_option
+                else -> R.string.settings_theme_system_option
+            }
         }
         TextButton(
             onClick = { showDialog = true },

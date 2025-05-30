@@ -24,5 +24,9 @@
     <string name="operation_compress">ضغط</string>
     <string name="operation_convert">تحويل الصيغة</string>
     <string name="operation_remove_background">إزالة الخلفية</string>
-    <string name="operation_trim">قص</string>
+    <string name="operation_cut">قص</string>
+
+    <string name="back_btn">الرجوع للخلف</string>
+    <string name="preview_image">صورة المعاينة</string>
+    <string name="unknown_author">مؤدٍ غير معروف</string>
 </resources>

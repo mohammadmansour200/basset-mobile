@@ -43,6 +43,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.ui.compose)
+    implementation(libs.androidx.media3.exoplayer)
+
     implementation(files("../app/libs/ffmpeg-kit-full-gpl.aar"))
     implementation(libs.smart.exception.java)
 

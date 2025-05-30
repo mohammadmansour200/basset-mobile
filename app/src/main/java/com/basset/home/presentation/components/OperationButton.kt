@@ -89,7 +89,7 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                 // Handle audio files
                 listOf(
                     OperationButtonData(
-                        stringResource(R.string.operation_trim),
+                        stringResource(R.string.operation_cut),
                         R.drawable.cut,
                         operationType = OperationType.CUT
                     ),
@@ -110,7 +110,7 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                 // Handle video files
                 listOf(
                     OperationButtonData(
-                        stringResource(R.string.operation_trim),
+                        stringResource(R.string.operation_cut),
                         R.drawable.cut,
                         operationType = OperationType.CUT
                     ),
