@@ -1,3 +1,5 @@
+// Credit: https://stackoverflow.com/a/71546366
+
 package com.basset.core.utils
 
 import android.content.ContentResolver

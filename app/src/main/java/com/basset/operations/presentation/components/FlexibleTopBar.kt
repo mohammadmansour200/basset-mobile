@@ -1,3 +1,5 @@
+// Credit: github.com/OyaCanli/tutorial_samples/blob/master/AppBarLayoutCompose/app/src/main/java/com/canlioya/appbarlayoutcompose/FlexibleTopBar.kt
+
 package com.basset.operations.presentation.components
 
 import androidx.compose.animation.animateColorAsState
