@@ -27,10 +27,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.basset.R
+import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.components.IconWithTooltip
 import com.basset.home.presentation.ThemeState
-import com.basset.home.presentation.components.OperationType
 import com.basset.operations.presentation.components.FlexibleTopBar
 import com.basset.operations.presentation.components.FlexibleTopBarDefaults
 import com.basset.operations.presentation.components.MediaInfoCard

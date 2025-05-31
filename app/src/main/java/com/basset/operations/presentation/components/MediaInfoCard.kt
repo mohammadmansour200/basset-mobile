@@ -38,10 +38,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.basset.R
+import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.utils.formatDuration
 import com.basset.core.utils.getFileName
-import com.basset.home.presentation.components.MimeType
 
 data class MediaMetadata(
     val title: String?,

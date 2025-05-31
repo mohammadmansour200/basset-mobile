@@ -23,15 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.basset.R
+import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
-
-enum class MimeType {
-    AUDIO, IMAGE, VIDEO
-}
-
-enum class OperationType {
-    COMPRESS, CONVERT, BG_REMOVE, CUT
-}
 
 data class OperationButtonData(val text: String, val icon: Int, val operationType: OperationType)
 

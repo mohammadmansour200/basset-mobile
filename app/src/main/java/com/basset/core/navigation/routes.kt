@@ -1,7 +1,7 @@
 package com.basset.core.navigation
 
-import com.basset.home.presentation.components.MimeType
-import com.basset.home.presentation.components.OperationType
+import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.OperationType
 import kotlinx.serialization.Serializable
 
 @Serializable
