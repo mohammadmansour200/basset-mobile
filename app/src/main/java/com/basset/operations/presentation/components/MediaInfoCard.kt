@@ -1,12 +1,8 @@
 package com.basset.operations.presentation.components
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.provider.OpenableColumns
 import android.text.format.Formatter
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +15,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,15 +23,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.basset.R
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
@@ -47,7 +43,6 @@ data class MediaMetadata(
     val title: String?,
     val artist: String?,
     val durationMs: Long?,
-    val embeddedPicture: Bitmap?,
     val fileSizeBytes: Long?
 )
 
@@ -82,18 +77,12 @@ fun MediaInfoCard(
                     fileSizeBytes = fileSizeBytes,
                     artist = null,
                     durationMs = null,
-                    embeddedPicture = null,
                 )
             }
 
             retriever.setDataSource(context, uri)
             val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-            val embeddedPicture = retriever.embeddedPicture?.let {
-                BitmapFactory.decodeByteArray(
-                    it, 0,
-                    it.size
-                )
-            }
+
             val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
             val durationMs = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 ?.toLongOrNull()
@@ -102,7 +91,6 @@ fun MediaInfoCard(
                 title = title,
                 artist = artist,
                 durationMs = durationMs,
-                embeddedPicture = embeddedPicture,
                 fileSizeBytes = fileSizeBytes,
             )
         }.getOrNull()
@@ -110,13 +98,12 @@ fun MediaInfoCard(
 
     val durationFormatted = metadata?.durationMs?.formatDuration() ?: "--:--"
 
-    val image = when (pickedFile.mimeType) {
-        MimeType.AUDIO -> metadata?.embeddedPicture
-        MimeType.IMAGE -> context.contentResolver.openInputStream(uri).use { data ->
-            BitmapFactory.decodeStream(data)
+    val imageRequestData = remember(metadata, pickedFile.mimeType) {
+        when (pickedFile.mimeType) {
+            MimeType.IMAGE -> uri
+            MimeType.VIDEO -> retriever.getFrameAtTime(0)
+            MimeType.AUDIO -> retriever.embeddedPicture
         }
-
-        MimeType.VIDEO -> retriever.getFrameAtTime(0)
     }
 
     Box(
@@ -138,40 +125,31 @@ fun MediaInfoCard(
                     .padding(vertical = 8.dp, horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Crossfade(targetState = image) { img ->
-                    if (img != null) {
-                        Image(
-                            bitmap = img.asImageBitmap(),
-                            contentDescription = stringResource(R.string.preview_image),
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(68.dp)
-                                .padding(end = 16.dp)
-                                .clip(RoundedCornerShape(5.dp))
-                                .aspectRatio(0.9f)
-                        )
-                    } else {
-                        val icon = when (pickedFile.mimeType) {
-                            MimeType.AUDIO -> R.drawable.music_note
-                            MimeType.IMAGE -> R.drawable.image
-                            MimeType.VIDEO -> R.drawable.movie
-                        }
-                        Icon(
-                            imageVector = ImageVector.vectorResource(icon),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(68.dp)
-                                .padding(end = 16.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .aspectRatio(0.9f)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.2f), // light background hint
-                                    shape = RoundedCornerShape(6.dp)
-                                ),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
+                val icon = when (pickedFile.mimeType) {
+                    MimeType.AUDIO -> R.drawable.music_note
+                    MimeType.IMAGE -> R.drawable.image
+                    MimeType.VIDEO -> R.drawable.movie
                 }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imageRequestData)
+                        .crossfade(true)
+                        .memoryCacheKey(uri.toString())
+                        .build(),
+                    contentDescription = stringResource(R.string.preview_image),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(68.dp)
+                        .padding(end = 16.dp)
+                        .clip(RoundedCornerShape(5.dp))
+                        .aspectRatio(0.9f)
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.2f), // light background hint
+                            shape = RoundedCornerShape(6.dp)
+                        ),
+                    placeholder = painterResource(icon),
+                    fallback = painterResource(icon),
+                )
 
                 Column(
                     modifier = Modifier.weight(1f)
