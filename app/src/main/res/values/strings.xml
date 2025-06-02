@@ -28,4 +28,7 @@
     <string name="back_btn">Go back</string>
     <string name="preview_image">Preview Image</string>
     <string name="unknown_author">Unknown Author</string>
+    <string name="playpause_button_play">Play</string>
+    <string name="playpause_button_pause">Pause</string>
+    <string name="playback_speed">Playback Speed</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.basset.operations.presentation
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +34,7 @@ import com.basset.home.presentation.ThemeState
 import com.basset.operations.presentation.components.FlexibleTopBar
 import com.basset.operations.presentation.components.FlexibleTopBarDefaults
 import com.basset.operations.presentation.components.MediaInfoCard
+import com.basset.operations.presentation.components.OperationScreenContent
 import com.basset.ui.theme.AppTheme
 import com.basset.ui.theme.isDarkMode
 
@@ -93,16 +94,18 @@ fun OperationScreen(
                 }
                 MediaInfoCard(pickedFile = pickedFile)
             }
-
         }
     }) { innerPadding ->
-        Column(
+        LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
+            item {
+                OperationScreenContent(pickedFile = pickedFile, accentColor = accentColor)
+            }
         }
     }
 }

@@ -29,4 +29,7 @@
     <string name="back_btn">الرجوع للخلف</string>
     <string name="preview_image">صورة المعاينة</string>
     <string name="unknown_author">مؤدٍ غير معروف</string>
+    <string name="playpause_button_play">تشغيل</string>
+    <string name="playpause_button_pause">إيقاف</string>
+    <string name="playback_speed">سرعة التشغيل</string>
 </resources>

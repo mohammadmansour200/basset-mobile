@@ -43,6 +43,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.amplituda)
+    implementation(libs.compose.audiowaveform)
+
     implementation(libs.coil.compose)
 
     implementation(libs.androidx.media3.common)
