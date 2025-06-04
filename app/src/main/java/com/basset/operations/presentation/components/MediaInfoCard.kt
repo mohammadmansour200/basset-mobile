@@ -38,6 +38,7 @@ import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.utils.formatDuration
 import com.basset.operations.data.android.getFileName
+import com.basset.operations.data.android.getUriExtension
 
 data class MediaMetadata(
     val title: String?,
@@ -174,7 +175,7 @@ fun MediaInfoCard(
                                 context,
                                 metadata?.fileSizeBytes ?: 0
                             )
-                        } | ${context.contentResolver.getType(uri)?.substringAfter("/")}",
+                        } | ${context.contentResolver.getUriExtension(uri = uri)}",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
