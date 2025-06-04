@@ -1,4 +1,4 @@
-package com.basset.operations.presentation
+package com.basset.operations.presentation.cut_operation
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.Immutable

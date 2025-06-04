@@ -1,4 +1,4 @@
-package com.basset.operations.presentation.components
+package com.basset.operations.presentation.cut_operation.components
 
 import androidx.annotation.OptIn
 import androidx.compose.animation.Crossfade
@@ -29,9 +29,9 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
-import com.basset.operations.presentation.CutOperationMediaPlayerAction
-import com.basset.operations.presentation.CutOperationMediaPlayerViewModel
-import com.basset.operations.presentation.MAX_VIDEO_PREVIEW_IMAGES
+import com.basset.operations.presentation.cut_operation.CutOperationMediaPlayerAction
+import com.basset.operations.presentation.cut_operation.CutOperationMediaPlayerViewModel
+import com.basset.operations.presentation.cut_operation.MAX_VIDEO_PREVIEW_IMAGES
 import com.linc.audiowaveform.AudioWaveform
 import org.koin.androidx.compose.koinViewModel
 

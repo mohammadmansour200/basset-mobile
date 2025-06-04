@@ -1,6 +1,6 @@
 // Credit: https://stackoverflow.com/a/71546366
 
-package com.basset.core.utils
+package com.basset.operations.data.android
 
 import android.content.ContentResolver
 import android.content.Context

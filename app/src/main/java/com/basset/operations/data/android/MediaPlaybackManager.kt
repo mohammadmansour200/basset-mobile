@@ -1,8 +1,10 @@
 // Credit: https://github.com/lincollincol/compose-audiowaveform/blob/master/app/src/main/java/com/linc/audiowaveform/sample/android/AudioPlaybackManager.kt
-package com.basset.operations.presentation
+package com.basset.operations.data.android
 
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.runBlocking
@@ -32,19 +34,26 @@ class MediaPlaybackManager(
         }
     }
 
-    fun clearAudio() {
-        player.stop()
-        player.clearMediaItems()
-    }
-
-    fun releaseController() {
-        clearAudio()
+    fun releaseMedia() {
+        clearMedia()
         player.removeListener(this)
         handler?.removeCallbacks(playerPositionRunnable)
         handler = null
     }
 
-    fun startTrackingPlaybackPosition() {
+    fun loadMedia(uri: Uri) {
+        val mediaItem = MediaItem.fromUri(uri)
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        startTrackingPlaybackPosition()
+    }
+
+    private fun clearMedia() {
+        player.stop()
+        player.clearMediaItems()
+    }
+
+    private fun startTrackingPlaybackPosition() {
         handler = Handler(Looper.getMainLooper())
         handler?.postDelayed(playerPositionRunnable, PLAYER_POSITION_UPDATE_TIME)
         player.addListener(this)

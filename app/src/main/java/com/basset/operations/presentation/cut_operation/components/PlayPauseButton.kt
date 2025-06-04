@@ -1,4 +1,4 @@
-package com.basset.operations.presentation.components
+package com.basset.operations.presentation.cut_operation.components
 
 import androidx.annotation.OptIn
 import androidx.compose.material.icons.Icons

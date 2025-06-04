@@ -3,7 +3,7 @@ package com.basset.home.data.preferences
 import android.content.Context
 import android.content.SharedPreferences
 
-class ThemePreferencesDataSource(context: Context) {
+class LocalThemePreferencesDataSource(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("theme_preferences", Context.MODE_PRIVATE)
 

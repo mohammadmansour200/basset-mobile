@@ -1,4 +1,4 @@
-package com.basset.operations.presentation
+package com.basset.operations.presentation.cut_operation
 
 import android.net.Uri
 import com.basset.core.domain.model.MimeType

@@ -1,0 +1,82 @@
+package com.basset.operations.data.cutOperation
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import android.util.Log
+import com.basset.operations.data.android.getFileName
+import com.basset.operations.data.android.uriToFile
+import com.basset.operations.domain.MediaDataSource
+import com.basset.operations.presentation.cut_operation.MAX_VIDEO_PREVIEW_IMAGES
+import com.linc.amplituda.Amplituda
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.IOException
+
+class LocalMediaDataSource(
+    private val appContext: Context
+) : MediaDataSource {
+    override suspend fun loadAmplitudes(uri: Uri): List<Int> = withContext(Dispatchers.IO) {
+        var inputFile: File? = null
+        try {
+            val amplituda = Amplituda(appContext)
+            inputFile = appContext.uriToFile(uri = uri)
+            val result = amplituda.processAudio(inputFile).get()
+            return@withContext result.amplitudesAsList() ?: emptyList()
+        } catch (e: IOException) {
+            Log.e("MediaPlayer", "Error processing audio file: $uri", e)
+            emptyList()
+        } catch (e: Exception) {
+            Log.e("MediaPlayer", "Unexpected error loading amplitudes: $uri", e)
+            emptyList()
+        } finally {
+            inputFile?.delete()?.also { deleted ->
+                if (deleted) {
+                    Log.d("MediaPlayer", "Temp file deleted: ${inputFile.name}")
+                } else {
+                    Log.w("MediaPlayer", "Failed to delete temp file: ${inputFile.name}")
+                }
+            }
+        }
+    }
+
+    override suspend fun loadVideoPreviewFrames(uri: Uri, onThumbnailReady: (Bitmap) -> Unit) =
+        withContext(Dispatchers.IO) {
+            val retriever = MediaMetadataRetriever()
+            try {
+                retriever.setDataSource(appContext, uri)
+
+                val durationMs =
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        ?.toLongOrNull()
+
+                Log.d(
+                    "ThumbnailExtract",
+                    "Extracting thumbnails for: ${uri.getFileName(appContext)} (URI: $uri)"
+                )
+
+                if (durationMs == null) {
+                    Log.e("ThumbnailExtract", "Failed to read video duration for URI: $uri")
+                    return@withContext
+                }
+
+                val interval = (12.5f * durationMs) / 100
+
+                for (i in 0 until MAX_VIDEO_PREVIEW_IMAGES) {
+                    val timeUs = i * interval * 1000
+                    val bitmap =
+                        retriever.getFrameAtTime(
+                            timeUs.toLong(),
+                            MediaMetadataRetriever.OPTION_CLOSEST
+                        )
+                    if (bitmap != null) onThumbnailReady(bitmap)
+                }
+            } catch (e: Exception) {
+                Log.e("ThumbnailExtract", "Unexpected error loading frames: $uri", e)
+            } finally {
+                retriever.release()
+            }
+        }
+}

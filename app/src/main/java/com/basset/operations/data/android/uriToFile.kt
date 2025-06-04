@@ -1,4 +1,4 @@
-package com.basset.core.utils
+package com.basset.operations.data.android
 
 import android.content.ContentResolver
 import android.content.Context
