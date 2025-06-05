@@ -7,8 +7,9 @@ import android.net.Uri
 import android.util.Log
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.data.android.uriToFile
+import com.basset.operations.domain.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
+import com.basset.operations.domain.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
 import com.basset.operations.domain.MediaDataSource
-import com.basset.operations.presentation.cut_operation.MAX_VIDEO_PREVIEW_IMAGES
 import com.linc.amplituda.Amplituda
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,7 +63,7 @@ class LocalMediaDataSource(
                     return@withContext
                 }
 
-                val interval = (12.5f * durationMs) / 100
+                val interval = (VIDEO_FRAME_INTERVAL_PERCENTAGE * durationMs) / 100
 
                 for (i in 0 until MAX_VIDEO_PREVIEW_IMAGES) {
                     val timeUs = i * interval * 1000

@@ -29,9 +29,9 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
+import com.basset.operations.domain.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
 import com.basset.operations.presentation.cut_operation.CutOperationMediaPlayerAction
 import com.basset.operations.presentation.cut_operation.CutOperationMediaPlayerViewModel
-import com.basset.operations.presentation.cut_operation.MAX_VIDEO_PREVIEW_IMAGES
 import com.linc.audiowaveform.AudioWaveform
 import org.koin.androidx.compose.koinViewModel
 

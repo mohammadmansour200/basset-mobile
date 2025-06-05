@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-const val MAX_VIDEO_PREVIEW_IMAGES = 8
-
 class CutOperationMediaPlayerViewModel(
     val player: Player,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
