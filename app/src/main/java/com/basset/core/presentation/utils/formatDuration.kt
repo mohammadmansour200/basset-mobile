@@ -1,4 +1,4 @@
-package com.basset.core.utils
+package com.basset.core.presentation.utils
 
 
 fun Long.formatDuration(): String {

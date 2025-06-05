@@ -36,7 +36,7 @@ import coil3.request.crossfade
 import com.basset.R
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
-import com.basset.core.utils.formatDuration
+import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.data.android.getUriExtension
 
