@@ -33,6 +33,9 @@ class CutOperationMediaPlayerViewModel(
                 viewModelScope.launch {
                     mediaPlaybackRepository.loadMedia(uri = action.uri)
                     Log.d("MediaPlayer", "Media item set")
+                    
+                    launch { observePlaybackEvents() }
+                    Log.d("MediaPlayer", "Preview Loaded")
 
                     when (action.mimeType) {
                         MimeType.AUDIO -> {
@@ -46,16 +49,14 @@ class CutOperationMediaPlayerViewModel(
                             }
                         }
                     }
-                    launch { observePlaybackEvents() }
 
-                    Log.d("MediaPlayer", "Preview Loaded")
                 }
             }
 
             is CutOperationMediaPlayerAction.OnUpdateProgress -> {
                 val position = player.duration.times(action.progress).toLong()
-                player.seekTo(position)
                 _state.update { it.copy(position = position) }
+                player.seekTo(position)
             }
         }
     }
