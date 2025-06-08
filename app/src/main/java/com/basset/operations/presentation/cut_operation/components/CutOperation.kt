@@ -174,7 +174,7 @@ fun CutOperation(
                         .offset(x = maxWidth.times(progress))
                         .shadow(8.dp, RectangleShape)
                         .width(2.dp)
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(Color.White)
                         .height(62.dp)
                 )
             }
