@@ -198,7 +198,7 @@ fun SettingsBottomSheet(
                 headlineContent = { Text(text = stringResource(R.string.settings_lang_label)) },
                 supportingContent = {
                     Text(
-                        text = java.util.Locale(Locale.current.language).displayLanguage,
+                        text = Locale(Locale.current.language).platformLocale.displayLanguage,
                         modifier = Modifier.alpha(0.8f)
                     )
                 },
@@ -241,7 +241,7 @@ fun SettingsBottomSheet(
                                     onClick = null
                                 )
                                 Text(
-                                    text = java.util.Locale(locale).displayLanguage,
+                                    text = Locale(locale).platformLocale.displayLanguage,
                                     style = MaterialTheme.typography.bodyLarge,
                                     modifier = Modifier.padding(start = 16.dp)
                                 )

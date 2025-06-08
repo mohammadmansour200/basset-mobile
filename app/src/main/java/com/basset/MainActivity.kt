@@ -7,10 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.basset.core.navigation.HomeRoute
 import com.basset.core.navigation.OperationRoute
 import com.basset.home.presentation.HomeScreen
@@ -36,24 +38,37 @@ class MainActivity : AppCompatActivity() {
                 darkTheme = isDarkMode(state.theme),
                 dynamicColor = state.dynamicColorsEnabled
             ) {
-                val navController = rememberNavController()
-
-                NavHost(navController = navController, startDestination = HomeRoute) {
-                    composable<HomeRoute> {
-                        HomeScreen(onGoToOperation = { it -> navController.navigate(it) })
-                    }
-                    composable<OperationRoute> { it ->
-                        val pickedFile: OperationRoute = it.toRoute()
-                        OperationScreen(
-                            pickedFile = pickedFile,
-                            themeState = state,
-                            onGoBack = {
-                                navController.navigate(HomeRoute) {
-                                    popUpTo(HomeRoute)
+                val backStack = rememberNavBackStack(HomeRoute)
+                NavDisplay(
+                    backStack = backStack,
+                    entryDecorators = listOf(
+                        rememberSavedStateNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                        rememberSceneSetupNavEntryDecorator()
+                    ),
+                    entryProvider = { key ->
+                        when (key) {
+                            is HomeRoute -> {
+                                NavEntry(key = key) {
+                                    HomeScreen(onGoToOperation = { it ->
+                                        backStack.add(it)
+                                    })
                                 }
-                            })
-                    }
-                }
+                            }
+
+                            is OperationRoute -> {
+                                NavEntry(key = key) {
+                                    OperationScreen(
+                                        pickedFile = key,
+                                        themeState = state,
+                                    )
+                                }
+                            }
+
+                            else -> throw RuntimeException("Unknown route")
+                        }
+                    },
+                )
             }
         }
     }

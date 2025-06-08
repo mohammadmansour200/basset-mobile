@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.basset"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.basset.kotlin"
@@ -43,20 +43,28 @@ android {
 }
 
 dependencies {
+    // Navigation 3
+    implementation(libs.nav3.runtime)
+    implementation(libs.nav3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Amplituda & compose-audiowaveform
     implementation(libs.amplituda)
     implementation(libs.compose.audiowaveform)
 
     implementation(libs.coil.compose)
 
+    // Media3
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.ui.compose)
     implementation(libs.androidx.media3.exoplayer)
 
+    // FFmpegKIT
     implementation(files("../app/libs/ffmpeg-kit-full-gpl.aar"))
     implementation(libs.smart.exception.java)
 
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.bundles.koin)

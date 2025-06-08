@@ -13,7 +13,7 @@ import com.basset.operations.domain.MediaDataSource
 import com.basset.operations.domain.MediaPlaybackRepository
 import com.basset.operations.presentation.cut_operation.CutOperationViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
