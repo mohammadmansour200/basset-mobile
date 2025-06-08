@@ -55,16 +55,36 @@ class CutOperationViewModel(
 
             is CutOperationAction.OnUpdateProgress -> {
                 val position = player.duration.times(action.progress).toLong()
+
+                val startRangePosition = player.duration * _state.value.startRangeProgress
+                val endRangePosition = player.duration * _state.value.endRangeProgress
+                if (position < player.duration * _state.value.startRangeProgress) {
+                    _state.update { it.copy(position = startRangePosition.toLong()) }
+                    player.seekTo(
+                        startRangePosition.toLong()
+                    )
+
+                    return
+                }
+                if (position > player.duration * _state.value.endRangeProgress) {
+                    _state.update { it.copy(position = endRangePosition.toLong()) }
+                    player.pause()
+
+                    return
+                }
+
                 _state.update { it.copy(position = position) }
-                player.seekTo(position)
+                player.seekTo(
+                    position
+                )
             }
 
             is CutOperationAction.OnEndRangeChange -> {
-                _state.update { it.copy(endRange = action.position) }
+                _state.update { it.copy(endRangeProgress = action.position) }
             }
 
             is CutOperationAction.OnStartRangeChange -> {
-                _state.update { it.copy(startRange = action.position) }
+                _state.update { it.copy(startRangeProgress = action.position) }
             }
         }
     }
@@ -73,14 +93,23 @@ class CutOperationViewModel(
     private suspend fun observePlaybackEvents() {
         mediaPlaybackRepository.events.collectLatest {
             when (it) {
-                is MediaPlaybackRepository.MediaPlaybackEvent.PositionChanged -> updatePlaybackProgress(
-                    it.position
-                )
+                is MediaPlaybackRepository.MediaPlaybackEvent.PositionChanged -> {
+                    updatePlaybackPosition(it.position)
+
+                    val startRangePosition = player.duration * _state.value.startRangeProgress
+                    if (it.position < player.duration * _state.value.startRangeProgress) player.seekTo(
+                        startRangePosition.toLong()
+                    )
+                    if (it.position > player.duration * _state.value.endRangeProgress) player.seekTo(
+                        startRangePosition.toLong()
+                    )
+
+                }
             }
         }
     }
 
-    private fun updatePlaybackProgress(position: Long) {
+    private fun updatePlaybackPosition(position: Long) {
         _state.update { it.copy(position = position) }
     }
 }

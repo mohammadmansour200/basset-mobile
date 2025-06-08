@@ -8,6 +8,6 @@ data class CutOperationState(
     val amplitudes: List<Int> = emptyList(),
     val videoFrames: List<Bitmap> = emptyList(),
     val position: Long = 0L,
-    val startRange: Float = 0f,
-    val endRange: Float = 1f
+    val startRangeProgress: Float = 0f,
+    val endRangeProgress: Float = 1f
 )
