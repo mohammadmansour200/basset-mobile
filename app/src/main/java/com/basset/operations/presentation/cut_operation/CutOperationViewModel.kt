@@ -13,27 +13,27 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CutOperationMediaPlayerViewModel(
+class CutOperationViewModel(
     val player: Player,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val mediaDataSource: MediaDataSource
 ) : ViewModel() {
-    private val _state = MutableStateFlow(CutOperationMediaPlayerState())
-    val state: StateFlow<CutOperationMediaPlayerState> = _state
+    private val _state = MutableStateFlow(CutOperationState())
+    val state: StateFlow<CutOperationState> = _state
 
     override fun onCleared() {
         super.onCleared()
-        _state.update { CutOperationMediaPlayerState() }
+        _state.update { CutOperationState() }
         mediaPlaybackRepository.releaseMedia()
     }
 
-    fun onAction(action: CutOperationMediaPlayerAction) {
+    fun onAction(action: CutOperationAction) {
         when (action) {
-            is CutOperationMediaPlayerAction.OnLoadMedia -> {
+            is CutOperationAction.OnLoadMedia -> {
                 viewModelScope.launch {
                     mediaPlaybackRepository.loadMedia(uri = action.uri)
                     Log.d("MediaPlayer", "Media item set")
-                    
+
                     launch { observePlaybackEvents() }
                     Log.d("MediaPlayer", "Preview Loaded")
 
@@ -53,10 +53,18 @@ class CutOperationMediaPlayerViewModel(
                 }
             }
 
-            is CutOperationMediaPlayerAction.OnUpdateProgress -> {
+            is CutOperationAction.OnUpdateProgress -> {
                 val position = player.duration.times(action.progress).toLong()
                 _state.update { it.copy(position = position) }
                 player.seekTo(position)
+            }
+
+            is CutOperationAction.OnEndRangeChange -> {
+                _state.update { it.copy(endRange = action.position) }
+            }
+
+            is CutOperationAction.OnStartRangeChange -> {
+                _state.update { it.copy(startRange = action.position) }
             }
         }
     }

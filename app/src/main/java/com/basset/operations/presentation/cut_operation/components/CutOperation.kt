@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,8 +49,8 @@ import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
 import com.basset.operations.domain.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
 import com.basset.operations.domain.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
-import com.basset.operations.presentation.cut_operation.CutOperationMediaPlayerAction
-import com.basset.operations.presentation.cut_operation.CutOperationMediaPlayerViewModel
+import com.basset.operations.presentation.cut_operation.CutOperationAction
+import com.basset.operations.presentation.cut_operation.CutOperationViewModel
 import com.linc.audiowaveform.AudioWaveform
 import org.koin.androidx.compose.koinViewModel
 
@@ -59,11 +60,11 @@ fun CutOperation(
     pickedFile: OperationRoute,
     accentColor: Color
 ) {
-    val viewModel = koinViewModel<CutOperationMediaPlayerViewModel>()
+    val viewModel = koinViewModel<CutOperationViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(pickedFile.uri) {
         viewModel.onAction(
-            CutOperationMediaPlayerAction.OnLoadMedia(
+            CutOperationAction.OnLoadMedia(
                 pickedFile.uri.toUri(),
                 pickedFile.mimeType
             )
@@ -104,7 +105,8 @@ fun CutOperation(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Box(
             modifier = Modifier
-                .widthIn(max = 500.dp),
+                .widthIn(max = 500.dp)
+                .padding(10.dp),
             contentAlignment = Alignment.Center
         ) {
             when (pickedFile.mimeType) {
@@ -150,7 +152,7 @@ fun CutOperation(
                             detectTapGestures(onTap = {
                                 val tappedProgress = (it.x / maxWidthPx).coerceIn(0f, 1f)
                                 viewModel.onAction(
-                                    CutOperationMediaPlayerAction.OnUpdateProgress(tappedProgress)
+                                    CutOperationAction.OnUpdateProgress(tappedProgress)
                                 )
                             })
                         }
@@ -161,7 +163,7 @@ fun CutOperation(
                                     (progress + delta / maxWidthPx).coerceIn(0f, 1f)
 
                                 viewModel.onAction(
-                                    CutOperationMediaPlayerAction.OnUpdateProgress(newProgress)
+                                    CutOperationAction.OnUpdateProgress(newProgress)
                                 )
                             }
                         )

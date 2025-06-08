@@ -11,7 +11,7 @@ import com.basset.operations.data.cutOperation.LocalMediaDataSource
 import com.basset.operations.data.cutOperation.MediaPlaybackRepositoryImpl
 import com.basset.operations.domain.MediaDataSource
 import com.basset.operations.domain.MediaPlaybackRepository
-import com.basset.operations.presentation.cut_operation.CutOperationMediaPlayerViewModel
+import com.basset.operations.presentation.cut_operation.CutOperationViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -37,9 +37,9 @@ val appModule = module {
     single<ThemePreferencesRepository> {
         ThemePreferencesRepositoryImpl(themePreferencesDataSource = get())
     }
-    
+
     viewModel {
-        CutOperationMediaPlayerViewModel(
+        CutOperationViewModel(
             player = get(),
             mediaPlaybackRepository = get(),
             mediaDataSource = get()
