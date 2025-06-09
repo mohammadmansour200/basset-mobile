@@ -81,10 +81,24 @@ class CutOperationViewModel(
 
             is CutOperationAction.OnEndRangeChange -> {
                 _state.update { it.copy(endRangeProgress = action.position) }
+                val startRangePosition = player.duration * _state.value.startRangeProgress
+                if (_state.value.position > player.duration * _state.value.endRangeProgress) {
+                    _state.update { it.copy(position = startRangePosition.toLong()) }
+                    player.seekTo(
+                        startRangePosition.toLong()
+                    )
+                }
             }
 
             is CutOperationAction.OnStartRangeChange -> {
                 _state.update { it.copy(startRangeProgress = action.position) }
+                val startRangePosition = player.duration * action.position
+                if (_state.value.position < player.duration * action.position) {
+                    _state.update { it.copy(position = startRangePosition.toLong()) }
+                    player.seekTo(
+                        startRangePosition.toLong()
+                    )
+                }
             }
         }
     }

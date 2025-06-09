@@ -20,7 +20,8 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun IconWithTooltip(
-    icon: ImageVector,
+    icon: ImageVector? = null,
+    content: @Composable (() -> Unit)? = null,
     text: String,
     surfaceColor: Color,
     @SuppressLint("ModifierParameter") tooltipBoxModifier: Modifier = Modifier,
@@ -48,10 +49,12 @@ fun IconWithTooltip(
         modifier = tooltipBoxModifier
     )
     {
-        Icon(
-            imageVector = icon,
-            contentDescription = text,
-            modifier = iconModifier
-        )
+        if (icon != null)
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = iconModifier
+            )
+        if (content != null) content()
     }
 }

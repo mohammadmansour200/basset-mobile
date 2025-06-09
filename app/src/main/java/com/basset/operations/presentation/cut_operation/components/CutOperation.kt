@@ -14,6 +14,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -94,16 +95,17 @@ fun CutOperation(
                 .background(MaterialTheme.colorScheme.surfaceContainer),
         )
     }
-
-    Row {
-        PlayPauseButton(
-            player = viewModel.player,
-            accentColor = accentColor
-        )
-        PlaybackSpeedPopUpButton(
-            player = viewModel.player,
-            accentColor = accentColor
-        )
+    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row {
+            PlayPauseButton(
+                player = viewModel.player,
+                accentColor = accentColor
+            )
+            PlaybackSpeedPopUpButton(
+                player = viewModel.player,
+                accentColor = accentColor
+            )
+        }
     }
 
     val progress = state.position.toFloat() / viewModel.player.duration.toFloat()
