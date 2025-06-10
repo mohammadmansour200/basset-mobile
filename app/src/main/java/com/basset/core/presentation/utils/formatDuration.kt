@@ -29,15 +29,31 @@ fun Double.formatDuration(): String {
 
 fun String.parseDuration(): Double {
     val parts = this.split(":", ".", limit = 4)
-    return when (parts.size) {
-        3 -> { // mm:ss.mmm
+    // Check if milliseconds are present
+    val hasMillis = this.contains(".")
+
+    return when {
+        parts.size == 2 && !hasMillis -> { // mm:ss
+            val minutes = parts[0].toLong()
+            val seconds = parts[1].toLong()
+            (minutes * 60_000 + seconds * 1000).toDouble()
+        }
+
+        parts.size == 3 && hasMillis -> { // mm:ss.mmm
             val minutes = parts[0].toLong()
             val seconds = parts[1].toLong()
             val millis = parts[2].padEnd(3, '0').take(3).toLong()
             (minutes * 60_000 + seconds * 1000 + millis).toDouble()
         }
 
-        4 -> { // hh:mm:ss.mmm
+        parts.size == 3 && !hasMillis -> { // hh:mm:ss
+            val hours = parts[0].toLong()
+            val minutes = parts[1].toLong()
+            val seconds = parts[2].toLong()
+            (hours * 3600_000 + minutes * 60_000 + seconds * 1000).toDouble()
+        }
+
+        parts.size == 4 && hasMillis -> { // hh:mm:ss.mmm
             val hours = parts[0].toLong()
             val minutes = parts[1].toLong()
             val seconds = parts[2].toLong()
@@ -50,7 +66,7 @@ fun String.parseDuration(): Double {
 }
 
 fun String.isValidDurationFormat(): Boolean {
-    val durationRegex = Regex("""^(\d{1,2}:)?\d{2}:\d{2}\.\d{1,3}$""")
+    val durationRegex = Regex("""^((\d{1,2}:)?\d{2}:\d{2}(\.\d{1,3})?|\d{1,2}:\d{2})$""")
     return this.matches(durationRegex)
 }
 
