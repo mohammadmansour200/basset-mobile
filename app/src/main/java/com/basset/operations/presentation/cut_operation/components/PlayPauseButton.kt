@@ -16,7 +16,7 @@ fun PlayPauseButton(player: Player, accentColor: Color) {
     AnimatedPlayPauseButton(
         isPlaying = !state.showPlay,
         onClick = state::onClick,
-        iconColor = MaterialTheme.colorScheme.primary,
+        iconColor = MaterialTheme.colorScheme.onSurface,
         accentColor = accentColor
     )
 }

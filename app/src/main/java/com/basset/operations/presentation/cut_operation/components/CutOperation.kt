@@ -9,23 +9,16 @@ import androidx.annotation.OptIn
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -36,10 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
@@ -53,6 +43,7 @@ import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
+import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.presentation.cut_operation.CutOperationAction
 import com.basset.operations.presentation.cut_operation.CutOperationViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -79,7 +70,6 @@ fun CutOperation(
     if (pickedFile.mimeType == MimeType.VIDEO) Crossfade(viewModel.player.isCurrentMediaItemSeekable) {
         if (it) PlayerSurface(
             modifier = Modifier
-                .widthIn(max = 500.dp)
                 .aspectRatio(
                     16 / 9f
                 )
@@ -95,7 +85,13 @@ fun CutOperation(
                 .background(MaterialTheme.colorScheme.surfaceContainer),
         )
     }
-    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceBetween) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Row {
             PlayPauseButton(
                 player = viewModel.player,
@@ -106,6 +102,7 @@ fun CutOperation(
                 accentColor = accentColor
             )
         }
+        Text(state.position.formatDuration())
     }
 
     val progress = state.position.toFloat() / viewModel.player.duration.toFloat()
@@ -115,7 +112,6 @@ fun CutOperation(
         var boxYPosition by remember { mutableFloatStateOf(0f) }
         Box(
             modifier = Modifier
-                .widthIn(max = 500.dp)
                 .onGloballyPositioned { coordinates ->
                     boxYPosition = coordinates.positionInWindow().y
                 },
@@ -157,116 +153,21 @@ fun CutOperation(
                     }
                 }
 
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .pointerInput(Unit) {
-                            detectTapGestures(onTap = {
-                                val tappedProgress = (it.x / timelineWidthPx).coerceIn(0f, 1f)
-                                viewModel.onAction(
-                                    CutOperationAction.OnUpdateProgress(tappedProgress)
-                                )
-                            })
-                        }
-                        .draggable(
-                            orientation = Orientation.Horizontal,
-                            state = rememberDraggableState { delta ->
-                                val newProgress =
-                                    (progress + delta / timelineWidthPx).coerceIn(0f, 1f)
-
-                                viewModel.onAction(
-                                    CutOperationAction.OnUpdateProgress(newProgress)
-                                )
-                            }
-                        )
-                )
-
-                Box(
-                    modifier = Modifier
-                        .offset(x = minWidth.times(progress))
-                        .shadow(8.dp, RectangleShape)
-                        .width(2.dp)
-                        .background(Color.White)
-                        .height(timelineHeight)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .offset(x = maxWidth.times(state.startRangeProgress) - 12.dp)
-                        .width(20.dp)
-                        .height(timelineHeight)
-                        .pointerInput(Unit) {
-                            detectDragGestures { _, change ->
-                                val newStartRange =
-                                    ((state.startRangeProgress * timelineWidthPx + change.x) / timelineWidthPx)
-                                        .coerceIn(0f, state.endRangeProgress)
-                                viewModel.onAction(
-                                    CutOperationAction.OnStartRangeChange(newStartRange)
-                                )
-                            }
-                        }
-                ) {
-                    // Visual handle (narrow)
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .width(4.dp) // Narrow visual handle
-                            .height(timelineHeight)
-                            .background(
-                                Color.White,
-                                RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)
-                            )
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .offset(x = maxWidth.times(state.endRangeProgress) - 8.dp)
-                        .width(20.dp)
-                        .height(timelineHeight)
-                        .pointerInput(Unit) {
-                            detectDragGestures { _, change ->
-                                val newEndRange =
-                                    ((state.endRangeProgress * timelineWidthPx + change.x) / timelineWidthPx)
-                                        .coerceIn(state.startRangeProgress, 1f)
-                                viewModel.onAction(
-                                    CutOperationAction.OnEndRangeChange(newEndRange)
-                                )
-                            }
-                        }
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .width(4.dp)
-                            .height(timelineHeight)
-                            .background(
-                                Color.White,
-                                RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
-                            )
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .offset(x = 0.dp)
-                        .width(minWidth.times(state.startRangeProgress))
-                        .height(timelineHeight)
-                        .background(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                        )
-                )
-                Box(
-                    modifier = Modifier
-                        .offset(x = minWidth.times(state.endRangeProgress))
-                        .width(minWidth.times(1f - state.endRangeProgress))
-                        .height(timelineHeight)
-                        .background(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                        )
+                TimelineBars(
+                    timelineWidthPx,
+                    { viewModel.onAction(it) },
+                    progress,
+                    timelineHeight,
+                    state
                 )
             }
         }
+
+        RangeSelectorField(
+            duration = viewModel.player.duration,
+            onAction = { viewModel.onAction(it) },
+            state = state
+        )
     }
 }
 
