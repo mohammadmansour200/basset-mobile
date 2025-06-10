@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,7 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.basset.R
 import com.basset.core.presentation.utils.formatDuration
 import com.basset.core.presentation.utils.isValidDurationFormat
 import com.basset.core.presentation.utils.parseDuration
@@ -45,7 +48,8 @@ fun RangeSelectorField(
                     CutOperationAction.OnStartRangeChange(newTime / duration)
                 )
             },
-            duration = duration
+            duration = duration,
+            label = stringResource(R.string.start_time)
         )
         Spacer(modifier = Modifier.padding(5.dp))
         TimeTextField(
@@ -55,13 +59,15 @@ fun RangeSelectorField(
                     CutOperationAction.OnEndRangeChange(newTime / duration)
                 )
             },
-            duration = duration
+            duration = duration,
+            label = stringResource(R.string.end_time)
         )
     }
 }
 
 @Composable
 private fun TimeTextField(
+    label: String,
     time: Float,
     onTimeChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
@@ -73,6 +79,7 @@ private fun TimeTextField(
     }
 
     TextField(
+        label = { Text(label) },
         value = text,
         onValueChange = { newText ->
             text = newText

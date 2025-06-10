@@ -31,4 +31,6 @@
     <string name="playpause_button_play">Play</string>
     <string name="playpause_button_pause">Pause</string>
     <string name="playback_speed">Playback Speed</string>
+    <string name="start_time">Start of Selection</string>
+    <string name="end_time">End of Selection</string>
 </resources>

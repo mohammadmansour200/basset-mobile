@@ -32,4 +32,6 @@
     <string name="playpause_button_play">تشغيل</string>
     <string name="playpause_button_pause">إيقاف</string>
     <string name="playback_speed">سرعة التشغيل</string>
+    <string name="start_time">بداية التحديد</string>
+    <string name="end_time">نهاية التحديد</string>
 </resources>
