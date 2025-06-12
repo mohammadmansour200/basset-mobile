@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
@@ -68,7 +67,7 @@ fun BoxWithConstraintsScope.TimelineBars(
             .offset(x = minWidth.times(progress))
             .shadow(8.dp, RectangleShape)
             .width(2.dp)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.primary)
             .height(timelineHeight)
     )
 
@@ -95,7 +94,7 @@ fun BoxWithConstraintsScope.TimelineBars(
                 .width(4.dp)
                 .height(timelineHeight)
                 .background(
-                    Color.White,
+                    MaterialTheme.colorScheme.primary,
                     RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)
                 )
         )
@@ -125,7 +124,7 @@ fun BoxWithConstraintsScope.TimelineBars(
                 .width(4.dp)
                 .height(timelineHeight)
                 .background(
-                    Color.White,
+                    MaterialTheme.colorScheme.primary,
                     RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
                 )
         )

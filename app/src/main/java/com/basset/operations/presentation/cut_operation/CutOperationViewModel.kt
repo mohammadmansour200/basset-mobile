@@ -7,11 +7,15 @@ import androidx.media3.common.Player
 import com.basset.core.domain.model.MimeType
 import com.basset.operations.domain.MediaDataSource
 import com.basset.operations.domain.MediaPlaybackRepository
+import com.basset.operations.domain.cutOperation.CutOperationError
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
 
 class CutOperationViewModel(
     val player: Player,
@@ -20,6 +24,9 @@ class CutOperationViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(CutOperationState())
     val state: StateFlow<CutOperationState> = _state
+
+    private val _events = Channel<CutOperationEvent>()
+    val events = _events.receiveAsFlow()
 
     override fun onCleared() {
         super.onCleared()
@@ -39,13 +46,21 @@ class CutOperationViewModel(
 
                     when (action.mimeType) {
                         MimeType.AUDIO -> {
-                            val result = mediaDataSource.loadAmplitudes(action.uri)
-                            _state.update { it.copy(amplitudes = result) }
+                            try {
+                                val result = mediaDataSource.loadAmplitudes(action.uri)
+                                _state.update { it.copy(amplitudes = result) }
+                            } catch (_: Exception) {
+                                _events.send(CutOperationEvent.Error(CutOperationError.MEDIA_PREVIEW_LOADING))
+                            }
                         }
 
                         else -> {
-                            mediaDataSource.loadVideoPreviewFrames(action.uri) { bitmap ->
-                                _state.update { it.copy(videoFrames = it.videoFrames + bitmap) }
+                            try {
+                                mediaDataSource.loadVideoPreviewFrames(action.uri) { bitmap ->
+                                    _state.update { it.copy(videoFrames = it.videoFrames + bitmap) }
+                                }
+                            } catch (_: Exception) {
+                                _events.send(CutOperationEvent.Error(CutOperationError.MEDIA_PREVIEW_LOADING))
                             }
                         }
                     }
@@ -80,8 +95,22 @@ class CutOperationViewModel(
             }
 
             is CutOperationAction.OnEndRangeChange -> {
-                _state.update { it.copy(endRangeProgress = action.position) }
                 val startRangePosition = player.duration * _state.value.startRangeProgress
+                val endRangePosition = player.duration * action.position
+                if (startRangePosition > player.duration) {
+                    viewModelScope.launch {
+                        _events.send(CutOperationEvent.Error(CutOperationError.CUT_RANGE_EXCEEDS_DURATION))
+                    }
+                    return
+                }
+                if (startRangePosition > endRangePosition) {
+                    viewModelScope.launch {
+                        _events.send(CutOperationEvent.Error(CutOperationError.WRONG_END_CUT_RANGE_POSITION))
+                    }
+                    return
+                }
+
+                _state.update { it.copy(endRangeProgress = action.position) }
                 if (_state.value.position > player.duration * _state.value.endRangeProgress) {
                     _state.update { it.copy(position = startRangePosition.toLong()) }
                     player.seekTo(
@@ -91,8 +120,22 @@ class CutOperationViewModel(
             }
 
             is CutOperationAction.OnStartRangeChange -> {
-                _state.update { it.copy(startRangeProgress = action.position) }
                 val startRangePosition = player.duration * action.position
+                val endRangePosition = player.duration * _state.value.endRangeProgress
+                if (startRangePosition > player.duration) {
+                    viewModelScope.launch {
+                        _events.send(CutOperationEvent.Error(CutOperationError.CUT_RANGE_EXCEEDS_DURATION))
+                    }
+                    return
+                }
+                if (startRangePosition > endRangePosition) {
+                    viewModelScope.launch {
+                        _events.send(CutOperationEvent.Error(CutOperationError.WRONG_START_CUT_RANGE_POSITION))
+                    }
+                    return
+                }
+
+                _state.update { it.copy(startRangeProgress = action.position) }
                 if (_state.value.position < player.duration * action.position) {
                     _state.update { it.copy(position = startRangePosition.toLong()) }
                     player.seekTo(

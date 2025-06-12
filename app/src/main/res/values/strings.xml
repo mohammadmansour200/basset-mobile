@@ -33,4 +33,8 @@
     <string name="playback_speed">Playback Speed</string>
     <string name="start_time">Start of Selection</string>
     <string name="end_time">End of Selection</string>
+    <string name="error_media_preview_loading">Failed to load timeline preview.</string>
+    <string name="error_wrong_start_cut_range_position">Start of selection must be before end of selection.</string>
+    <string name="error_wrong_end_cut_range_position">End of selection must be after start of selection.</string>
+    <string name="error_cut_range_exceeds_duration">Cut range exceeds media duration.</string>
 </resources>

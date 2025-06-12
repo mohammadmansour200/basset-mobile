@@ -14,6 +14,8 @@ fun Long.formatDuration(): String {
 }
 
 fun Double.formatDuration(): String {
+    if (this < 0) return String.format("--:--.---")
+
     val totalMillis = this.toLong()
     val totalSeconds = totalMillis / 1000
     val hours = totalSeconds / 3600

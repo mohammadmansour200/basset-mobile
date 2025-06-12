@@ -20,8 +20,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,69 +52,79 @@ fun OperationScreen(
     onGoBack: () -> Unit = {}
 ) {
     val accentColor = if (isDarkMode(themeState.theme)) Color.White else Color.Black
-    Scaffold(topBar = {
-        FlexibleTopBar(
-            colors = FlexibleTopBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            )
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier.padding(start = 4.dp)
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        topBar = {
+            FlexibleTopBar(
+                colors = FlexibleTopBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                )
+            ) {
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                top = WindowInsets.statusBars.asPaddingValues()
+                                    .calculateTopPadding()
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { onGoBack() }) {
-                            IconWithTooltip(
-                                icon = Icons.AutoMirrored.Filled.ArrowBack,
-                                text = stringResource(R.string.back_btn),
-                                surfaceColor = accentColor
+                        Box(
+                            modifier = Modifier.padding(start = 4.dp)
+                        ) {
+                            IconButton(onClick = { onGoBack() }) {
+                                IconWithTooltip(
+                                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                    text = stringResource(R.string.back_btn),
+                                    surfaceColor = accentColor
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            val localizedTitle = when (pickedFile.operationType) {
+                                OperationType.COMPRESS -> R.string.operation_compress
+                                OperationType.CONVERT -> R.string.operation_convert
+                                OperationType.BG_REMOVE -> R.string.operation_remove_background
+                                OperationType.CUT -> R.string.operation_cut
+                            }
+                            Text(
+                                text = stringResource(localizedTitle),
+                                style = MaterialTheme.typography.titleLarge
                             )
                         }
+                        Spacer(modifier = Modifier.size(48.dp))
                     }
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val localizedTitle = when (pickedFile.operationType) {
-                            OperationType.COMPRESS -> R.string.operation_compress
-                            OperationType.CONVERT -> R.string.operation_convert
-                            OperationType.BG_REMOVE -> R.string.operation_remove_background
-                            OperationType.CUT -> R.string.operation_cut
-                        }
-                        Text(
-                            text = stringResource(localizedTitle),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    }
-                    Spacer(modifier = Modifier.size(48.dp))
+                    MediaInfoCard(pickedFile = pickedFile)
                 }
-                MediaInfoCard(pickedFile = pickedFile)
             }
-        }
-    }) { innerPadding ->
+        }) { innerPadding ->
         Box(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.TopCenter
         ) {
             Column(
                 modifier = modifier
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .verticalScroll(rememberScrollState())
                     .widthIn(max = 500.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                OperationScreenContent(pickedFile = pickedFile, accentColor = accentColor)
+                OperationScreenContent(
+                    pickedFile = pickedFile,
+                    accentColor = accentColor,
+                    snackbarHostState = snackbarHostState
+                )
             }
         }
     }

@@ -26,12 +26,9 @@ class LocalMediaDataSource(
             inputFile = appContext.uriToFile(uri = uri)
             val result = amplituda.processAudio(inputFile).get()
             return@withContext result.amplitudesAsList() ?: emptyList()
-        } catch (e: IOException) {
-            Log.e("MediaPlayer", "Error processing audio file: $uri", e)
-            emptyList()
         } catch (e: Exception) {
             Log.e("MediaPlayer", "Unexpected error loading amplitudes: $uri", e)
-            emptyList()
+            throw IOException("Error loading amplitudes", e)
         } finally {
             inputFile?.delete()?.also { deleted ->
                 if (deleted) {
@@ -75,7 +72,7 @@ class LocalMediaDataSource(
                     if (bitmap != null) onThumbnailReady(bitmap)
                 }
             } catch (e: Exception) {
-                Log.e("ThumbnailExtract", "Unexpected error loading frames: $uri", e)
+                throw IOException("Error loading video preview frames", e)
             } finally {
                 retriever.release()
             }

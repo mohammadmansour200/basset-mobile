@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
@@ -45,7 +47,10 @@ import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.presentation.cut_operation.CutOperationAction
+import com.basset.operations.presentation.cut_operation.CutOperationEvent
 import com.basset.operations.presentation.cut_operation.CutOperationViewModel
+import com.basset.operations.presentation.cut_operation.utils.toString
+import com.basset.operations.presentation.utils.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(
@@ -54,8 +59,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CutOperation(
     pickedFile: OperationRoute,
-    accentColor: Color
+    accentColor: Color,
+    snackbarHostState: SnackbarHostState
 ) {
+    val context = LocalContext.current
     val viewModel = koinViewModel<CutOperationViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(pickedFile.uri) {
@@ -65,6 +72,15 @@ fun CutOperation(
                 pickedFile.mimeType
             )
         )
+    }
+
+    ObserveAsEvents(events = viewModel.events) {
+        when (it) {
+            is CutOperationEvent.Error ->
+                snackbarHostState.showSnackbar(
+                    message = it.error.toString(context)
+                )
+        }
     }
 
     if (pickedFile.mimeType == MimeType.VIDEO) Crossfade(viewModel.player.isCurrentMediaItemSeekable) {
@@ -131,9 +147,9 @@ fun CutOperation(
                 val timelineHeight = 62.dp
 
                 val activity = LocalActivity.current
-                LaunchedEffect(Unit) {
-                    activity?.let { act ->
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    LaunchedEffect(Unit) {
+                        activity?.let { act ->
                             val timelineHeightPx =
                                 with(density) { timelineHeight.toPx().toInt() }
 
