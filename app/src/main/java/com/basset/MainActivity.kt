@@ -18,61 +18,66 @@ import com.basset.core.navigation.OperationRoute
 import com.basset.home.presentation.HomeScreen
 import com.basset.home.presentation.ThemeViewModel
 import com.basset.operations.presentation.OperationScreen
+import com.basset.operations.presentation.OperationScreenViewModel
 import com.basset.ui.theme.AppTheme
 import com.basset.ui.theme.isDarkMode
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.KoinContext
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel = koinViewModel<ThemeViewModel>()
+            KoinContext {
+                val themeViewModel = koinViewModel<ThemeViewModel>()
+                val operationScreenViewModel = koinViewModel<OperationScreenViewModel>()
 
-            val state by viewModel.state.collectAsStateWithLifecycle()
+                val themeState by themeViewModel.state.collectAsStateWithLifecycle()
 
-            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-            insetsController.isAppearanceLightStatusBars = !isDarkMode(state.theme)
+                val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+                insetsController.isAppearanceLightStatusBars = !isDarkMode(themeState.theme)
 
-            AppTheme(
-                darkTheme = isDarkMode(state.theme),
-                dynamicColor = state.dynamicColorsEnabled
-            ) {
-                val backStack = rememberNavBackStack(HomeRoute)
-                NavDisplay(
-                    backStack = backStack,
-                    entryDecorators = listOf(
-                        rememberSavedStateNavEntryDecorator(),
-                        rememberViewModelStoreNavEntryDecorator(),
-                        rememberSceneSetupNavEntryDecorator()
-                    ),
-                    entryProvider = { key ->
-                        when (key) {
-                            is HomeRoute -> {
-                                NavEntry(key = key) {
-                                    HomeScreen(onGoToOperation = { it ->
-                                        backStack.add(it)
-                                    })
-                                }
-                            }
-
-                            is OperationRoute -> {
-                                NavEntry(key = key) {
-                                    OperationScreen(
-                                        pickedFile = key,
-                                        themeState = state,
-                                        onGoBack = {
-                                            backStack.removeLastOrNull()
+                AppTheme(
+                    darkTheme = isDarkMode(themeState.theme),
+                    dynamicColor = themeState.dynamicColorsEnabled
+                ) {
+                    val backStack = rememberNavBackStack(HomeRoute)
+                    NavDisplay(
+                        backStack = backStack,
+                        entryDecorators = listOf(
+                            rememberSavedStateNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                            rememberSceneSetupNavEntryDecorator()
+                        ),
+                        entryProvider = { key ->
+                            when (key) {
+                                is HomeRoute -> {
+                                    NavEntry(key = key) {
+                                        HomeScreen(onGoToOperation = { it ->
+                                            backStack.add(it)
                                         })
+                                    }
                                 }
-                            }
 
-                            else -> throw RuntimeException("Unknown route")
-                        }
-                    },
-                )
+                                is OperationRoute -> {
+                                    NavEntry(key = key) {
+                                        OperationScreen(
+                                            pickedFile = key,
+                                            themeState = themeState,
+                                            onGoBack = {
+                                                backStack.removeLastOrNull()
+                                            })
+                                    }
+                                }
+
+                                else -> throw RuntimeException("Unknown route")
+                            }
+                        },
+                    )
+                }
             }
         }
     }
-}
 
+}

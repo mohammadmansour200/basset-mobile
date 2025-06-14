@@ -5,11 +5,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
+import com.basset.operations.presentation.OperationScreenAction
+import com.basset.operations.presentation.OperationScreenState
 import com.basset.operations.presentation.cut_operation.components.CutOperation
 
 @Composable
 fun OperationScreenContent(
-    pickedFile: OperationRoute, accentColor: Color, snackbarHostState: SnackbarHostState
+    pickedFile: OperationRoute,
+    accentColor: Color,
+    snackbarHostState: SnackbarHostState,
+    onAction: (OperationScreenAction) -> Unit,
+    operationScreenState: OperationScreenState
 ) {
     when (pickedFile.operationType) {
         OperationType.COMPRESS -> TODO()
@@ -18,7 +24,9 @@ fun OperationScreenContent(
         OperationType.CUT -> CutOperation(
             pickedFile = pickedFile,
             accentColor = accentColor,
-            snackbarHostState = snackbarHostState
+            snackbarHostState = snackbarHostState,
+            onAction = { onAction(it) },
+            operationScreenState = operationScreenState
         )
     }
 }

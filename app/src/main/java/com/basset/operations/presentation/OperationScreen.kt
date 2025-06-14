@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.basset.R
 import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
@@ -42,11 +44,13 @@ import com.basset.operations.presentation.components.MediaInfoCard
 import com.basset.operations.presentation.components.OperationScreenContent
 import com.basset.ui.theme.AppTheme
 import com.basset.ui.theme.isDarkMode
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OperationScreen(
     modifier: Modifier = Modifier,
+    viewModel: OperationScreenViewModel = koinViewModel(),
     pickedFile: OperationRoute,
     themeState: ThemeState,
     onGoBack: () -> Unit = {}
@@ -54,6 +58,8 @@ fun OperationScreen(
     val accentColor = if (isDarkMode(themeState.theme)) Color.White else Color.Black
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -123,7 +129,9 @@ fun OperationScreen(
                 OperationScreenContent(
                     pickedFile = pickedFile,
                     accentColor = accentColor,
-                    snackbarHostState = snackbarHostState
+                    snackbarHostState = snackbarHostState,
+                    onAction = { viewModel.onAction(it) },
+                    operationScreenState = state
                 )
             }
         }

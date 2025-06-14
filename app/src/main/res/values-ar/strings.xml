@@ -38,5 +38,6 @@
     <string name="error_wrong_start_cut_range_position">يجب أن يكون بداية التحديد قبل نهاية التحديد.</string>
     <string name="error_wrong_end_cut_range_position">يجب أن يكون نهاية التحديد بعد بداية التحديد.</string>
     <string name="error_cut_range_exceeds_duration">نطاق القص يتجاوز مدة الوسائط.</string>
-
+    <string name="cut_operation_label">قص</string>
+    <string name="cancel_operation_label">إلغاء</string>
 </resources>

@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -46,6 +47,9 @@ import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.utils.formatDuration
+import com.basset.operations.presentation.OperationScreenAction
+import com.basset.operations.presentation.OperationScreenState
+import com.basset.operations.presentation.components.ExecuteOperationBtn
 import com.basset.operations.presentation.cut_operation.CutOperationAction
 import com.basset.operations.presentation.cut_operation.CutOperationEvent
 import com.basset.operations.presentation.cut_operation.CutOperationViewModel
@@ -60,7 +64,9 @@ import org.koin.androidx.compose.koinViewModel
 fun CutOperation(
     pickedFile: OperationRoute,
     accentColor: Color,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    onAction: (OperationScreenAction) -> Unit,
+    operationScreenState: OperationScreenState
 ) {
     val context = LocalContext.current
     val viewModel = koinViewModel<CutOperationViewModel>()
@@ -185,6 +191,20 @@ fun CutOperation(
             state = state
         )
     }
+
+    ExecuteOperationBtn(
+        onAction = {
+            onAction(
+                OperationScreenAction.OnCut(
+                    pickedFile = pickedFile,
+                    start = ((state.startRangeProgress * viewModel.player.duration) / 1000).toDouble(),
+                    end = ((state.endRangeProgress * viewModel.player.duration) / 1000).toDouble()
+                )
+            )
+        },
+        operationScreenState = operationScreenState,
+        buttonLabel = stringResource(com.basset.R.string.cut_operation_label)
+    )
 }
 
 

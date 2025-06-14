@@ -37,4 +37,6 @@
     <string name="error_wrong_start_cut_range_position">Start of selection must be before end of selection.</string>
     <string name="error_wrong_end_cut_range_position">End of selection must be after start of selection.</string>
     <string name="error_cut_range_exceeds_duration">Cut range exceeds media duration.</string>
+    <string name="cut_operation_label">Cut</string>
+    <string name="cancel_operation_label">Cancel</string>
 </resources>
