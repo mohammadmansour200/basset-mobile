@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class OperationScreenViewModel(
     context: Context,
     val mediaStoreManager: MediaStoreManager,
@@ -142,19 +141,25 @@ class OperationScreenViewModel(
 
                         when (session.returnCode.value) {
                             ReturnCode.CANCEL -> {
-                                mediaStoreManager.deleteMedia(it)
+                                viewModelScope.launch {
+                                    mediaStoreManager.deleteMedia(it)
+                                }
                                 _state.update { it.copy(isOperating = false) }
                             }
 
                             ReturnCode.SUCCESS -> {
-                                mediaStoreManager.saveMedia(it, pickedFile)
+                                viewModelScope.launch {
+                                    mediaStoreManager.saveMedia(it, pickedFile)
+                                }
                                 _state.update { it.copy(isOperating = false) }
                             }
                         }
 
                         when (state) {
                             SessionState.FAILED -> {
-                                mediaStoreManager.deleteMedia(it)
+                                viewModelScope.launch {
+                                    mediaStoreManager.deleteMedia(it)
+                                }
                                 _state.update { it.copy(isOperating = false) }
                             }
 
@@ -190,16 +195,18 @@ class OperationScreenViewModel(
                     uri = pickedFile.uri.toUri(),
                     onSuccess = { bitmap ->
                         val whiteBackgroundedBitmap = flattenTransparencyToWhite(bitmap)
-                        mediaStoreManager.writeBitmap(
-                            uri = uri,
-                            outputFileInfo = outputFileInfo,
-                            bitmap = whiteBackgroundedBitmap
-                        )
-                        mediaStoreManager.saveMedia(
-                            uri = uri,
-                            pickedFile = pickedFile,
-                        )
-                        _state.update { it.copy(outputedFile = uri, isOperating = false) }
+                        viewModelScope.launch {
+                            mediaStoreManager.writeBitmap(
+                                uri = uri,
+                                outputFileInfo = outputFileInfo,
+                                bitmap = whiteBackgroundedBitmap
+                            )
+                            mediaStoreManager.saveMedia(
+                                uri = uri,
+                                pickedFile = pickedFile,
+                            )
+                            _state.update { it.copy(outputedFile = uri, isOperating = false) }
+                        }
                     }, onFailure = { exception ->
 
                     }

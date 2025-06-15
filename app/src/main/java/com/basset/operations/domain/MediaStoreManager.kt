@@ -6,17 +6,17 @@ import com.basset.core.navigation.OperationRoute
 import com.basset.operations.domain.model.OutputFileInfo
 
 interface MediaStoreManager {
-    fun createMediaUri(pickedFile: OperationRoute, outputFileInfo: OutputFileInfo): Uri?
-    fun saveMedia(
+    suspend fun createMediaUri(pickedFile: OperationRoute, outputFileInfo: OutputFileInfo): Uri?
+    suspend fun saveMedia(
         uri: Uri,
         pickedFile: OperationRoute,
     )
 
-    fun writeBitmap(
+    suspend fun writeBitmap(
         uri: Uri,
         outputFileInfo: OutputFileInfo,
         bitmap: Bitmap
     )
 
-    fun deleteMedia(uri: Uri)
+    suspend fun deleteMedia(uri: Uri)
 }
