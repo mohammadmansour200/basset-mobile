@@ -5,5 +5,6 @@ data class Metadata(
     val artist: String?,
     val durationMs: Long?,
     val fileSizeBytes: Long?,
-    val imageData: Any?
+    val imageData: Any?,
+    val ext: String?
 )

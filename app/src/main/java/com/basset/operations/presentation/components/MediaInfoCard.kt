@@ -34,9 +34,7 @@ import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.data.android.getFileName
-import com.basset.operations.data.android.getUriExtension
 import com.basset.operations.domain.model.Metadata
-
 
 @Composable
 fun MediaInfoCard(
@@ -116,7 +114,7 @@ fun MediaInfoCard(
                                 context,
                                 metadata?.fileSizeBytes ?: 0
                             )
-                        } | ${context.contentResolver.getUriExtension(uri = uri)}",
+                        } | ${metadata?.ext}",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

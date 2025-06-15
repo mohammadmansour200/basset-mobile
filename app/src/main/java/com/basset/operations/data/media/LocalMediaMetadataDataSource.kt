@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import com.basset.core.domain.model.MimeType
 import com.basset.operations.data.android.getFileName
+import com.basset.operations.data.android.getUriExtension
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.model.Metadata
 import kotlinx.coroutines.Dispatchers
@@ -27,14 +28,15 @@ class LocalMediaMetadataDataSource(
                         cursor.moveToFirst()
                         if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
                     }
-
+                val ext = context.contentResolver.getUriExtension(uri)
                 if (mimeType == MimeType.IMAGE) {
                     return@withContext Metadata(
                         title = uri.getFileName(context),
                         fileSizeBytes = fileSizeBytes,
                         artist = null,
                         durationMs = null,
-                        imageData = uri
+                        imageData = uri,
+                        ext = ext
                     )
                 }
 
@@ -51,7 +53,7 @@ class LocalMediaMetadataDataSource(
                     else -> null
                 }
 
-                Metadata(title, artist, durationMs, fileSizeBytes, imageData)
+                Metadata(title, artist, durationMs, fileSizeBytes, imageData, ext)
             } catch (e: Exception) {
                 null
             } finally {
