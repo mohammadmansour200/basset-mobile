@@ -1,4 +1,4 @@
-package com.basset.operations.data.cutOperation
+package com.basset.operations.data.media
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,9 +7,9 @@ import android.net.Uri
 import android.util.Log
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.data.android.uriToFile
-import com.basset.operations.domain.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
-import com.basset.operations.domain.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
-import com.basset.operations.domain.MediaDataSource
+import com.basset.operations.domain.cutOperation.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
+import com.basset.operations.domain.cutOperation.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
+import com.basset.operations.domain.cutOperation.MediaDataSource
 import com.linc.amplituda.Amplituda
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

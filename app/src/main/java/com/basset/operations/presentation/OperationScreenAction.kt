@@ -1,16 +1,14 @@
 package com.basset.operations.presentation
 
-import com.basset.core.navigation.OperationRoute
-
 sealed interface OperationScreenAction {
-    data class OnCut(val pickedFile: OperationRoute, val start: Double, val end: Double) :
+    data class OnCut(val start: Double, val end: Double) :
         OperationScreenAction
 
-    data class OnCompress(val pickedFile: OperationRoute, val compressionRate: Int) :
+    data class OnCompress(val compressionRate: Int) :
         OperationScreenAction
 
-    data class OnConvert(val pickedFile: OperationRoute, val outputFormat: String) :
+    data class OnConvert(val outputFormat: String) :
         OperationScreenAction
 
-    data class OnRemoveBackground(val pickedFile: OperationRoute) : OperationScreenAction
+    class OnRemoveBackground : OperationScreenAction
 }

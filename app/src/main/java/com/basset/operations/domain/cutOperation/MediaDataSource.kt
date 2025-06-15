@@ -1,4 +1,4 @@
-package com.basset.operations.domain
+package com.basset.operations.domain.cutOperation
 
 import android.graphics.Bitmap
 import android.net.Uri

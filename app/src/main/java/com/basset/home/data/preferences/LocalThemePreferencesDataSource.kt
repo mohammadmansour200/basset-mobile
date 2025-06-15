@@ -2,8 +2,9 @@ package com.basset.home.data.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.basset.home.domain.ThemePreferences
 
-class LocalThemePreferencesDataSource(context: Context) {
+class LocalThemePreferencesDataSource(context: Context) : ThemePreferences {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("theme_preferences", Context.MODE_PRIVATE)
 
@@ -12,20 +13,20 @@ class LocalThemePreferencesDataSource(context: Context) {
         private const val KEY_DYNAMIC_COLORS = "dynamic_colors"
     }
 
-    fun setTheme(theme: String) {
+    override fun setTheme(theme: String) {
         sharedPreferences.edit().putString(KEY_THEME, theme).apply()
     }
 
-    fun getTheme(): String? {
+    override fun getTheme(): String? {
         return sharedPreferences.getString(KEY_THEME, "system") // Default to light theme
     }
 
-    fun setDynamicColorsEnabled(enabled: Boolean) {
+    override fun setDynamicColorsEnabled(enabled: Boolean) {
         sharedPreferences.edit().putBoolean(KEY_DYNAMIC_COLORS, enabled).apply()
     }
 
     // Retrieve whether dynamic colors are enabled
-    fun getDynamicColorsEnabled(): Boolean {
+    override fun getDynamicColorsEnabled(): Boolean {
         return sharedPreferences.getBoolean(KEY_DYNAMIC_COLORS, false) // Default is false
     }
 }

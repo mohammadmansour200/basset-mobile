@@ -1,10 +1,10 @@
 package com.basset.operations.presentation
 
-import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.media.MediaMetadataRetriever
-import android.os.Build
-import android.provider.MediaStore
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,9 +20,11 @@ import com.arthenica.ffmpegkit.Statistics
 import com.arthenica.ffmpegkit.StatisticsCallback
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
-import com.basset.operations.data.android.createMediaStoreUri
 import com.basset.operations.data.android.getUriExtension
-import com.basset.operations.domain.OutputFile
+import com.basset.operations.domain.BackgroundRemover
+import com.basset.operations.domain.MediaMetadataDataSource
+import com.basset.operations.domain.MediaStoreManager
+import com.basset.operations.domain.model.OutputFileInfo
 import com.basset.operations.presentation.utils.progress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,37 +34,59 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class OperationScreenViewModel(context: Context) : ViewModel() {
+class OperationScreenViewModel(
+    context: Context,
+    val mediaStoreManager: MediaStoreManager,
+    val metadataDataSource: MediaMetadataDataSource,
+    val backgroundRemover: BackgroundRemover,
+    val pickedFile: OperationRoute
+) :
+    ViewModel() {
     private val appContext: Context = context
 
     private val _state = MutableStateFlow(OperationScreenState())
     val state: StateFlow<OperationScreenState> = _state
 
+    init {
+        viewModelScope.launch {
+            val metadata =
+                metadataDataSource.loadMetadata(pickedFile.uri.toUri(), pickedFile.mimeType)
+            _state.update { it.copy(metadata = metadata) }
+        }
+    }
+
     fun onAction(action: OperationScreenAction) {
         when (action) {
-            is OperationScreenAction.OnCut -> handleCut(action.pickedFile, action.start, action.end)
+            is OperationScreenAction.OnCut -> handleCut(action.start, action.end)
             is OperationScreenAction.OnCompress -> handleCompress(
-                action.pickedFile,
                 action.compressionRate
             )
 
             is OperationScreenAction.OnConvert -> handleConvert(
-                action.pickedFile,
                 action.outputFormat
             )
 
-            is OperationScreenAction.OnRemoveBackground -> handleBgRemove(action.pickedFile)
+            is OperationScreenAction.OnRemoveBackground -> {
+                viewModelScope.launch {
+                    handleBgRemove(
+                        outputFileInfo = OutputFileInfo(
+                            appContext.contentResolver.getUriExtension(pickedFile.uri.toUri())
+                                .toString(),
+                            null
+                        )
+                    )
+                }
+            }
         }
     }
 
-    private fun handleCut(pickedFile: OperationRoute, start: Double, end: Double) {
+    private fun handleCut(start: Double, end: Double) {
         val inputPath =
             FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
         viewModelScope.launch {
             runFFmpeg(
                 command = "-ss $start -to $end -i $inputPath -c copy",
-                pickedFile = pickedFile,
-                outputFile = OutputFile(
+                outputFileInfo = OutputFileInfo(
                     appContext.contentResolver.getUriExtension(pickedFile.uri.toUri()).toString(),
                     null
                 )
@@ -70,7 +94,7 @@ class OperationScreenViewModel(context: Context) : ViewModel() {
         }
     }
 
-    private fun handleCompress(pickedFile: OperationRoute, compressionRate: Int) {
+    private fun handleCompress(compressionRate: Int) {
         when (pickedFile.mimeType) {
             MimeType.VIDEO, MimeType.AUDIO -> {
 
@@ -82,7 +106,7 @@ class OperationScreenViewModel(context: Context) : ViewModel() {
         }
     }
 
-    private fun handleConvert(pickedFile: OperationRoute, outputFormat: String) {
+    private fun handleConvert(outputFormat: String) {
         when (pickedFile.mimeType) {
             MimeType.VIDEO, MimeType.AUDIO -> {
 
@@ -95,10 +119,10 @@ class OperationScreenViewModel(context: Context) : ViewModel() {
     }
 
     private suspend fun runFFmpeg(
-        command: String, pickedFile: OperationRoute,
-        outputFile: OutputFile
+        command: String,
+        outputFileInfo: OutputFileInfo
     ) = withContext(Dispatchers.IO) {
-        val outputUri = createMediaStoreUri(appContext, pickedFile, outputFile)
+        val outputUri = mediaStoreManager.createMediaUri(pickedFile, outputFileInfo)
         _state.update { it.copy(isOperating = true) }
 
         val retriever = MediaMetadataRetriever()
@@ -118,24 +142,19 @@ class OperationScreenViewModel(context: Context) : ViewModel() {
 
                         when (session.returnCode.value) {
                             ReturnCode.CANCEL -> {
-                                appContext.contentResolver.delete(outputUri, null, null)
+                                mediaStoreManager.deleteMedia(it)
                                 _state.update { it.copy(isOperating = false) }
                             }
 
                             ReturnCode.SUCCESS -> {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                    val values = ContentValues().apply {
-                                        put(MediaStore.Video.Media.IS_PENDING, 0)
-                                    }
-                                    appContext.contentResolver.update(outputUri, values, null, null)
-                                }
+                                mediaStoreManager.saveMedia(it, pickedFile)
                                 _state.update { it.copy(isOperating = false) }
                             }
                         }
 
                         when (state) {
                             SessionState.FAILED -> {
-                                appContext.contentResolver.delete(outputUri, null, null)
+                                mediaStoreManager.deleteMedia(it)
                                 _state.update { it.copy(isOperating = false) }
                             }
 
@@ -162,9 +181,39 @@ class OperationScreenViewModel(context: Context) : ViewModel() {
         }
     }
 
-    private fun handleBgRemove(pickedFile: OperationRoute) {
-        if (pickedFile.mimeType == MimeType.IMAGE) {
+    private suspend fun handleBgRemove(outputFileInfo: OutputFileInfo) =
+        withContext(Dispatchers.IO) {
+            _state.update { it.copy(isOperating = true) }
+            val outputUri = mediaStoreManager.createMediaUri(pickedFile, outputFileInfo)
+            outputUri?.let { uri ->
+                backgroundRemover.processImage(
+                    uri = pickedFile.uri.toUri(),
+                    onSuccess = { bitmap ->
+                        val whiteBackgroundedBitmap = flattenTransparencyToWhite(bitmap)
+                        mediaStoreManager.writeBitmap(
+                            uri = uri,
+                            outputFileInfo = outputFileInfo,
+                            bitmap = whiteBackgroundedBitmap
+                        )
+                        mediaStoreManager.saveMedia(
+                            uri = uri,
+                            pickedFile = pickedFile,
+                        )
+                        _state.update { it.copy(outputedFile = uri, isOperating = false) }
+                    }, onFailure = { exception ->
+
+                    }
+                )
+            }
 
         }
+
+    private fun flattenTransparencyToWhite(source: Bitmap): Bitmap {
+        val result = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(result)
+        canvas.drawColor(Color.WHITE) // Fill with white
+        canvas.drawBitmap(source, 0f, 0f, null) // Draw original bitmap
+        return result
     }
 }

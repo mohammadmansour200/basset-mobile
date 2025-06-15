@@ -196,7 +196,6 @@ fun CutOperation(
         onAction = {
             onAction(
                 OperationScreenAction.OnCut(
-                    pickedFile = pickedFile,
                     start = ((state.startRangeProgress * viewModel.player.duration) / 1000).toDouble(),
                     end = ((state.endRangeProgress * viewModel.player.duration) / 1000).toDouble()
                 )

@@ -15,6 +15,7 @@ composeBom = "2025.06.00"
 media3 = "1.7.1"
 appcompat = "1.7.1"
 koin = "4.0.4"
+playServicesMlkitSubjectSegmentation = "16.0.0-beta1"
 smartExceptionJava = "0.2.1"
 nav3Core = "1.0.0-alpha03"
 lifecycleViewmodelNav3 = "1.0.0-alpha01"
@@ -51,6 +52,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+play-services-mlkit-subject-segmentation = { module = "com.google.android.gms:play-services-mlkit-subject-segmentation", version.ref = "playServicesMlkitSubjectSegmentation" }
 smart-exception-java = { module = "com.arthenica:smart-exception-java", version.ref = "smartExceptionJava" }
 
 [plugins]

@@ -18,7 +18,6 @@ import com.basset.core.navigation.OperationRoute
 import com.basset.home.presentation.HomeScreen
 import com.basset.home.presentation.ThemeViewModel
 import com.basset.operations.presentation.OperationScreen
-import com.basset.operations.presentation.OperationScreenViewModel
 import com.basset.ui.theme.AppTheme
 import com.basset.ui.theme.isDarkMode
 import org.koin.androidx.compose.koinViewModel
@@ -31,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         setContent {
             KoinContext {
                 val themeViewModel = koinViewModel<ThemeViewModel>()
-                val operationScreenViewModel = koinViewModel<OperationScreenViewModel>()
 
                 val themeState by themeViewModel.state.collectAsStateWithLifecycle()
 

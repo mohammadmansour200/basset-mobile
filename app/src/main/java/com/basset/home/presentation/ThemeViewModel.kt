@@ -4,14 +4,14 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.basset.R
-import com.basset.home.domain.ThemePreferencesRepository
+import com.basset.home.domain.ThemePreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class ThemeViewModel(
     context: Context,
-    private val themePreferencesRepository: ThemePreferencesRepository
+    private val themePreferences: ThemePreferences
 ) : ViewModel() {
     private val appContext: Context = context
 
@@ -25,12 +25,12 @@ class ThemeViewModel(
     fun onAction(action: ThemeAction) {
         when (action) {
             is ThemeAction.OnDynamicColorChange -> {
-                themePreferencesRepository.setDynamicColorsEnabled(action.enabled)
+                themePreferences.setDynamicColorsEnabled(action.enabled)
                 _state.update { it.copy(dynamicColorsEnabled = action.enabled) }
             }
 
             is ThemeAction.OnThemeChange -> {
-                themePreferencesRepository.setTheme(action.theme)
+                themePreferences.setTheme(action.theme)
                 _state.update { it.copy(theme = action.theme) }
             }
         }
@@ -45,8 +45,8 @@ class ThemeViewModel(
     private fun loadThemePrefs() {
         _state.update {
             it.copy(
-                theme = themePreferencesRepository.getTheme() ?: "system",
-                dynamicColorsEnabled = themePreferencesRepository.getDynamicColorsEnabled()
+                theme = themePreferences.getTheme() ?: "system",
+                dynamicColorsEnabled = themePreferences.getDynamicColorsEnabled()
             )
         }
     }

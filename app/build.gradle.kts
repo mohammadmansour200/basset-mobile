@@ -47,6 +47,9 @@ android {
 }
 
 dependencies {
+    // Subject segmentation
+    implementation(libs.play.services.mlkit.subject.segmentation)
+
     // Navigation 3
     implementation(libs.nav3.runtime)
     implementation(libs.nav3.ui)

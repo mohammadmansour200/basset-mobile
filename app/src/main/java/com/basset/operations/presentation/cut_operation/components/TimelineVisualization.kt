@@ -15,8 +15,8 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
-import com.basset.operations.domain.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
-import com.basset.operations.domain.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
+import com.basset.operations.domain.cutOperation.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
+import com.basset.operations.domain.cutOperation.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
 import com.basset.operations.presentation.cut_operation.CutOperationState
 import com.linc.audiowaveform.AudioWaveform
 

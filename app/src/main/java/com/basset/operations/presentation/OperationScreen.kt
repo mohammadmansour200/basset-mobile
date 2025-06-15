@@ -45,22 +45,24 @@ import com.basset.operations.presentation.components.OperationScreenContent
 import com.basset.ui.theme.AppTheme
 import com.basset.ui.theme.isDarkMode
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OperationScreen(
     modifier: Modifier = Modifier,
-    viewModel: OperationScreenViewModel = koinViewModel(),
     pickedFile: OperationRoute,
     themeState: ThemeState,
     onGoBack: () -> Unit = {}
 ) {
+    val viewModel: OperationScreenViewModel =
+        koinViewModel(parameters = { parametersOf(pickedFile) })
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     val accentColor = if (isDarkMode(themeState.theme)) Color.White else Color.Black
 
     val snackbarHostState = remember { SnackbarHostState() }
-
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
+    
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
@@ -109,7 +111,7 @@ fun OperationScreen(
                         }
                         Spacer(modifier = Modifier.size(48.dp))
                     }
-                    MediaInfoCard(pickedFile = pickedFile)
+                    MediaInfoCard(pickedFile = pickedFile, metadata = state.metadata)
                 }
             }
         }) { innerPadding ->

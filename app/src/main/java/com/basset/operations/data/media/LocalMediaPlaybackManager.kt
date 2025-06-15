@@ -1,23 +1,25 @@
 // Credit: https://github.com/lincollincol/compose-audiowaveform/blob/master/app/src/main/java/com/linc/audiowaveform/sample/android/AudioPlaybackManager.kt
-package com.basset.operations.data.android
+package com.basset.operations.data.media
 
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import com.basset.operations.domain.cutOperation.MediaPlaybackManager
+import com.basset.operations.domain.cutOperation.MediaPlaybackManager.Event
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.runBlocking
 
-class MediaPlaybackManager(
+class LocalMediaPlaybackManager(
     private val player: Player
-) : Player.Listener {
+) : MediaPlaybackManager, Player.Listener {
 
     companion object {
         private const val PLAYER_POSITION_UPDATE_TIME = 500L
     }
 
-    val events: MutableSharedFlow<Event> = MutableSharedFlow()
+    override val events: MutableSharedFlow<Event> = MutableSharedFlow()
 
     private var lastEmittedPosition: Long = 0
     private var handler: Handler? = null
@@ -34,14 +36,14 @@ class MediaPlaybackManager(
         }
     }
 
-    fun releaseMedia() {
+    override fun releaseMedia() {
         clearMedia()
         player.removeListener(this)
         handler?.removeCallbacks(playerPositionRunnable)
         handler = null
     }
 
-    fun loadMedia(uri: Uri) {
+    override fun loadMedia(uri: Uri) {
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.prepare()
@@ -61,9 +63,5 @@ class MediaPlaybackManager(
 
     private fun sendEvent(event: Event) {
         runBlocking { events.emit(event) }
-    }
-
-    sealed interface Event {
-        data class PositionChanged(val position: Long) : Event
     }
 }

@@ -1,6 +1,6 @@
 package com.basset.home.domain
 
-interface ThemePreferencesRepository {
+interface ThemePreferences {
     fun setTheme(
         theme: String
     )

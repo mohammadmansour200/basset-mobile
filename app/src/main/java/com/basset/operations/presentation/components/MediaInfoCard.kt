@@ -1,7 +1,5 @@
 package com.basset.operations.presentation.components
 
-import android.media.MediaMetadataRetriever
-import android.provider.OpenableColumns
 import android.text.format.Formatter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,8 +16,6 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,74 +35,19 @@ import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.data.android.getUriExtension
+import com.basset.operations.domain.model.Metadata
 
-data class MediaMetadata(
-    val title: String?,
-    val artist: String?,
-    val durationMs: Long?,
-    val fileSizeBytes: Long?
-)
 
 @Composable
 fun MediaInfoCard(
     modifier: Modifier = Modifier,
-    pickedFile: OperationRoute
+    pickedFile: OperationRoute,
+    metadata: Metadata?
 ) {
     val context = LocalContext.current
     val uri = pickedFile.uri.toUri()
 
-    val retriever = remember { MediaMetadataRetriever() }
-    DisposableEffect(Unit) {
-        onDispose {
-            retriever.release()
-        }
-    }
-
-    val metadata = remember(uri) {
-        runCatching {
-            val fileSizeBytes = context.contentResolver
-                .query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)
-                ?.use { cursor ->
-                    val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-                    cursor.moveToFirst()
-                    if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
-                }
-
-            if (pickedFile.mimeType == MimeType.IMAGE) {
-                return@runCatching MediaMetadata(
-                    title = uri.getFileName(context),
-                    fileSizeBytes = fileSizeBytes,
-                    artist = null,
-                    durationMs = null,
-                )
-            }
-
-            retriever.setDataSource(context, uri)
-            val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-
-            val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            val durationMs = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.toLongOrNull()
-
-            MediaMetadata(
-                title = title,
-                artist = artist,
-                durationMs = durationMs,
-                fileSizeBytes = fileSizeBytes,
-            )
-        }.getOrNull()
-    }
-
     val durationFormatted = metadata?.durationMs?.formatDuration() ?: "--:--"
-
-    val imageRequestData = remember(metadata, pickedFile.mimeType) {
-        when (pickedFile.mimeType) {
-            MimeType.IMAGE -> uri
-            MimeType.VIDEO -> retriever.getFrameAtTime(0)
-            MimeType.AUDIO -> retriever.embeddedPicture
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -132,8 +73,8 @@ fun MediaInfoCard(
                     MimeType.VIDEO -> R.drawable.movie
                 }
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(imageRequestData)
+                    model = ImageRequest.Builder(context)
+                        .data(metadata?.imageData)
                         .crossfade(true)
                         .memoryCacheKey(uri.toString())
                         .build(),

@@ -20,13 +20,17 @@ fun OperationScreenContent(
     when (pickedFile.operationType) {
         OperationType.COMPRESS -> TODO()
         OperationType.CONVERT -> TODO()
-        OperationType.BG_REMOVE -> TODO()
+        OperationType.BG_REMOVE -> BgRemoveOperation(
+            onAction = { onAction(it) },
+            operationScreenState = operationScreenState
+        )
+
         OperationType.CUT -> CutOperation(
             pickedFile = pickedFile,
             accentColor = accentColor,
             snackbarHostState = snackbarHostState,
+            operationScreenState = operationScreenState,
             onAction = { onAction(it) },
-            operationScreenState = operationScreenState
         )
     }
 }

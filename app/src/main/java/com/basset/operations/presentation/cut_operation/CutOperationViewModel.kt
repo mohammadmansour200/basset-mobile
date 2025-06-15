@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.basset.core.domain.model.MimeType
-import com.basset.operations.domain.MediaDataSource
-import com.basset.operations.domain.MediaPlaybackRepository
 import com.basset.operations.domain.cutOperation.CutOperationError
+import com.basset.operations.domain.cutOperation.MediaDataSource
+import com.basset.operations.domain.cutOperation.MediaPlaybackManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class CutOperationViewModel(
     val player: Player,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val mediaPlaybackManager: MediaPlaybackManager,
     private val mediaDataSource: MediaDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(CutOperationState())
@@ -31,14 +31,14 @@ class CutOperationViewModel(
     override fun onCleared() {
         super.onCleared()
         _state.update { CutOperationState() }
-        mediaPlaybackRepository.releaseMedia()
+        mediaPlaybackManager.releaseMedia()
     }
 
     fun onAction(action: CutOperationAction) {
         when (action) {
             is CutOperationAction.OnLoadMedia -> {
                 viewModelScope.launch {
-                    mediaPlaybackRepository.loadMedia(uri = action.uri)
+                    mediaPlaybackManager.loadMedia(uri = action.uri)
                     Log.d("MediaPlayer", "Media item set")
 
                     launch { observePlaybackEvents() }
@@ -148,9 +148,9 @@ class CutOperationViewModel(
 
 
     private suspend fun observePlaybackEvents() {
-        mediaPlaybackRepository.events.collectLatest {
+        mediaPlaybackManager.events.collectLatest {
             when (it) {
-                is MediaPlaybackRepository.MediaPlaybackEvent.PositionChanged -> {
+                is MediaPlaybackManager.Event.PositionChanged -> {
                     updatePlaybackPosition(it.position)
 
                     val startRangePosition = player.duration * _state.value.startRangeProgress
@@ -160,7 +160,6 @@ class CutOperationViewModel(
                     if (it.position > player.duration * _state.value.endRangeProgress) player.seekTo(
                         startRangePosition.toLong()
                     )
-
                 }
             }
         }
