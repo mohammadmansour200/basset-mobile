@@ -7,6 +7,9 @@ import com.basset.operations.domain.BackgroundRemover
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class MlKitBackgroundRemover(private val context: Context) : BackgroundRemover {
     private val segmenter = SubjectSegmentation.getClient(
@@ -18,23 +21,19 @@ class MlKitBackgroundRemover(private val context: Context) : BackgroundRemover {
 
     override suspend fun processImage(
         uri: Uri,
-        onSuccess: (Bitmap) -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
+    ): Bitmap = suspendCoroutine { cont ->
         val inputImage = InputImage.fromFilePath(context, uri)
-
         segmenter.process(inputImage)
             .addOnSuccessListener { result ->
-                // Extract foreground bitmap with transparency
-                val foregroundBitmap = result.foregroundBitmap
-                if (foregroundBitmap != null) {
-                    onSuccess(foregroundBitmap)
+                val bitmap = result.foregroundBitmap
+                if (bitmap != null) {
+                    cont.resume(bitmap)
                 } else {
-                    onFailure(Exception("Failed to extract foreground"))
+                    cont.resumeWithException(Exception("Failed to extract foreground"))
                 }
             }
             .addOnFailureListener { exception ->
-                onFailure(exception)
+                cont.resumeWithException(exception)
             }
     }
 }

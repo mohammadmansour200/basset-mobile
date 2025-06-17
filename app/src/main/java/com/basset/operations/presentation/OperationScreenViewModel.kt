@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.media.MediaMetadataRetriever
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -124,13 +123,6 @@ class OperationScreenViewModel(
         val outputUri = mediaStoreManager.createMediaUri(pickedFile, outputFileInfo)
         _state.update { it.copy(isOperating = true) }
 
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(appContext, pickedFile.uri.toUri())
-        val durationMs =
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.toLongOrNull()
-        retriever.release()
-
         outputUri?.let {
             val outputPath = FFmpegKitConfig.getSafParameterForWrite(appContext, outputUri)
             FFmpegKit.executeAsync(
@@ -175,7 +167,8 @@ class OperationScreenViewModel(
                 object : LogCallback {
                     override fun apply(log: Log?) {
                         android.util.Log.d("ffmpeg-kit", log?.message.toString())
-                        val progress = log?.progress(durationMs?.div(1000) ?: 0)
+                        val durationMs = _state.value.metadata?.durationMs ?: 0L
+                        val progress = log?.progress(durationMs.div(1000))
                         if (progress != null) _state.update { it.copy(progress = progress) }
                     }
                 },
@@ -189,30 +182,26 @@ class OperationScreenViewModel(
     private suspend fun handleBgRemove(outputFileInfo: OutputFileInfo) =
         withContext(Dispatchers.IO) {
             _state.update { it.copy(isOperating = true) }
-            val outputUri = mediaStoreManager.createMediaUri(pickedFile, outputFileInfo)
-            outputUri?.let { uri ->
-                backgroundRemover.processImage(
-                    uri = pickedFile.uri.toUri(),
-                    onSuccess = { bitmap ->
-                        val whiteBackgroundedBitmap = flattenTransparencyToWhite(bitmap)
-                        viewModelScope.launch {
-                            mediaStoreManager.writeBitmap(
-                                uri = uri,
-                                outputFileInfo = outputFileInfo,
-                                bitmap = whiteBackgroundedBitmap
-                            )
-                            mediaStoreManager.saveMedia(
-                                uri = uri,
-                                pickedFile = pickedFile,
-                            )
-                            _state.update { it.copy(outputedFile = uri, isOperating = false) }
-                        }
-                    }, onFailure = { exception ->
+            try {
+                val outputUri = mediaStoreManager.createMediaUri(pickedFile, outputFileInfo)
+                if (outputUri == null) {
+                    _state.update { it.copy(isOperating = false) }
+                    return@withContext
+                }
 
-                    }
-                )
+                val originalUri = pickedFile.uri.toUri()
+                val bitmap = backgroundRemover.processImage(originalUri)
+                val whiteBackgroundedBitmap = flattenTransparencyToWhite(bitmap)
+
+                mediaStoreManager.writeBitmap(outputUri, outputFileInfo, whiteBackgroundedBitmap)
+                mediaStoreManager.saveMedia(outputUri, pickedFile)
+
+                _state.update {
+                    it.copy(outputedFile = outputUri, isOperating = false)
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isOperating = false) }
             }
-
         }
 
     private fun flattenTransparencyToWhite(source: Bitmap): Bitmap {

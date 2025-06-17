@@ -6,7 +6,5 @@ import android.net.Uri
 interface BackgroundRemover {
     suspend fun processImage(
         uri: Uri,
-        onSuccess: (Bitmap) -> Unit,
-        onFailure: (Exception) -> Unit
-    )
+    ): Bitmap
 }
