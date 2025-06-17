@@ -1,6 +1,10 @@
 package com.basset.operations.presentation.components
 
 import android.text.format.Formatter
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,91 +47,96 @@ fun MediaInfoCard(
     metadata: Metadata?
 ) {
     val context = LocalContext.current
-    val uri = pickedFile.uri.toUri()
-
-    val durationFormatted = metadata?.durationMs?.formatDuration() ?: "--:--"
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        ElevatedCard(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .then(Modifier.widthIn(max = 500.dp)),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            ),
-            elevation = CardDefaults.elevatedCardElevation()
+    AnimatedContent(
+        targetState = metadata,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        label = "metadata_animation"
+    ) { currentMetadata ->
+        val uri = pickedFile.uri.toUri()
+        val durationFormatted = currentMetadata?.durationMs?.formatDuration() ?: "--:--"
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Row(
+            ElevatedCard(
                 modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .align(Alignment.Center)
+                    .then(Modifier.widthIn(max = 500.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                elevation = CardDefaults.elevatedCardElevation()
             ) {
-                val icon = when (pickedFile.mimeType) {
-                    MimeType.AUDIO -> R.drawable.music_note
-                    MimeType.IMAGE -> R.drawable.image
-                    MimeType.VIDEO -> R.drawable.movie
-                }
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(metadata?.imageData)
-                        .crossfade(true)
-                        .memoryCacheKey(uri.toString())
-                        .build(),
-                    contentDescription = stringResource(R.string.preview_image),
-                    contentScale = ContentScale.Crop,
+                Row(
                     modifier = Modifier
-                        .size(68.dp)
-                        .padding(end = 16.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .aspectRatio(0.9f)
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.2f), // light background hint
-                            shape = RoundedCornerShape(6.dp)
-                        ),
-                    placeholder = painterResource(icon),
-                    fallback = painterResource(icon),
-                )
-
-                Column(
-                    modifier = Modifier.weight(1f)
+                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = metadata?.title ?: uri.getFileName(context),
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                    val icon = when (pickedFile.mimeType) {
+                        MimeType.AUDIO -> R.drawable.music_note
+                        MimeType.IMAGE -> R.drawable.image
+                        MimeType.VIDEO -> R.drawable.movie
+                    }
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(currentMetadata?.imageData)
+                            .crossfade(true)
+                            .memoryCacheKey(uri.toString())
+                            .build(),
+                        contentDescription = stringResource(R.string.preview_image),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(68.dp)
+                            .padding(end = 16.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .aspectRatio(0.9f)
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.2f), // light background hint
+                                shape = RoundedCornerShape(6.dp)
+                            ),
+                        placeholder = painterResource(icon),
+                        fallback = painterResource(icon),
                     )
-                    if (pickedFile.mimeType == MimeType.AUDIO) {
+
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Text(
-                            text = metadata?.artist ?: stringResource(R.string.unknown_author),
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = currentMetadata?.title ?: uri.getFileName(context),
+                            style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                    }
-                    Text(
-                        text = "${
-                            Formatter.formatFileSize(
-                                context,
-                                metadata?.fileSizeBytes ?: 0
+                        if (pickedFile.mimeType == MimeType.AUDIO) {
+                            Text(
+                                text = currentMetadata?.artist
+                                    ?: stringResource(R.string.unknown_author),
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                        } | ${metadata?.ext}",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
+                        }
+                        Text(
+                            text = "${
+                                Formatter.formatFileSize(
+                                    context,
+                                    currentMetadata?.fileSizeBytes ?: 0
+                                )
+                            } | ${currentMetadata?.ext}",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
 
-                if (pickedFile.mimeType != MimeType.IMAGE) {
-                    Text(
-                        text = durationFormatted,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(start = 12.dp)
-                    )
+                    if (pickedFile.mimeType != MimeType.IMAGE) {
+                        Text(
+                            text = durationFormatted,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 12.dp)
+                        )
+                    }
                 }
             }
         }
     }
 }
-

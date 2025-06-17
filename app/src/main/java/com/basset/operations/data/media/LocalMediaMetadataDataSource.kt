@@ -28,7 +28,7 @@ class LocalMediaMetadataDataSource(
                         cursor.moveToFirst()
                         if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
                     }
-                val ext = context.contentResolver.getUriExtension(uri)
+                val ext = context.contentResolver.getUriExtension(uri) ?: ""
                 if (mimeType == MimeType.IMAGE) {
                     return@withContext Metadata(
                         title = uri.getFileName(context),

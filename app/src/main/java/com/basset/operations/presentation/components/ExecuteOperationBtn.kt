@@ -1,6 +1,6 @@
 package com.basset.operations.presentation.components
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,47 +30,45 @@ fun ExecuteOperationBtn(
 ) {
     val scope = rememberCoroutineScope()
     Spacer(Modifier.padding(top = 10.dp))
-    AnimatedVisibility(
-        visible = !operationScreenState.isOperating,
-        modifier = modifier
-    ) {
-        Button(
-            onClick = { onAction() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(buttonLabel)
-        }
-    }
-    AnimatedVisibility(
-        visible = operationScreenState.isOperating,
-        modifier = modifier
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            if (operationScreenState.progress != null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    LinearProgressIndicator(
-                        modifier = Modifier.weight(1f),
-                        progress = { operationScreenState.progress })
-                    Text(
-                        text = "${(operationScreenState.progress * 100).toInt()}%",
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-            } else {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-            OutlinedButton(
-                onClick = {
-                    scope.launch {
-                        FFmpegKit.cancel()
-                    }
-                },
+    AnimatedContent(
+        targetState = operationScreenState.isOperating,
+        label = "execute_operation_btn_animation"
+    ) { isOperating ->
+        if (!isOperating) {
+            Button(
+                onClick = { onAction() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.cancel_operation_label))
+                Text(buttonLabel)
+            }
+        } else {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (operationScreenState.progress != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.weight(1f),
+                            progress = { operationScreenState.progress })
+                        Text(
+                            text = "${(operationScreenState.progress * 100).toInt()}%",
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                } else {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+                OutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            FFmpegKit.cancel()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.cancel_operation_label))
+                }
             }
         }
     }
