@@ -14,8 +14,8 @@ import com.basset.operations.data.media.LocalMediaStoreManager
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
-import com.basset.operations.domain.cutOperation.MediaDataSource
-import com.basset.operations.domain.cutOperation.MediaPlaybackManager
+import com.basset.operations.domain.cut_operation.MediaDataSource
+import com.basset.operations.domain.cut_operation.MediaPlaybackManager
 import com.basset.operations.presentation.OperationScreenViewModel
 import com.basset.operations.presentation.cut_operation.CutOperationViewModel
 import org.koin.android.ext.koin.androidContext

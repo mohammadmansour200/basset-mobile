@@ -6,8 +6,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import com.basset.operations.domain.cutOperation.MediaPlaybackManager
-import com.basset.operations.domain.cutOperation.MediaPlaybackManager.Event
+import com.basset.operations.domain.cut_operation.MediaPlaybackManager
+import com.basset.operations.domain.cut_operation.MediaPlaybackManager.Event
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.runBlocking
 

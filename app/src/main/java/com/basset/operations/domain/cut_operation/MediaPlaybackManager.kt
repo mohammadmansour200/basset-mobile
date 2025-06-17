@@ -1,4 +1,4 @@
-package com.basset.operations.domain.cutOperation
+package com.basset.operations.domain.cut_operation
 
 import android.net.Uri
 import kotlinx.coroutines.flow.MutableSharedFlow

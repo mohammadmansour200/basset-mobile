@@ -7,9 +7,9 @@ import android.net.Uri
 import android.util.Log
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.data.android.uriToFile
-import com.basset.operations.domain.cutOperation.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
-import com.basset.operations.domain.cutOperation.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
-import com.basset.operations.domain.cutOperation.MediaDataSource
+import com.basset.operations.domain.cut_operation.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
+import com.basset.operations.domain.cut_operation.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
+import com.basset.operations.domain.cut_operation.MediaDataSource
 import com.linc.amplituda.Amplituda
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

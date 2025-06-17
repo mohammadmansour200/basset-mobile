@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.basset.core.domain.model.MimeType
-import com.basset.operations.domain.cutOperation.CutOperationError
-import com.basset.operations.domain.cutOperation.MediaDataSource
-import com.basset.operations.domain.cutOperation.MediaPlaybackManager
+import com.basset.operations.domain.cut_operation.CutOperationError
+import com.basset.operations.domain.cut_operation.MediaDataSource
+import com.basset.operations.domain.cut_operation.MediaPlaybackManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,4 +1,4 @@
-package com.basset.operations.domain.cutOperation
+package com.basset.operations.domain.cut_operation
 
 object MediaConstants {
     const val MAX_VIDEO_PREVIEW_IMAGES = 8

@@ -2,7 +2,7 @@ package com.basset.operations.presentation.cut_operation.utils
 
 import android.content.Context
 import com.basset.R
-import com.basset.operations.domain.cutOperation.CutOperationError
+import com.basset.operations.domain.cut_operation.CutOperationError
 
 fun CutOperationError.toString(context: Context): String {
     val resId = when (this) {
