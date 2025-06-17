@@ -1,4 +1,4 @@
-package com.basset.operations.presentation.cut_operation.components
+package com.basset.operations.presentation.cut_operation
 
 import android.R
 import android.graphics.Rect
@@ -50,9 +50,11 @@ import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
 import com.basset.operations.presentation.components.ExecuteOperationBtn
-import com.basset.operations.presentation.cut_operation.CutOperationAction
-import com.basset.operations.presentation.cut_operation.CutOperationEvent
-import com.basset.operations.presentation.cut_operation.CutOperationViewModel
+import com.basset.operations.presentation.cut_operation.components.PlayPauseButton
+import com.basset.operations.presentation.cut_operation.components.PlaybackSpeedPopUpButton
+import com.basset.operations.presentation.cut_operation.components.RangeSelectorField
+import com.basset.operations.presentation.cut_operation.components.TimelineBars
+import com.basset.operations.presentation.cut_operation.components.TimelineVisualization
 import com.basset.operations.presentation.cut_operation.utils.toString
 import com.basset.operations.presentation.utils.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel

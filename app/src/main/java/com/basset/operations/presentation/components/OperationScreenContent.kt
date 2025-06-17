@@ -7,7 +7,7 @@ import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
-import com.basset.operations.presentation.cut_operation.components.CutOperation
+import com.basset.operations.presentation.cut_operation.CutOperation
 
 @Composable
 fun OperationScreenContent(
