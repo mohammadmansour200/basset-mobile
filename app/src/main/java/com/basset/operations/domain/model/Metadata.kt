@@ -6,5 +6,5 @@ data class Metadata(
     val durationMs: Long?,
     val fileSizeBytes: Long?,
     val imageData: Any?,
-    val ext: String
+    val ext: String?
 )

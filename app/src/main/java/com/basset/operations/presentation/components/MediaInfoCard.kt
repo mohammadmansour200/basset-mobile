@@ -123,7 +123,7 @@ fun MediaInfoCard(
                                     context,
                                     currentMetadata?.fileSizeBytes ?: 0
                                 )
-                            } | ${currentMetadata?.ext}",
+                            } | ${currentMetadata?.ext ?: ""}",
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
