@@ -28,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -37,13 +36,11 @@ import com.basset.R
 import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.components.IconWithTooltip
-import com.basset.home.presentation.ThemeState
 import com.basset.operations.presentation.components.FlexibleTopBar
 import com.basset.operations.presentation.components.FlexibleTopBarDefaults
 import com.basset.operations.presentation.components.MediaInfoCard
 import com.basset.operations.presentation.components.OperationScreenContent
 import com.basset.ui.theme.AppTheme
-import com.basset.ui.theme.isDarkMode
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -59,7 +56,7 @@ fun OperationScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
-    
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {

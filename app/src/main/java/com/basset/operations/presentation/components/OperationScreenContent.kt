@@ -2,7 +2,6 @@ package com.basset.operations.presentation.components
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
 import com.basset.operations.presentation.OperationScreenAction
