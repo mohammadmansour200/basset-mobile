@@ -31,7 +31,6 @@ fun PlaybackSpeedPopUpButton(
     player: Player,
     modifier: Modifier = Modifier,
     speedSelection: List<Float> = listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f),
-    accentColor: Color
 ) {
     val state = rememberPlaybackSpeedState(player)
     var openMenu by remember { mutableStateOf(false) }
@@ -39,7 +38,6 @@ fun PlaybackSpeedPopUpButton(
         IconWithTooltip(
             icon = ImageVector.vectorResource(R.drawable.speed),
             text = stringResource(R.string.playback_speed),
-            surfaceColor = accentColor,
         )
     }
     if (openMenu) {

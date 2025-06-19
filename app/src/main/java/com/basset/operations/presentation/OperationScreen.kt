@@ -52,14 +52,11 @@ import org.koin.core.parameter.parametersOf
 fun OperationScreen(
     modifier: Modifier = Modifier,
     pickedFile: OperationRoute,
-    themeState: ThemeState,
     onGoBack: () -> Unit = {}
 ) {
     val viewModel: OperationScreenViewModel =
         koinViewModel(parameters = { parametersOf(pickedFile) })
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    val accentColor = if (isDarkMode(themeState.theme)) Color.White else Color.Black
 
     val snackbarHostState = remember { SnackbarHostState() }
     
@@ -88,7 +85,6 @@ fun OperationScreen(
                                 IconWithTooltip(
                                     icon = Icons.AutoMirrored.Filled.ArrowBack,
                                     text = stringResource(R.string.back_btn),
-                                    surfaceColor = accentColor
                                 )
                             }
                         }
@@ -130,7 +126,6 @@ fun OperationScreen(
             ) {
                 OperationScreenContent(
                     pickedFile = pickedFile,
-                    accentColor = accentColor,
                     snackbarHostState = snackbarHostState,
                     onAction = { viewModel.onAction(it) },
                     operationScreenState = state
@@ -146,7 +141,6 @@ private fun OperationScreenPreview() {
     AppTheme(dynamicColor = false) {
         OperationScreen(
             pickedFile = OperationRoute(),
-            themeState = ThemeState(),
         )
     }
 }

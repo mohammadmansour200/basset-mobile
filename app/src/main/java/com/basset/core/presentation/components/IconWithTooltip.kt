@@ -13,7 +13,6 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
@@ -23,7 +22,6 @@ fun IconWithTooltip(
     icon: ImageVector? = null,
     content: @Composable (() -> Unit)? = null,
     text: String,
-    surfaceColor: Color,
     @SuppressLint("ModifierParameter") tooltipBoxModifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier
 ) {
@@ -34,7 +32,7 @@ fun IconWithTooltip(
         ),
         tooltip = {
             Surface(
-                color = surfaceColor,
+                color = MaterialTheme.colorScheme.inverseSurface,
                 shape = MaterialTheme.shapes.extraSmall,
             ) {
                 Text(

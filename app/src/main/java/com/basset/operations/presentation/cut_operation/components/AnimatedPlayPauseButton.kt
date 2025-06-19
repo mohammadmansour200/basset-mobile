@@ -30,7 +30,6 @@ fun AnimatedPlayPauseButton(
     modifier: Modifier = Modifier,
     size: Dp = 48.dp,
     iconColor: Color,
-    accentColor: Color
 ) {
     val animationProgress by animateFloatAsState(
         targetValue = if (isPlaying) 1f else 0f,
@@ -55,7 +54,6 @@ fun AnimatedPlayPauseButton(
                 }
             },
             text = text,
-            surfaceColor = accentColor,
         )
     }
 }

@@ -10,13 +10,12 @@ import androidx.media3.ui.compose.state.rememberPlayPauseButtonState
 
 @OptIn(UnstableApi::class)
 @Composable
-fun PlayPauseButton(player: Player, accentColor: Color) {
+fun PlayPauseButton(player: Player) {
     val state = rememberPlayPauseButtonState(player)
 
     AnimatedPlayPauseButton(
         isPlaying = !state.showPlay,
         onClick = state::onClick,
         iconColor = MaterialTheme.colorScheme.onSurface,
-        accentColor = accentColor
     )
 }

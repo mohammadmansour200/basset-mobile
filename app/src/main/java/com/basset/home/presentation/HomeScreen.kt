@@ -83,7 +83,6 @@ fun HomeScreen(
                     IconWithTooltip(
                         icon = Icons.Filled.MoreVert,
                         text = stringResource(R.string.more_options),
-                        surfaceColor = accentColor
                     )
 
                 }
@@ -122,7 +121,6 @@ fun HomeScreen(
                         icon = ImageVector.vectorResource(R.drawable.folder_open),
                         text = stringResource(R.string.file_upload_fab),
                         iconModifier = Modifier.size(28.dp),
-                        surfaceColor = accentColor
                     )
                 }
             }

@@ -12,7 +12,6 @@ import com.basset.operations.presentation.cut_operation.CutOperation
 @Composable
 fun OperationScreenContent(
     pickedFile: OperationRoute,
-    accentColor: Color,
     snackbarHostState: SnackbarHostState,
     onAction: (OperationScreenAction) -> Unit,
     operationScreenState: OperationScreenState
@@ -22,12 +21,11 @@ fun OperationScreenContent(
         OperationType.CONVERT -> TODO()
         OperationType.BG_REMOVE -> BgRemoveOperation(
             onAction = { onAction(it) },
-            operationScreenState = operationScreenState
+            operationScreenState = operationScreenState,
         )
 
         OperationType.CUT -> CutOperation(
             pickedFile = pickedFile,
-            accentColor = accentColor,
             snackbarHostState = snackbarHostState,
             operationScreenState = operationScreenState,
             onAction = { onAction(it) },

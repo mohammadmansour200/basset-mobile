@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalContext
@@ -65,7 +64,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CutOperation(
     pickedFile: OperationRoute,
-    accentColor: Color,
     snackbarHostState: SnackbarHostState,
     onAction: (OperationScreenAction) -> Unit,
     operationScreenState: OperationScreenState
@@ -119,11 +117,9 @@ fun CutOperation(
         Row {
             PlayPauseButton(
                 player = viewModel.player,
-                accentColor = accentColor
             )
             PlaybackSpeedPopUpButton(
                 player = viewModel.player,
-                accentColor = accentColor
             )
         }
         Text(state.position.formatDuration())

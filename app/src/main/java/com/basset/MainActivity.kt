@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
                                     NavEntry(key = key) {
                                         OperationScreen(
                                             pickedFile = key,
-                                            themeState = themeState,
                                             onGoBack = {
                                                 backStack.removeLastOrNull()
                                             })
