@@ -47,6 +47,10 @@ android {
 }
 
 dependencies {
+    // Color picker
+    implementation(libs.compose.color.picker.android)
+    implementation(libs.compose.color.picker)
+
     // Subject segmentation
     implementation(libs.play.services.mlkit.subject.segmentation)
 

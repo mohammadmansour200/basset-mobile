@@ -24,6 +24,7 @@
     <string name="operation_compress">Compress</string>
     <string name="operation_convert">Convert</string>
     <string name="operation_remove_background">Remove Background</string>
+    <string name="operation_remove_background_btn">Remove</string>
     <string name="operation_cut">Cut</string>
     <string name="back_btn">Go back</string>
     <string name="preview_image">Preview Image</string>
@@ -37,6 +38,15 @@
     <string name="error_wrong_start_cut_range_position">Start of selection must be before end of selection.</string>
     <string name="error_wrong_end_cut_range_position">End of selection must be after start of selection.</string>
     <string name="error_cut_range_exceeds_duration">Cut range exceeds media duration.</string>
-    <string name="cut_operation_label">Cut</string>
     <string name="cancel_operation_label">Cancel</string>
+
+    <string name="background_card_title">Background</string>
+    <string name="none_background_option">None</string>
+    <string name="color_background_option">Color</string>
+    <string name="image_background_option">Image</string>
+
+    <string name="choose_image_label">Choose Image</string>
+    <string name="change_image_label">Change Image</string>
+    <string name="selected_background_image_content_desc">Selected Background Image</string>
+    <string name="please_select_an_image_err">Please select an image</string>
 </resources>

@@ -10,5 +10,5 @@ sealed interface OperationScreenAction {
     data class OnConvert(val outputFormat: String) :
         OperationScreenAction
 
-    class OnRemoveBackground : OperationScreenAction
+    data class OnRemoveBackground(val background: Any?) : OperationScreenAction
 }

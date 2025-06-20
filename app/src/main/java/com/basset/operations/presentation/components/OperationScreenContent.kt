@@ -21,6 +21,7 @@ fun OperationScreenContent(
         OperationType.BG_REMOVE -> BgRemoveOperation(
             onAction = { onAction(it) },
             operationScreenState = operationScreenState,
+            snackbarHostState = snackbarHostState
         )
 
         OperationType.CUT -> CutOperation(

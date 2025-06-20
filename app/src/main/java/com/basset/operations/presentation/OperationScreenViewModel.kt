@@ -1,9 +1,9 @@
 package com.basset.operations.presentation
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
+import android.net.Uri
+import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,11 +20,14 @@ import com.arthenica.ffmpegkit.StatisticsCallback
 import com.basset.core.domain.model.MimeType
 import com.basset.core.navigation.OperationRoute
 import com.basset.operations.data.android.getUriExtension
+import com.basset.operations.data.android.toBitmap
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
 import com.basset.operations.domain.model.OutputFileInfo
 import com.basset.operations.presentation.utils.progress
+import com.godaddy.android.colorpicker.HsvColor
+import com.godaddy.android.colorpicker.toColorInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,7 +74,8 @@ class OperationScreenViewModel(
                             appContext.contentResolver.getUriExtension(pickedFile.uri.toUri())
                                 .toString(),
                             null
-                        )
+                        ),
+                        background = action.background
                     )
                 }
             }
@@ -179,7 +183,7 @@ class OperationScreenViewModel(
         }
     }
 
-    private suspend fun handleBgRemove(outputFileInfo: OutputFileInfo) =
+    private suspend fun handleBgRemove(outputFileInfo: OutputFileInfo, background: Any?) =
         withContext(Dispatchers.IO) {
             _state.update { it.copy(isOperating = true) }
             try {
@@ -190,10 +194,34 @@ class OperationScreenViewModel(
                 }
 
                 val originalUri = pickedFile.uri.toUri()
-                val bitmap = backgroundRemover.processImage(originalUri)
-                val whiteBackgroundedBitmap = flattenTransparencyToWhite(bitmap)
+                val foregroundBitmap = backgroundRemover.processImage(originalUri)
 
-                mediaStoreManager.writeBitmap(outputUri, outputFileInfo, whiteBackgroundedBitmap)
+                val finalResult = createBitmap(foregroundBitmap.width, foregroundBitmap.height)
+                val canvas = Canvas(finalResult)
+                // Background
+                when (background) {
+                    is HsvColor -> canvas.drawColor(background.toColorInt())
+                    is Uri -> {
+                        val backgroundBitmap = background.toBitmap(
+                            targetWidth = foregroundBitmap.width,
+                            targetHeight = foregroundBitmap.height,
+                            context = appContext
+                        )
+                        canvas.drawBitmap(
+                            backgroundBitmap,
+                            0f,
+                            0f,
+                            null
+                        )
+                    }
+
+                    else -> {
+                        if (background != null) Exception("Background can only be HsvColor, Uri and null")
+                    }
+                }
+                canvas.drawBitmap(foregroundBitmap, 0f, 0f, null) // Foreground
+
+                mediaStoreManager.writeBitmap(outputUri, outputFileInfo, finalResult)
                 mediaStoreManager.saveMedia(outputUri, pickedFile)
 
                 _state.update {
@@ -203,13 +231,4 @@ class OperationScreenViewModel(
                 _state.update { it.copy(isOperating = false) }
             }
         }
-
-    private fun flattenTransparencyToWhite(source: Bitmap): Bitmap {
-        val result = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
-
-        val canvas = Canvas(result)
-        canvas.drawColor(Color.WHITE) // Fill with white
-        canvas.drawBitmap(source, 0f, 0f, null) // Draw original bitmap
-        return result
-    }
 }

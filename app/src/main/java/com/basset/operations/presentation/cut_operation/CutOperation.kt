@@ -200,7 +200,7 @@ fun CutOperation(
             )
         },
         operationScreenState = operationScreenState,
-        buttonLabel = stringResource(com.basset.R.string.cut_operation_label)
+        buttonLabel = stringResource(com.basset.R.string.operation_cut)
     )
 }
 
