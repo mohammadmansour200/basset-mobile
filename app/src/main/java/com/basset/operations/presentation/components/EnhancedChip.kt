@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.basset.operations.presentation.modifier.LocalContainerShape
-import com.basset.operations.presentation.modifier.container
+import com.basset.core.presentation.modifier.LocalContainerShape
+import com.basset.core.presentation.modifier.container
 import com.basset.ui.theme.outlineVariant
 
 @Composable

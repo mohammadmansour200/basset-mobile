@@ -26,6 +26,8 @@ import com.basset.R
 import com.basset.core.domain.model.MimeType
 import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
+import com.basset.core.presentation.modifier.ContainerShapeDefaults
+import com.basset.core.presentation.modifier.container
 
 data class OperationButtonData(val text: String, val icon: Int, val operationType: OperationType)
 
@@ -45,9 +47,6 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(modifier = Modifier.size(15.dp))
-
-        val textButtonModifier = Modifier
-            .fillMaxWidth()
 
         val type = context.contentResolver.getType(uri)
 
@@ -134,31 +133,12 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                         )
                     )
                 },
-                modifier =
-                    when (i) {
-                        0 -> textButtonModifier
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    topEnd = 16.dp,
-                                )
-                            )
-
-                        actions.size - 1 -> textButtonModifier
-                            .clip(
-                                RoundedCornerShape(
-                                    bottomEnd = 16.dp,
-                                    bottomStart = 16.dp
-                                )
-                            )
-
-                        else -> textButtonModifier
-                            .clip(
-                                RoundedCornerShape(
-                                    0.dp
-                                )
-                            )
-                    },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .container(
+                        shape = ContainerShapeDefaults.shapeForIndex(i, 3),
+                        color = MaterialTheme.colorScheme.surface
+                    ),
                 shape = MaterialTheme.shapes.extraSmall,
                 contentPadding = PaddingValues()
             ) {

@@ -45,10 +45,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.basset.R
+import com.basset.core.presentation.modifier.ContainerShapeDefaults
+import com.basset.core.presentation.modifier.container
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
-import com.basset.operations.presentation.modifier.ContainerShapeDefaults
-import com.basset.operations.presentation.modifier.container
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import kotlinx.coroutines.launch

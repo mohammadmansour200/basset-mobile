@@ -1,4 +1,4 @@
-package com.basset.operations.presentation.modifier
+package com.basset.core.presentation.modifier
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.shape.CornerSize
