@@ -24,6 +24,7 @@ import com.basset.operations.data.android.toBitmap
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
+import com.basset.operations.domain.model.CompressionRate
 import com.basset.operations.domain.model.Format
 import com.basset.operations.domain.model.OutputFileInfo
 import com.basset.operations.presentation.utils.progress
@@ -103,14 +104,75 @@ class OperationScreenViewModel(
         }
     }
 
-    private fun handleCompress(compressionRate: Int) {
+    private fun handleCompress(compressionRate: CompressionRate) {
         when (pickedFile.mimeType) {
             MimeType.VIDEO, MimeType.AUDIO -> {
+                val videoCompressBitrate = when (compressionRate) {
+                    CompressionRate.LOW -> "2000k"
+                    CompressionRate.MEDIUM -> "1000k"
+                    CompressionRate.HIGH -> "500k"
+                }
 
+                val audioCompressBitrate = when (compressionRate) {
+                    CompressionRate.LOW -> "192k"
+                    CompressionRate.MEDIUM -> "128k"
+                    CompressionRate.HIGH -> "64k"
+                }
+
+                val inputPath =
+                    FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
+                val outputExt =
+                    appContext.contentResolver.getUriExtension(pickedFile.uri.toUri()).toString()
+
+
+                val command =
+                    if (pickedFile.mimeType == MimeType.VIDEO) "-i $inputPath -b:v $videoCompressBitrate -b:a $audioCompressBitrate" else "-i $inputPath -b:a $audioCompressBitrate"
+
+                viewModelScope.launch {
+                    runFFmpeg(
+                        command = command,
+                        outputFileInfo = OutputFileInfo(
+                            outputExt,
+                            null
+                        )
+                    )
+                }
             }
 
             MimeType.IMAGE -> {
+                viewModelScope.launch {
+                    _state.update { it.copy(isOperating = true) }
+                    val ext = appContext.contentResolver.getUriExtension(pickedFile.uri.toUri())
+                    if (ext == null) {
+                        _state.update { it.copy(isOperating = false) }
+                        return@launch
+                    }
 
+                    val outputFileInfo = OutputFileInfo(ext, null)
+                    val outputUri = mediaStoreManager.createMediaUri(
+                        pickedFile,
+                        outputFileInfo
+                    )
+                    if (outputUri == null) {
+                        _state.update { it.copy(isOperating = false) }
+                        return@launch
+                    }
+
+                    val bitmap =
+                        pickedFile.uri.toUri().toBitmap(null, null, appContext, scaled = false)
+                    val imageQuality = when (compressionRate) {
+                        CompressionRate.LOW -> 90
+                        CompressionRate.MEDIUM -> 75
+                        CompressionRate.HIGH -> 50
+                    }
+                    mediaStoreManager.writeBitmap(
+                        outputUri,
+                        outputFileInfo,
+                        bitmap, imageQuality
+                    )
+                    mediaStoreManager.saveMedia(outputUri, pickedFile)
+                    _state.update { it.copy(isOperating = false) }
+                }
             }
         }
     }

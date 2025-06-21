@@ -120,7 +120,8 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
     override suspend fun writeBitmap(
         uri: Uri,
         outputFileInfo: OutputFileInfo,
-        bitmap: Bitmap
+        bitmap: Bitmap,
+        quality: Int
     ): Unit =
         withContext(Dispatchers.IO) {
             try {
@@ -132,7 +133,7 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
                             Bitmap.CompressFormat.WEBP
                         }
                     }
-                    bitmap.compress(format, 100, outputStream)
+                    bitmap.compress(format, quality, outputStream)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

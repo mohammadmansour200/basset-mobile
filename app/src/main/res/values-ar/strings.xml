@@ -21,7 +21,8 @@
     <string name="settings_lang_alert_title">المظهر</string>
 
     <string name="operation_alert_title">اختيار العملية</string>
-    <string name="operation_compress">ضغط</string>
+    <string name="operation_compress">ضغط (تقليل المساحة)</string>
+    <string name="operation_compress_btn">ضغط</string>
     <string name="operation_convert">تحويل الصيغة</string>
     <string name="operation_convert_btn">تحويل</string>
     <string name="operation_remove_background">إزالة الخلفية</string>
@@ -47,9 +48,15 @@
     <string name="color_background_option">لون</string>
     <string name="image_background_option">صورة</string>
 
-    <string name="no_format_selected_err">رجاءً اختر صيغة</string>
+    <string name="no_format_selected_err">رجاءً اختر صيغة المطلوبة</string>
     <string name="format_card_title">الصيغة</string>
     <string name="selected_stillimage_content_desc">الصورة الثابتة المختارة</string>
+
+    <string name="no_compress_selected_err">رجاءً اختر درجة الضغط المطلوبة</string>
+    <string name="compress_card_title">درجة الضغط</string>
+    <string name="quality_option_low">منخفضة</string>
+    <string name="quality_option_medium">متوسطة</string>
+    <string name="quality_option_high">عالية</string>
 
     <string name="choose_image_label">اختر صورة</string>
     <string name="change_image_label">غير الصورة</string>

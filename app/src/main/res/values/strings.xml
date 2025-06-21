@@ -22,6 +22,7 @@
 
     <string name="operation_alert_title">Choose operation</string>
     <string name="operation_compress">Compress</string>
+    <string name="operation_compress_btn">Compress</string>
     <string name="operation_convert">Convert</string>
     <string name="operation_convert_btn">Convert</string>
     <string name="operation_remove_background">Remove Background</string>
@@ -49,6 +50,12 @@
     <string name="no_format_selected_err">Please select a format</string>
     <string name="format_card_title">Format</string>
     <string name="selected_stillimage_content_desc">Selected Still Image</string>
+
+    <string name="no_compress_selected_err">Please select a Compression Rate</string>
+    <string name="compress_card_title">Compression Rate</string>
+    <string name="quality_option_low">Low</string>
+    <string name="quality_option_medium">Medium</string>
+    <string name="quality_option_high">High</string>
 
     <string name="choose_image_label">Choose Image</string>
     <string name="change_image_label">Change Image</string>

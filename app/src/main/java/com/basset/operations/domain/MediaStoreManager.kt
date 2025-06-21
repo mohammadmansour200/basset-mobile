@@ -15,7 +15,8 @@ interface MediaStoreManager {
     suspend fun writeBitmap(
         uri: Uri,
         outputFileInfo: OutputFileInfo,
-        bitmap: Bitmap
+        bitmap: Bitmap,
+        quality: Int = 100
     )
 
     suspend fun deleteMedia(uri: Uri)

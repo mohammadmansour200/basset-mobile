@@ -16,7 +16,13 @@ fun OperationScreenContent(
     operationScreenState: OperationScreenState
 ) {
     when (pickedFile.operationType) {
-        OperationType.COMPRESS -> TODO()
+        OperationType.COMPRESS -> CompressOperation(
+            onAction = { onAction(it) },
+            operationScreenState = operationScreenState,
+            snackbarHostState = snackbarHostState,
+            pickedFile = pickedFile
+        )
+
         OperationType.CONVERT -> ConvertOperation(
             onAction = { onAction(it) },
             operationScreenState = operationScreenState,
