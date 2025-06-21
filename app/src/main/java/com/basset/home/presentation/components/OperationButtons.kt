@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +15,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -37,8 +35,6 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
             .padding(start = 10.dp, top = 15.dp, end = 10.dp, bottom = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -137,7 +133,8 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                     .fillMaxWidth()
                     .container(
                         shape = ContainerShapeDefaults.shapeForIndex(i, 3),
-                        color = MaterialTheme.colorScheme.surface
+                        color = MaterialTheme.colorScheme.surface,
+                        resultPadding = 0.dp
                     ),
                 shape = MaterialTheme.shapes.extraSmall,
                 contentPadding = PaddingValues()

@@ -1,20 +1,21 @@
 package com.basset.home.presentation.components
 
 import android.os.Build
+import android.view.Gravity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -23,7 +24,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,11 +39,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.os.LocaleListCompat
 import com.basset.R
 import com.basset.core.presentation.utils.findActivity
@@ -90,59 +94,56 @@ fun SettingsBottomSheet(
             )
         }
         if (showDialog) {
-            BasicAlertDialog(onDismissRequest = { showDialog = false }) {
-                Surface(
+            Dialog(onDismissRequest = { showDialog = false }) {
+                val dialogWindowProvider = LocalView.current.parent as DialogWindowProvider
+                dialogWindowProvider.window.setGravity(Gravity.BOTTOM)
+
+                Card(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = AlertDialogDefaults.shape,
-                    color = AlertDialogDefaults.containerColor,
-                    tonalElevation = AlertDialogDefaults.TonalElevation,
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 16.dp),
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 16.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_theme_alert_title),
-                            style = MaterialTheme.typography.titleLarge
-                        )
+                    Spacer(Modifier.size(16.dp))
+                    Text(
+                        text = stringResource(R.string.settings_theme_alert_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                        val radioOptions = listOf("system", "light", "dark")
+                    val radioOptions = listOf("system", "light", "dark")
 
-                        Column(modifier = Modifier.selectableGroup()) {
-                            radioOptions.forEach { text ->
-                                Row(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .height(56.dp)
-                                        .selectable(
-                                            selected = (text == state.theme),
-                                            onClick = {
-                                                onAction(
-                                                    ThemeAction.OnThemeChange(
-                                                        text
-                                                    )
-                                                )
-                                            },
-                                            role = Role.RadioButton
-                                        ),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RadioButton(
-                                        modifier = Modifier.padding(start = 16.dp),
+                    Column(modifier = Modifier.selectableGroup()) {
+                        radioOptions.forEach { text ->
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .height(56.dp)
+                                    .selectable(
                                         selected = (text == state.theme),
-                                        onClick = null
-                                    )
-                                    Text(
-                                        text = stringResource(localizedRadioLabel(text)),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier.padding(start = 16.dp)
-                                    )
-                                }
+                                        onClick = {
+                                            onAction(
+                                                ThemeAction.OnThemeChange(
+                                                    text
+                                                )
+                                            )
+                                        },
+                                        role = Role.RadioButton
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    modifier = Modifier.padding(start = 16.dp),
+                                    selected = (text == state.theme),
+                                    onClick = null
+                                )
+                                Text(
+                                    text = stringResource(localizedRadioLabel(text)),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
                             }
                         }
                     }
