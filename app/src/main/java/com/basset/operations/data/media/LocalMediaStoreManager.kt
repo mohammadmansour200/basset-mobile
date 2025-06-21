@@ -25,78 +25,79 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
         outputFileInfo: OutputFileInfo
     ): Uri? =
         withContext(Dispatchers.IO) {
-            val collectionUri: Uri
             val contentValues = ContentValues()
             val outputName = outputFileInfo.name ?: pickedFile.uri.toUri().getFileName(context)
 
-            when (pickedFile.mimeType) {
-                MimeType.AUDIO -> {
-                    collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    } else {
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                    }
-                    contentValues.put(
-                        MediaStore.Audio.Media.DISPLAY_NAME,
-                        "$outputName.${outputFileInfo.extension}"
-                    )
-                    if (outputFileInfo.format == Format.MP3) {
-                        contentValues.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
-                    } else {
-                        contentValues.put(
-                            MediaStore.Audio.Media.MIME_TYPE,
-                            "audio/${outputFileInfo.extension}"
-                        )
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        contentValues.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music")
-                    }
-                }
-
-                MimeType.IMAGE -> {
-                    collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    } else {
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    }
-                    contentValues.put(
-                        MediaStore.Images.Media.DISPLAY_NAME,
-                        "$outputName.${outputFileInfo.extension}"
-                    )
-                    contentValues.put(
-                        MediaStore.Images.Media.MIME_TYPE,
-                        "image/${outputFileInfo.extension}"
-                    )
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures")
-                    }
-                }
-
-                MimeType.VIDEO -> {
-                    collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    } else {
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                    }
-                    contentValues.put(
-                        MediaStore.Video.Media.DISPLAY_NAME,
-                        "$outputName.${outputFileInfo.extension}"
-                    )
-                    contentValues.put(
-                        MediaStore.Video.Media.MIME_TYPE,
-                        "video/${outputFileInfo.extension}"
-                    )
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies")
-                    }
-                }
-            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1)
             }
 
-            return@withContext contentResolver.insert(collectionUri, contentValues)
+            if (outputFileInfo.format.isAudio()) {
+                val collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                } else {
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                }
+                contentValues.put(
+                    MediaStore.Audio.Media.DISPLAY_NAME,
+                    "$outputName.${outputFileInfo.extension}"
+                )
+                if (outputFileInfo.format == Format.MP3) {
+                    contentValues.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
+                } else {
+                    contentValues.put(
+                        MediaStore.Audio.Media.MIME_TYPE,
+                        "audio/${outputFileInfo.extension}"
+                    )
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    contentValues.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music")
+                }
+                return@withContext contentResolver.insert(collectionUri, contentValues)
+            }
+
+            if (outputFileInfo.format.isImage()) {
+                val collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                } else {
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                }
+                contentValues.put(
+                    MediaStore.Images.Media.DISPLAY_NAME,
+                    "$outputName.${outputFileInfo.extension}"
+                )
+                contentValues.put(
+                    MediaStore.Images.Media.MIME_TYPE,
+                    "image/${outputFileInfo.extension}"
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures")
+                }
+
+                return@withContext contentResolver.insert(collectionUri, contentValues)
+            }
+
+            if (outputFileInfo.format.isVideo()) {
+                val collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                } else {
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                }
+                contentValues.put(
+                    MediaStore.Video.Media.DISPLAY_NAME,
+                    "$outputName.${outputFileInfo.extension}"
+                )
+                contentValues.put(
+                    MediaStore.Video.Media.MIME_TYPE,
+                    "video/${outputFileInfo.extension}"
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies")
+                }
+                return@withContext contentResolver.insert(collectionUri, contentValues)
+            } else return@withContext null
+
         }
 
     override suspend fun saveMedia(

@@ -24,6 +24,7 @@ import com.basset.operations.data.android.toBitmap
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
+import com.basset.operations.domain.model.Format
 import com.basset.operations.domain.model.OutputFileInfo
 import com.basset.operations.presentation.utils.progress
 import com.godaddy.android.colorpicker.HsvColor
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class OperationScreenViewModel(
     context: Context,
@@ -79,6 +81,11 @@ class OperationScreenViewModel(
                     )
                 }
             }
+
+            is OperationScreenAction.OnAudioToVideoConvert -> handleAudioToVideoConvert(
+                action.outputFormat,
+                action.image
+            )
         }
     }
 
@@ -108,15 +115,76 @@ class OperationScreenViewModel(
         }
     }
 
-    private fun handleConvert(outputFormat: String) {
+    private fun handleConvert(outputFormat: Format) {
         when (pickedFile.mimeType) {
             MimeType.VIDEO, MimeType.AUDIO -> {
-
+                val inputPath =
+                    FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
+                viewModelScope.launch {
+                    runFFmpeg(
+                        command = "-i $inputPath",
+                        outputFileInfo = OutputFileInfo(
+                            outputFormat.name.lowercase(),
+                            null
+                        )
+                    )
+                }
             }
 
             MimeType.IMAGE -> {
+                viewModelScope.launch {
+                    _state.update { it.copy(isOperating = true) }
+                    val outputFileInfo = OutputFileInfo(outputFormat.name.lowercase(), null)
+                    val outputUri = mediaStoreManager.createMediaUri(
+                        pickedFile,
+                        outputFileInfo
+                    )
+                    if (outputUri == null) {
+                        _state.update { it.copy(isOperating = false) }
+                        return@launch
+                    }
 
+                    val bitmap =
+                        pickedFile.uri.toUri().toBitmap(null, null, appContext, scaled = false)
+
+                    mediaStoreManager.writeBitmap(
+                        outputUri,
+                        outputFileInfo,
+                        bitmap
+                    )
+                    mediaStoreManager.saveMedia(outputUri, pickedFile)
+                    _state.update { it.copy(isOperating = false) }
+                }
             }
+        }
+    }
+
+    private fun handleAudioToVideoConvert(outputFormat: Format, image: Uri) {
+        val inputPath =
+            FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
+
+        val imageExtension = appContext.contentResolver.getUriExtension(image)
+        val imageInputPath = if (imageExtension != "jpg" && imageExtension != "jpeg") {
+            val imageBitmap = image.toBitmap(null, null, appContext, false)
+
+            val tempFile = File.createTempFile("temp", ".jpg", appContext.cacheDir)
+            val outputStream = java.io.FileOutputStream(tempFile)
+            imageBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 100, outputStream)
+            outputStream.close()
+
+            val tempFileUri = tempFile.toUri()
+            FFmpegKitConfig.getSafParameterForRead(appContext, tempFileUri)
+        } else FFmpegKitConfig.getSafParameterForRead(appContext, image)
+
+        viewModelScope.launch {
+            runFFmpeg(
+                command = "-r 1 -loop 1 -i $imageInputPath -i $inputPath -acodec copy -r 1 -pix_fmt yuv420p -tune stillimage -shortest",
+                outputFileInfo = OutputFileInfo(
+                    outputFormat.name.lowercase(),
+                    null
+                )
+            )
+            if (imageExtension != "jpg" && imageExtension != "jpeg") File(imageInputPath).delete()
         }
     }
 
@@ -126,7 +194,7 @@ class OperationScreenViewModel(
     ) = withContext(Dispatchers.IO) {
         val outputUri = mediaStoreManager.createMediaUri(pickedFile, outputFileInfo)
         _state.update { it.copy(isOperating = true) }
-
+        android.util.Log.d("ffmpeg-kit", "format: ${outputFileInfo.extension}, uri: $outputUri")
         outputUri?.let {
             val outputPath = FFmpegKitConfig.getSafParameterForWrite(appContext, outputUri)
             FFmpegKit.executeAsync(
@@ -139,15 +207,15 @@ class OperationScreenViewModel(
                             ReturnCode.CANCEL -> {
                                 viewModelScope.launch {
                                     mediaStoreManager.deleteMedia(it)
+                                    _state.update { it.copy(isOperating = false) }
                                 }
-                                _state.update { it.copy(isOperating = false) }
                             }
 
                             ReturnCode.SUCCESS -> {
                                 viewModelScope.launch {
                                     mediaStoreManager.saveMedia(it, pickedFile)
+                                    _state.update { it.copy(isOperating = false) }
                                 }
-                                _state.update { it.copy(isOperating = false) }
                             }
                         }
 
@@ -155,8 +223,8 @@ class OperationScreenViewModel(
                             SessionState.FAILED -> {
                                 viewModelScope.launch {
                                     mediaStoreManager.deleteMedia(it)
+                                    _state.update { it.copy(isOperating = false) }
                                 }
-                                _state.update { it.copy(isOperating = false) }
                             }
 
                             SessionState.CREATED -> {

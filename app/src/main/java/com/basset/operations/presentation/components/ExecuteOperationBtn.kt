@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 fun ExecuteOperationBtn(
     modifier: Modifier = Modifier,
     buttonLabel: String,
+    isCancellable: Boolean = false,
     onAction: () -> Unit,
     operationScreenState: OperationScreenState
 ) {
@@ -59,15 +60,17 @@ fun ExecuteOperationBtn(
                 } else {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-                OutlinedButton(
-                    onClick = {
-                        scope.launch {
-                            FFmpegKit.cancel()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.cancel_operation_label))
+                if (isCancellable) {
+                    OutlinedButton(
+                        onClick = {
+                            scope.launch {
+                                FFmpegKit.cancel()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.cancel_operation_label))
+                    }
                 }
             }
         }

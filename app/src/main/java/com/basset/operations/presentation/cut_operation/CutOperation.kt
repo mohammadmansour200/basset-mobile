@@ -199,6 +199,7 @@ fun CutOperation(
                 )
             )
         },
+        isCancellable = true,
         operationScreenState = operationScreenState,
         buttonLabel = stringResource(com.basset.R.string.operation_cut)
     )
