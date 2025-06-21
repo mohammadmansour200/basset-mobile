@@ -23,6 +23,7 @@
     <string name="operation_alert_title">Choose operation</string>
     <string name="operation_compress">Compress</string>
     <string name="operation_convert">Convert</string>
+    <string name="operation_convert_btn">Convert</string>
     <string name="operation_remove_background">Remove Background</string>
     <string name="operation_remove_background_btn">Remove</string>
     <string name="operation_cut">Cut</string>
@@ -44,6 +45,10 @@
     <string name="none_background_option">None</string>
     <string name="color_background_option">Color</string>
     <string name="image_background_option">Image</string>
+
+    <string name="no_format_selected_err">Please select a format</string>
+    <string name="format_card_title">Format</string>
+    <string name="selected_stillimage_content_desc">Selected Still Image</string>
 
     <string name="choose_image_label">Choose Image</string>
     <string name="change_image_label">Change Image</string>
