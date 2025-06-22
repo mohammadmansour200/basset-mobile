@@ -26,6 +26,24 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Sharing Intent filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <data android:mimeType="video/mp4" />
+                <data android:mimeType="video/webm" />
+                <data android:mimeType="audio/mpeg" />
+                <data android:mimeType="audio/aac" />
+                <data android:mimeType="audio/oga" />
+                <data android:mimeType="audio/mp3" />
+                <data android:mimeType="image/png" />
+                <data android:mimeType="image/jpeg" />
+                <data android:mimeType="image/jpg" />
+                <data android:mimeType="image/webp" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

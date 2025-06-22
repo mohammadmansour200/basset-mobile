@@ -132,7 +132,7 @@ fun ConvertOperation(
                             context.contentResolver.getUriExtension(pickedFile.uri.toUri())
                         val isDifferentExtension = it.name.lowercase() != currentExtension
 
-                        isCorrectMimeType && isDifferentExtension
+                        isCorrectMimeType && isDifferentExtension && it != Format.JPEG
                     }
                     CompositionLocalProvider(
                         LocalLayoutDirection provides LayoutDirection.Ltr,
@@ -181,7 +181,13 @@ fun ConvertOperation(
                         val launcher = rememberLauncherForActivityResult(
                             contract = ActivityResultContracts.GetContent()
                         ) {
-                            if (it != null) selectedImageUri = it
+                            if (it == null) return@rememberLauncherForActivityResult
+
+                            if (context.contentResolver.getType(it)
+                                    ?.contains("gif") == true
+                            ) snackScope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.gif_not_supported_err))
+                            } else selectedImageUri = it
                         }
                         Button(onClick = {
                             launcher.launch("image/*")

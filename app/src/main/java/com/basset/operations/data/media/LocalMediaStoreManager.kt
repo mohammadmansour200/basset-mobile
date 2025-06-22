@@ -67,10 +67,14 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
                     MediaStore.Images.Media.DISPLAY_NAME,
                     "$outputName.${outputFileInfo.extension}"
                 )
-                contentValues.put(
-                    MediaStore.Images.Media.MIME_TYPE,
-                    "image/${outputFileInfo.extension}"
-                )
+                if (outputFileInfo.format == Format.JPG) {
+                    contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                } else {
+                    contentValues.put(
+                        MediaStore.Images.Media.MIME_TYPE,
+                        "image/${outputFileInfo.extension}"
+                    )
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures")
                 }
@@ -128,6 +132,7 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                     val format = when (outputFileInfo.format) {
                         Format.JPEG -> Bitmap.CompressFormat.JPEG
+                        Format.JPG -> Bitmap.CompressFormat.JPEG
                         Format.PNG -> Bitmap.CompressFormat.PNG
                         else -> {
                             Bitmap.CompressFormat.WEBP

@@ -45,6 +45,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.basset.R
+import com.basset.core.domain.CoreConstants.AUDIO_MIME_TYPES
+import com.basset.core.domain.CoreConstants.IMAGE_MIME_TYPES
+import com.basset.core.domain.CoreConstants.VIDEO_MIME_TYPES
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.components.IconWithTooltip
 import com.basset.home.presentation.components.BottomSheetType
@@ -59,13 +62,14 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: ThemeViewModel = koinViewModel(),
+    receivedUri: Uri? = null,
     onGoToOperation: (OperationRoute) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     var showBottomSheet by remember { mutableStateOf(false) }
     var currentBottomSheet: BottomSheetType? by remember { mutableStateOf(null) }
-    var pickedFile by remember { mutableStateOf<Uri?>(null) }
+    var pickedFile by remember { mutableStateOf<Uri?>(receivedUri) }
 
     val accentColor = if (isDarkMode(state.theme)) Color.White else Color.Black
 
@@ -114,7 +118,7 @@ fun HomeScreen(
                 FloatingActionButton(
                     onClick = {
                         launcher.launch(
-                            arrayOf("image/*", "video/*", "audio/*")
+                            arrayOf(*IMAGE_MIME_TYPES, *AUDIO_MIME_TYPES, *VIDEO_MIME_TYPES)
                         )
                     }
                 ) {

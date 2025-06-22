@@ -1,6 +1,9 @@
 package com.basset
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +29,11 @@ import org.koin.compose.KoinContext
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val receivedUri = if (intent?.action == Intent.ACTION_SEND && intent.type != null) {
+            intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri
+        } else null
+
         enableEdgeToEdge()
         setContent {
             KoinContext {
@@ -54,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                                     NavEntry(key = key) {
                                         HomeScreen(onGoToOperation = { it ->
                                             backStack.add(it)
-                                        })
+                                        }, receivedUri = receivedUri)
                                     }
                                 }
 

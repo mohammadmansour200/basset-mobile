@@ -164,7 +164,13 @@ fun BgRemoveOperation(
                             val launcher = rememberLauncherForActivityResult(
                                 contract = ActivityResultContracts.GetContent()
                             ) {
-                                selectedImageUri = it
+                                if (it == null) return@rememberLauncherForActivityResult
+
+                                if (context.contentResolver.getType(it)
+                                        ?.contains("gif") == true
+                                ) snackScope.launch {
+                                    snackbarHostState.showSnackbar(context.getString(R.string.gif_not_supported_err))
+                                } else selectedImageUri = it
                             }
                             Button(onClick = {
                                 launcher.launch("image/*")
