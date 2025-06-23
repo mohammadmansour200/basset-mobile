@@ -1,6 +1,6 @@
 // Credit: Coil3
 
-package com.basset.home.utils
+package com.basset.core.utils
 
 object MimeTypeMap {
     fun getMimeTypeFromExtension(extension: String): String? {

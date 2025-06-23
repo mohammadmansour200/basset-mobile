@@ -48,12 +48,18 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.basset.R
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.CoreConstants.AUDIO_CONVERT_OPTIONS_MIME_TYPES
+import com.basset.core.domain.CoreConstants.IMAGE_MIME_TYPES
+import com.basset.core.domain.CoreConstants.VIDEO_MIME_TYPES
+import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.modifier.ContainerShapeDefaults
 import com.basset.core.presentation.modifier.container
+import com.basset.core.utils.MimeTypeMap
+import com.basset.core.utils.isAudio
+import com.basset.core.utils.isImage
+import com.basset.core.utils.isVideo
 import com.basset.operations.data.android.getUriExtension
-import com.basset.operations.domain.model.Format
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
 import kotlinx.coroutines.launch
@@ -69,11 +75,13 @@ fun ConvertOperation(
     val snackScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    var selectedFormat by remember { mutableStateOf<Format?>(null) }
+    val formats = arrayOf(*IMAGE_MIME_TYPES, *AUDIO_CONVERT_OPTIONS_MIME_TYPES, *VIDEO_MIME_TYPES)
+
+    var selectedFormat by remember { mutableStateOf<String?>(null) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val isAudioToVideo =
-        selectedFormat?.isVideo() == true && pickedFile.mimeType == MimeType.AUDIO
+        selectedFormat?.isVideo() == true && pickedFile.mediaType == MediaType.AUDIO
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -125,24 +133,29 @@ fun ConvertOperation(
                         .then(containerModifier(0))
                         .padding(horizontal = 8.dp, vertical = 12.dp)
                 ) {
-                    val options = Format.entries.toTypedArray().filter {
-                        val isCorrectMimeType =
-                            if (pickedFile.mimeType == MimeType.IMAGE) it.isImage() else !it.isImage()
-                        val currentExtension =
-                            context.contentResolver.getUriExtension(pickedFile.uri.toUri())
-                        val isDifferentExtension = it.name.lowercase() != currentExtension
+                    val options = formats.filter {
+                        val isImage = it.isImage()
+                        val isCorrectMediaType =
+                            if (pickedFile.mediaType == MediaType.IMAGE) isImage else !isImage
 
-                        isCorrectMimeType && isDifferentExtension && it != Format.JPEG
+                        val pickedFileMimeType = MimeTypeMap.getMimeTypeFromExtension(
+                            context.getUriExtension(pickedFile.uri.toUri()).toString()
+                        )
+                        val isDifferentMimeType = it != pickedFileMimeType
+
+                        isCorrectMediaType && isDifferentMimeType
                     }
                     CompositionLocalProvider(
                         LocalLayoutDirection provides LayoutDirection.Ltr,
                     ) {
                         options.forEach {
+                            val format = MimeTypeMap.getExtensionFromMimeType(it)
+                                .toString()
                             EnhancedChip(
                                 onClick = {
-                                    selectedFormat = it
+                                    selectedFormat = format
                                 },
-                                selected = selectedFormat == it,
+                                selected = selectedFormat == format,
                                 label = {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -158,7 +171,9 @@ fun ConvertOperation(
                                             imageVector = icon,
                                             contentDescription = null
                                         )
-                                        Text(text = it.name.lowercase())
+                                        Text(
+                                            text = format
+                                        )
                                     }
                                 },
                                 selectedColor = MaterialTheme.colorScheme.tertiary,
@@ -244,7 +259,7 @@ fun ConvertOperation(
                 )
             )
         },
-        isCancellable = pickedFile.mimeType != MimeType.IMAGE,
+        isCancellable = pickedFile.mediaType != MediaType.IMAGE,
         operationScreenState = operationScreenState,
         buttonLabel = stringResource(R.string.operation_convert_btn)
     )

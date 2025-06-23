@@ -1,4 +1,4 @@
-package com.basset.home.utils
+package com.basset.core.utils
 
 fun String.isVideo(): Boolean {
     if (this.contains("/")) return this.contains("video")

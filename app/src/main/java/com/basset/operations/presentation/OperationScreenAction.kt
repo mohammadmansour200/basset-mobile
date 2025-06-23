@@ -2,7 +2,6 @@ package com.basset.operations.presentation
 
 import android.net.Uri
 import com.basset.operations.domain.model.CompressionRate
-import com.basset.operations.domain.model.Format
 
 sealed interface OperationScreenAction {
     data class OnCut(val start: Double, val end: Double) :
@@ -11,10 +10,10 @@ sealed interface OperationScreenAction {
     data class OnCompress(val compressionRate: CompressionRate) :
         OperationScreenAction
 
-    data class OnConvert(val outputFormat: Format) :
+    data class OnConvert(val outputExtension: String) :
         OperationScreenAction
 
-    data class OnAudioToVideoConvert(val image: Uri, val outputFormat: Format) :
+    data class OnAudioToVideoConvert(val image: Uri, val outputExtension: String) :
         OperationScreenAction
 
     data class OnRemoveBackground(val background: Any?) : OperationScreenAction
