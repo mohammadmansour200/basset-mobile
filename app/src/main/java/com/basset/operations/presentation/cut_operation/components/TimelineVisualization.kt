@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
 import com.basset.operations.domain.cut_operation.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
 import com.basset.operations.domain.cut_operation.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
@@ -26,8 +26,8 @@ fun TimelineVisualization(
     state: CutOperationState,
     progress: Float
 ) {
-    when (pickedFile.mimeType) {
-        MimeType.AUDIO -> AudioWaveform(
+    when (pickedFile.mediaType) {
+        MediaType.AUDIO -> AudioWaveform(
             amplitudes = state.amplitudes,
             progress = progress,
             onProgressChange = { /* Already implemented manually */ },

@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.MediaType
 import com.basset.operations.domain.cut_operation.CutOperationError
 import com.basset.operations.domain.cut_operation.MediaDataSource
 import com.basset.operations.domain.cut_operation.MediaPlaybackManager
@@ -44,8 +44,8 @@ class CutOperationViewModel(
                     launch { observePlaybackEvents() }
                     Log.d("MediaPlayer", "Preview Loaded")
 
-                    when (action.mimeType) {
-                        MimeType.AUDIO -> {
+                    when (action.mediaType) {
+                        MediaType.AUDIO -> {
                             try {
                                 val result = mediaDataSource.loadAmplitudes(action.uri)
                                 _state.update { it.copy(amplitudes = result) }

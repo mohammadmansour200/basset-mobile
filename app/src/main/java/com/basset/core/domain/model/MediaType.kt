@@ -1,5 +1,5 @@
 package com.basset.core.domain.model
 
-enum class MimeType {
+enum class MediaType {
     AUDIO, IMAGE, VIDEO
 }

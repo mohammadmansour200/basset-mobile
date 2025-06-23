@@ -4,7 +4,7 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.MediaType
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.data.android.getUriExtension
 import com.basset.operations.domain.MediaMetadataDataSource
@@ -16,7 +16,7 @@ class LocalMediaMetadataDataSource(
     private val context: Context
 ) : MediaMetadataDataSource {
 
-    override suspend fun loadMetadata(uri: Uri, mimeType: MimeType): Metadata? =
+    override suspend fun loadMetadata(uri: Uri, mediaType: MediaType): Metadata? =
         withContext(Dispatchers.IO) {
             val retriever = MediaMetadataRetriever()
 
@@ -28,8 +28,8 @@ class LocalMediaMetadataDataSource(
                         cursor.moveToFirst()
                         if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
                     }
-                val ext = context.contentResolver.getUriExtension(uri)
-                if (mimeType == MimeType.IMAGE) {
+                val ext = context.getUriExtension(uri)
+                if (mediaType == MediaType.IMAGE) {
                     return@withContext Metadata(
                         title = uri.getFileName(context),
                         fileSizeBytes = fileSizeBytes,
@@ -47,9 +47,9 @@ class LocalMediaMetadataDataSource(
                 val durationMs =
                     retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                         ?.toLongOrNull()
-                val imageData = when (mimeType) {
-                    MimeType.VIDEO -> retriever.getFrameAtTime(0)
-                    MimeType.AUDIO -> retriever.embeddedPicture
+                val imageData = when (mediaType) {
+                    MediaType.VIDEO -> retriever.getFrameAtTime(0)
+                    MediaType.AUDIO -> retriever.embeddedPicture
                     else -> null
                 }
 

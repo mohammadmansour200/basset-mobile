@@ -43,7 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.presentation.OperationScreenAction
@@ -75,7 +75,7 @@ fun CutOperation(
         viewModel.onAction(
             CutOperationAction.OnLoadMedia(
                 pickedFile.uri.toUri(),
-                pickedFile.mimeType
+                pickedFile.mediaType
             )
         )
     }
@@ -89,7 +89,7 @@ fun CutOperation(
         }
     }
 
-    if (pickedFile.mimeType == MimeType.VIDEO) Crossfade(viewModel.player.isCurrentMediaItemSeekable) {
+    if (pickedFile.mediaType == MediaType.VIDEO) Crossfade(viewModel.player.isCurrentMediaItemSeekable) {
         if (it) PlayerSurface(
             modifier = Modifier
                 .aspectRatio(

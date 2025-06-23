@@ -34,7 +34,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.basset.R
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.data.android.getFileName
@@ -73,10 +73,10 @@ fun MediaInfoCard(
                         .padding(vertical = 8.dp, horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val icon = when (pickedFile.mimeType) {
-                        MimeType.AUDIO -> R.drawable.music_note
-                        MimeType.IMAGE -> R.drawable.image
-                        MimeType.VIDEO -> R.drawable.movie
+                    val icon = when (pickedFile.mediaType) {
+                        MediaType.AUDIO -> R.drawable.music_note
+                        MediaType.IMAGE -> R.drawable.image
+                        MediaType.VIDEO -> R.drawable.movie
                     }
                     AsyncImage(
                         model = ImageRequest.Builder(context)
@@ -108,7 +108,7 @@ fun MediaInfoCard(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        if (pickedFile.mimeType == MimeType.AUDIO) {
+                        if (pickedFile.mediaType == MediaType.AUDIO) {
                             Text(
                                 text = currentMetadata?.artist
                                     ?: stringResource(R.string.unknown_author),
@@ -128,7 +128,7 @@ fun MediaInfoCard(
                         )
                     }
 
-                    if (pickedFile.mimeType != MimeType.IMAGE) {
+                    if (pickedFile.mediaType != MediaType.IMAGE) {
                         Text(
                             text = durationFormatted,
                             style = MaterialTheme.typography.bodyMedium,

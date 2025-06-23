@@ -21,11 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.basset.R
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.MediaType
 import com.basset.core.domain.model.OperationType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.modifier.ContainerShapeDefaults
 import com.basset.core.presentation.modifier.container
+import com.basset.home.utils.isAudio
+import com.basset.home.utils.isVideo
 
 data class OperationButtonData(val text: String, val icon: Int, val operationType: OperationType)
 
@@ -46,14 +48,14 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
 
         val type = context.contentResolver.getType(uri)
 
-        val mimeType = when {
-            type!!.contains("video", ignoreCase = true) -> MimeType.VIDEO
-            type.contains("audio", ignoreCase = true) -> MimeType.AUDIO
-            else -> MimeType.IMAGE
+        val mediaType = when {
+            type!!.isVideo() -> MediaType.VIDEO
+            type.isAudio() -> MediaType.AUDIO
+            else -> MediaType.IMAGE
         }
 
-        val actions = when (mimeType) {
-            MimeType.IMAGE -> {
+        val actions = when (mediaType) {
+            MediaType.IMAGE -> {
                 // Handle image files
                 listOf(
                     OperationButtonData(
@@ -74,7 +76,7 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                 )
             }
 
-            MimeType.AUDIO -> {
+            MediaType.AUDIO -> {
                 // Handle audio files
                 listOf(
                     OperationButtonData(
@@ -95,7 +97,7 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                 )
             }
 
-            MimeType.VIDEO -> {
+            MediaType.VIDEO -> {
                 // Handle video files
                 listOf(
                     OperationButtonData(
@@ -123,7 +125,7 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                 onClick = {
                     onGoToOperation(
                         OperationRoute(
-                            mimeType = mimeType,
+                            mediaType = mediaType,
                             uri = uri.toString(),
                             operationType = action.operationType
                         )

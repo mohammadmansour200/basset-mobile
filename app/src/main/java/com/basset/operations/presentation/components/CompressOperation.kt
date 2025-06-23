@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.basset.R
-import com.basset.core.domain.model.MimeType
+import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
 import com.basset.operations.domain.model.CompressionRate
 import com.basset.operations.presentation.OperationScreenAction
@@ -126,7 +126,7 @@ fun CompressOperation(
                 )
             )
         },
-        isCancellable = pickedFile.mimeType != MimeType.IMAGE,
+        isCancellable = pickedFile.mediaType != MediaType.IMAGE,
         operationScreenState = operationScreenState,
         buttonLabel = stringResource(R.string.operation_compress_btn)
     )
