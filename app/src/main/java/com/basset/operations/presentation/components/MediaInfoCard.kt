@@ -37,14 +37,13 @@ import com.basset.R
 import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.utils.formatDuration
-import com.basset.operations.data.android.getFileName
 import com.basset.operations.domain.model.Metadata
 
 @Composable
 fun MediaInfoCard(
     modifier: Modifier = Modifier,
     pickedFile: OperationRoute,
-    metadata: Metadata?
+    metadata: Metadata
 ) {
     val context = LocalContext.current
     AnimatedContent(
@@ -53,7 +52,7 @@ fun MediaInfoCard(
         label = "metadata_animation"
     ) { currentMetadata ->
         val uri = pickedFile.uri.toUri()
-        val durationFormatted = currentMetadata?.durationMs?.formatDuration() ?: "--:--"
+        val durationFormatted = currentMetadata.durationMs?.formatDuration() ?: "--:--"
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -80,7 +79,7 @@ fun MediaInfoCard(
                     }
                     AsyncImage(
                         model = ImageRequest.Builder(context)
-                            .data(currentMetadata?.imageData)
+                            .data(currentMetadata.imageData)
                             .crossfade(true)
                             .memoryCacheKey(uri.toString())
                             .build(),
@@ -103,14 +102,14 @@ fun MediaInfoCard(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = currentMetadata?.title ?: uri.getFileName(context),
+                            text = currentMetadata.title,
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         if (pickedFile.mediaType == MediaType.AUDIO) {
                             Text(
-                                text = currentMetadata?.artist
+                                text = currentMetadata.artist
                                     ?: stringResource(R.string.unknown_author),
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 1,
@@ -121,9 +120,9 @@ fun MediaInfoCard(
                             text = "${
                                 Formatter.formatFileSize(
                                     context,
-                                    currentMetadata?.fileSizeBytes ?: 0
+                                    currentMetadata.fileSizeBytes ?: 0
                                 )
-                            } | ${currentMetadata?.ext ?: ""}",
+                            } | ${currentMetadata.ext ?: ""}",
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }

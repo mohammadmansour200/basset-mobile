@@ -1,10 +1,10 @@
 package com.basset.operations.domain.model
 
 data class Metadata(
-    val title: String?,
-    val artist: String?,
-    val durationMs: Long?,
-    val fileSizeBytes: Long?,
-    val imageData: Any?,
-    val ext: String?
+    val title: String = "",
+    val artist: String? = null,
+    val durationMs: Long? = null,
+    val fileSizeBytes: Long? = null,
+    val imageData: Any? = null,
+    val ext: String? = null
 )

@@ -10,7 +10,8 @@ data class OperationScreenState(
     val isOperating: Boolean = false,
     val progress: Float? = null,
     val outputedFile: Uri? = null,
-    val metadata: Metadata? = null,
+    val metadata: Metadata = Metadata(),
+    val outputedFileMetadata: Metadata = Metadata(),
     val operationError: OperationError? = null,
     val detailedErrorMessage: String? = null
 )

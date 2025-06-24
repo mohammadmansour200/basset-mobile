@@ -15,7 +15,6 @@ import com.arthenica.ffmpegkit.Log
 import com.arthenica.ffmpegkit.LogCallback
 import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
-import com.basset.operations.data.android.getUriExtension
 import com.basset.operations.data.android.toBitmap
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
@@ -79,8 +78,7 @@ class OperationScreenViewModel(
                 safeExecute {
                     handleBgRemove(
                         outputName = null,
-                        outputExtension = appContext.getUriExtension(pickedFile.uri.toUri())
-                            .toString(),
+                        outputExtension = _state.value.metadata.ext.toString(),
                         background = action.background
                     )
                 }
@@ -109,6 +107,7 @@ class OperationScreenViewModel(
 
     private suspend fun handleSuccess(uri: Uri) {
         mediaStoreManager.saveMedia(uri)
+        metadataDataSource.loadCompactMetadata(uri)
         _state.update {
             it.copy(
                 isOperating = false,
@@ -140,13 +139,13 @@ class OperationScreenViewModel(
         runFFmpeg(
             command = "-ss $start -to $end -i $inputPath -c copy",
             outputName = null,
-            outputExtension = appContext.getUriExtension(pickedFile.uri.toUri()).toString(),
+            outputExtension = _state.value.metadata.ext.toString(),
         )
     }
 
     private suspend fun handleCompress(compressionRate: CompressionRate) {
         val outputExt =
-            appContext.getUriExtension(pickedFile.uri.toUri()).toString()
+            _state.value.metadata.ext.toString()
 
         when (pickedFile.mediaType) {
             MediaType.VIDEO, MediaType.AUDIO -> {
@@ -351,7 +350,7 @@ class OperationScreenViewModel(
                     object : LogCallback {
                         override fun apply(log: Log?) {
                             android.util.Log.d("ffmpeg-kit", log?.message.toString())
-                            val durationMs = _state.value.metadata?.durationMs ?: 0L
+                            val durationMs = _state.value.metadata.durationMs ?: 0L
                             val progress = log?.progress(durationMs.div(1000))
                             if (progress != null) _state.update { it.copy(progress = progress) }
                         }

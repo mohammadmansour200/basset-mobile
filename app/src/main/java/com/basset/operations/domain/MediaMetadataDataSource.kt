@@ -5,5 +5,6 @@ import com.basset.core.domain.model.MediaType
 import com.basset.operations.domain.model.Metadata
 
 interface MediaMetadataDataSource {
-    suspend fun loadMetadata(uri: Uri, mediaType: MediaType): Metadata?
+    suspend fun loadMetadata(uri: Uri, mediaType: MediaType): Metadata
+    suspend fun loadCompactMetadata(uri: Uri): Metadata
 }
