@@ -2,22 +2,22 @@ package com.basset.operations.domain
 
 import android.graphics.Bitmap
 import android.net.Uri
-import com.basset.core.navigation.OperationRoute
-import com.basset.operations.domain.model.OutputFileInfo
 
 interface MediaStoreManager {
-    suspend fun createMediaUri(pickedFile: OperationRoute, outputFileInfo: OutputFileInfo): Uri?
-    suspend fun saveMedia(
+    suspend fun createMediaUri(
         uri: Uri,
-        pickedFile: OperationRoute,
-    )
+        name: String?,
+        extension: String
+    ): Result<Uri?>
+
+    suspend fun saveMedia(uri: Uri)
 
     suspend fun writeBitmap(
         uri: Uri,
-        outputFileInfo: OutputFileInfo,
+        extension: String,
         bitmap: Bitmap,
         quality: Int = 100
-    )
+    ): Result<Unit>
 
     suspend fun deleteMedia(uri: Uri)
 }

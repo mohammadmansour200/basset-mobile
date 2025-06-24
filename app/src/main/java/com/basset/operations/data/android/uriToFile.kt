@@ -1,10 +1,9 @@
 package com.basset.operations.data.android
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.webkit.MimeTypeMap
+import com.basset.core.utils.MimeTypeMap
 import java.io.File
 
 fun Context.uriToFile(uri: Uri) = with(contentResolver) {
@@ -22,7 +21,7 @@ fun Context.uriToFile(uri: Uri) = with(contentResolver) {
     return@with outputFile
 }
 
-fun ContentResolver.getUriExtension(uri: Uri): String? {
-    val type = getType(uri) ?: return null
-    return MimeTypeMap.getSingleton().getExtensionFromMimeType(type)
+fun Context.getUriExtension(uri: Uri): String? {
+    val type = contentResolver.getType(uri) ?: return null
+    return MimeTypeMap.getExtensionFromMimeType(type)
 }

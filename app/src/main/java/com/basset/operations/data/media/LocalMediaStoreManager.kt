@@ -7,115 +7,127 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.core.net.toUri
-import com.basset.core.domain.model.MimeType
-import com.basset.core.navigation.OperationRoute
+import com.basset.core.utils.MimeTypeMap
+import com.basset.core.utils.isAudio
+import com.basset.core.utils.isImage
+import com.basset.core.utils.isVideo
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.domain.MediaStoreManager
-import com.basset.operations.domain.model.Format
-import com.basset.operations.domain.model.OutputFileInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
     private val contentResolver: ContentResolver = context.contentResolver
+    private val isAndroidQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
     override suspend fun createMediaUri(
-        pickedFile: OperationRoute,
-        outputFileInfo: OutputFileInfo
-    ): Uri? =
+        uri: Uri,
+        name: String?,
+        extension: String
+    ): Result<Uri?> =
         withContext(Dispatchers.IO) {
             val contentValues = ContentValues()
-            val outputName = outputFileInfo.name ?: pickedFile.uri.toUri().getFileName(context)
+            val outputName = name ?: uri.getFileName(context)
+            val displayName = "$outputName.$extension"
+            val mimeType = MimeTypeMap.getMimeTypeFromExtension(extension)!!
 
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (isAndroidQOrLater) {
                 contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1)
             }
 
-            if (outputFileInfo.format.isAudio()) {
-                val collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                } else {
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                }
-                contentValues.put(
-                    MediaStore.Audio.Media.DISPLAY_NAME,
-                    "$outputName.${outputFileInfo.extension}"
-                )
-                if (outputFileInfo.format == Format.MP3) {
-                    contentValues.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
-                } else {
+            when {
+                extension.isAudio() -> {
+                    val collectionUri = if (isAndroidQOrLater) {
+                        MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                    } else {
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    }
+
                     contentValues.put(
-                        MediaStore.Audio.Media.MIME_TYPE,
-                        "audio/${outputFileInfo.extension}"
+                        MediaStore.Audio.Media.DISPLAY_NAME,
+                        displayName
+                    )
+
+                    contentValues.put(MediaStore.Audio.Media.MIME_TYPE, mimeType)
+
+                    if (isAndroidQOrLater) {
+                        contentValues.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music")
+                    }
+                    return@withContext Result.success(
+                        contentResolver.insert(
+                            collectionUri,
+                            contentValues
+                        )
                     )
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    contentValues.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music")
-                }
-                return@withContext contentResolver.insert(collectionUri, contentValues)
-            }
 
-            if (outputFileInfo.format.isImage()) {
-                val collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                } else {
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                }
-                contentValues.put(
-                    MediaStore.Images.Media.DISPLAY_NAME,
-                    "$outputName.${outputFileInfo.extension}"
-                )
-                if (outputFileInfo.format == Format.JPG) {
-                    contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-                } else {
+                extension.isImage() -> {
+                    val collectionUri = if (isAndroidQOrLater) {
+                        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                    } else {
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    }
+
                     contentValues.put(
-                        MediaStore.Images.Media.MIME_TYPE,
-                        "image/${outputFileInfo.extension}"
+                        MediaStore.Images.Media.DISPLAY_NAME,
+                        displayName
+                    )
+
+                    contentValues.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
+
+                    if (isAndroidQOrLater) {
+                        contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures")
+                    }
+
+                    return@withContext Result.success(
+                        contentResolver.insert(
+                            collectionUri,
+                            contentValues
+                        )
                     )
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures")
+
+                extension.isVideo() -> {
+                    val collectionUri = if (isAndroidQOrLater) {
+                        MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                    } else {
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                    }
+
+                    contentValues.put(
+                        MediaStore.Video.Media.DISPLAY_NAME,
+                        displayName
+                    )
+
+                    contentValues.put(
+                        MediaStore.Video.Media.MIME_TYPE,
+                        mimeType
+                    )
+
+                    if (isAndroidQOrLater) {
+                        contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies")
+                    }
+
+                    return@withContext Result.success(
+                        contentResolver.insert(
+                            collectionUri,
+                            contentValues
+                        )
+                    )
                 }
 
-                return@withContext contentResolver.insert(collectionUri, contentValues)
+                else -> return@withContext Result.failure(Exception("Invalid file format"))
             }
-
-            if (outputFileInfo.format.isVideo()) {
-                val collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                } else {
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                }
-                contentValues.put(
-                    MediaStore.Video.Media.DISPLAY_NAME,
-                    "$outputName.${outputFileInfo.extension}"
-                )
-                contentValues.put(
-                    MediaStore.Video.Media.MIME_TYPE,
-                    "video/${outputFileInfo.extension}"
-                )
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies")
-                }
-                return@withContext contentResolver.insert(collectionUri, contentValues)
-            } else return@withContext null
-
         }
 
     override suspend fun saveMedia(
-        uri: Uri,
-        pickedFile: OperationRoute,
+        uri: Uri
     ) =
         withContext(Dispatchers.IO) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (isAndroidQOrLater) {
                 val values = ContentValues().apply {
-                    when (pickedFile.mimeType) {
-                        MimeType.AUDIO -> put(MediaStore.Audio.Media.IS_PENDING, 0)
-                        MimeType.IMAGE -> put(MediaStore.Images.Media.IS_PENDING, 0)
-                        MimeType.VIDEO -> put(MediaStore.Video.Media.IS_PENDING, 0)
-                    }
+                    put(MediaStore.MediaColumns.IS_PENDING, 0)
                 }
                 context.contentResolver.update(uri, values, null, null)
             }
@@ -123,25 +135,28 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
 
     override suspend fun writeBitmap(
         uri: Uri,
-        outputFileInfo: OutputFileInfo,
+        extension: String,
         bitmap: Bitmap,
         quality: Int
-    ): Unit =
+    ): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    val format = when (outputFileInfo.format) {
-                        Format.JPEG -> Bitmap.CompressFormat.JPEG
-                        Format.JPG -> Bitmap.CompressFormat.JPEG
-                        Format.PNG -> Bitmap.CompressFormat.PNG
-                        else -> {
-                            Bitmap.CompressFormat.WEBP
-                        }
+                    val format = when (extension) {
+                        "webp" -> Bitmap.CompressFormat.WEBP
+                        "png" -> Bitmap.CompressFormat.PNG
+                        else -> Bitmap.CompressFormat.JPEG
                     }
-                    bitmap.compress(format, quality, outputStream)
+                    val success = bitmap.compress(format, quality, outputStream)
+                    if (success) {
+                        Result.success(Unit)
+                    } else {
+                        Result.failure(IOException("Failed to compress bitmap to $uri"))
+                    }
                 }
+                    ?: Result.failure(IOException("Could not open output stream for $uri")) // Handle null outputStream
             } catch (e: Exception) {
-                e.printStackTrace()
+                Result.failure(e)
             }
         }
 
