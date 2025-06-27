@@ -1,6 +1,7 @@
 package com.basset.operations.presentation
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
 import androidx.core.graphics.createBitmap
@@ -19,10 +20,11 @@ import com.basset.operations.data.android.toBitmap
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
-import com.basset.operations.domain.model.CompressionRate
 import com.basset.operations.domain.model.OperationError
+import com.basset.operations.domain.model.Rate
 import com.basset.operations.presentation.utils.parseFfmpegError
 import com.basset.operations.presentation.utils.progress
+import com.basset.operations.utils.FastBlur
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+
 
 class OperationScreenViewModel(
     context: Context,
@@ -64,7 +67,7 @@ class OperationScreenViewModel(
             is OperationScreenAction.OnCut -> safeExecute { handleCut(action.start, action.end) }
             is OperationScreenAction.OnCompress -> safeExecute {
                 handleCompress(
-                    compressionRate = action.compressionRate
+                    rate = action.rate
                 )
             }
 
@@ -79,7 +82,7 @@ class OperationScreenViewModel(
                     handleBgRemove(
                         outputName = null,
                         outputExtension = _state.value.metadata.ext.toString(),
-                        background = action.background
+                        newBackground = action.background
                     )
                 }
             }
@@ -143,22 +146,22 @@ class OperationScreenViewModel(
         )
     }
 
-    private suspend fun handleCompress(compressionRate: CompressionRate) {
+    private suspend fun handleCompress(rate: Rate) {
         val outputExt =
             _state.value.metadata.ext.toString()
 
         when (pickedFile.mediaType) {
             MediaType.VIDEO, MediaType.AUDIO -> {
-                val videoCompressBitrate = when (compressionRate) {
-                    CompressionRate.LOW -> "2000k"
-                    CompressionRate.MEDIUM -> "1000k"
-                    CompressionRate.HIGH -> "500k"
+                val videoCompressBitrate = when (rate) {
+                    Rate.LOW -> "2000k"
+                    Rate.MEDIUM -> "1000k"
+                    Rate.HIGH -> "500k"
                 }
 
-                val audioCompressBitrate = when (compressionRate) {
-                    CompressionRate.LOW -> "192k"
-                    CompressionRate.MEDIUM -> "128k"
-                    CompressionRate.HIGH -> "64k"
+                val audioCompressBitrate = when (rate) {
+                    Rate.LOW -> "192k"
+                    Rate.MEDIUM -> "128k"
+                    Rate.HIGH -> "64k"
                 }
 
                 val inputPath =
@@ -193,10 +196,10 @@ class OperationScreenViewModel(
                                 context = appContext,
                                 scaled = false
                             )
-                    val imageQuality = when (compressionRate) {
-                        CompressionRate.LOW -> 90
-                        CompressionRate.MEDIUM -> 75
-                        CompressionRate.HIGH -> 50
+                    val imageQuality = when (rate) {
+                        Rate.LOW -> 90
+                        Rate.MEDIUM -> 75
+                        Rate.HIGH -> 50
                     }
                     mediaStoreManager.writeBitmap(
                         uri = uri,
@@ -292,11 +295,10 @@ class OperationScreenViewModel(
         }
 
         runFFmpeg(
-            command = "-r 1 -loop 1 -i $cachedImageFile -i $inputPath -acodec copy -r 1 -pix_fmt yuv420p -tune stillimage -shortest",
+            command = "-r 1 -loop 1 -i $cachedImageFile -vf \"scale=ceil(iw/2)*2:ceil(ih/2)*2\" -i $inputPath -acodec copy -r 1 -pix_fmt yuv420p -tune stillimage -shortest",
             null,
             outputExtension
         )
-        cachedImageFile.delete()
     }
 
     private suspend fun runFFmpeg(
@@ -366,7 +368,7 @@ class OperationScreenViewModel(
     private suspend fun handleBgRemove(
         outputName: String?,
         outputExtension: String,
-        background: Any?
+        newBackground: Any?
     ) =
         withContext(Dispatchers.IO) {
             _state.update { it.copy(isOperating = true) }
@@ -380,22 +382,24 @@ class OperationScreenViewModel(
                     return@withContext
                 }
 
-                val originalUri = pickedFile.uri.toUri()
-                val foregroundBitmap =
-                    try {
-                        backgroundRemover.processImage(originalUri)
-                    } catch (_: Throwable) {
-                        handleError(OperationError.ERROR_BACKGROUND_REMOVAL, null, uri)
-                        return@withContext
-                    }
+                val pickedFileUri = pickedFile.uri.toUri()
+                val pickedFileBitmap = pickedFileUri.toBitmap(
+                    targetWidth = null,
+                    targetHeight = null,
+                    context = appContext,
+                )
 
-                val finalResult = createBitmap(foregroundBitmap.width, foregroundBitmap.height)
+                val (backgroundBitmap, foregroundBitmap) = backgroundRemover.processImage(
+                    pickedFileBitmap
+                )
+
+                val finalResult = createBitmap(pickedFileBitmap.width, pickedFileBitmap.height)
                 val canvas = Canvas(finalResult)
                 // Background
-                when (background) {
-                    is HsvColor -> canvas.drawColor(background.toColorInt())
+                when (newBackground) {
+                    is HsvColor -> canvas.drawColor(newBackground.toColorInt())
                     is Uri -> {
-                        val backgroundBitmap = background.toBitmap(
+                        val backgroundBitmap = newBackground.toBitmap(
                             targetWidth = foregroundBitmap.width,
                             targetHeight = foregroundBitmap.height,
                             context = appContext
@@ -408,8 +412,20 @@ class OperationScreenViewModel(
                         )
                     }
 
+                    is Rate -> {
+                        val blurRadius = when (newBackground) {
+                            Rate.LOW -> 25
+                            Rate.MEDIUM -> 50
+                            Rate.HIGH -> 75
+                        }
+                        // Credit: https://github.com/wasabeef/glide-transformations
+                        val bitmap = FastBlur.blur(backgroundBitmap, blurRadius, true)
+
+                        canvas.drawBitmap(bitmap as Bitmap, 0f, 0f, null)
+                    }
+
                     else -> {
-                        if (background != null) RuntimeException("Background can only be HsvColor, Uri and null")
+                        if (newBackground != null) RuntimeException("Background can only be HsvColor, Uri and null")
                     }
                 }
 

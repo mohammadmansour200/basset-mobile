@@ -46,6 +46,7 @@
     <string name="none_background_option">None</string>
     <string name="color_background_option">Color</string>
     <string name="image_background_option">Image</string>
+    <string name="blurry_background_option">Blurry</string>
 
     <string name="no_format_selected_err">Please select a format</string>
     <string name="format_card_title">Format</string>
@@ -53,9 +54,10 @@
 
     <string name="no_compress_selected_err">Please select a Compression Rate</string>
     <string name="compress_card_title">Compression Rate</string>
-    <string name="quality_option_low">Low</string>
-    <string name="quality_option_medium">Medium</string>
-    <string name="quality_option_high">High</string>
+
+    <string name="rate_option_low">Low</string>
+    <string name="rate_option_medium">Medium</string>
+    <string name="rate_option_high">High</string>
 
     <string name="choose_image_label">Choose Image</string>
     <string name="change_image_label">Change Image</string>

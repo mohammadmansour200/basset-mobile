@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.basset.R
 import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
-import com.basset.operations.domain.model.CompressionRate
+import com.basset.operations.domain.model.Rate
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
 import kotlinx.coroutines.launch
@@ -48,7 +48,7 @@ fun CompressOperation(
     val snackScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    var selectedCompressionRate by remember { mutableStateOf<CompressionRate?>(null) }
+    var selectedCompressRate by remember { mutableStateOf<Rate?>(null) }
 
     Card(
         modifier = modifier,
@@ -81,21 +81,21 @@ fun CompressOperation(
                 .padding(horizontal = 8.dp)
                 .padding(horizontal = 8.dp, vertical = 12.dp)
         ) {
-            val options = CompressionRate.entries.toTypedArray()
+            val options = Rate.entries.toTypedArray()
             CompositionLocalProvider(
                 LocalLayoutDirection provides LayoutDirection.Ltr,
             ) {
                 options.forEach {
                     val localizedOption = when (it) {
-                        CompressionRate.LOW -> R.string.quality_option_low
-                        CompressionRate.MEDIUM -> R.string.quality_option_medium
-                        CompressionRate.HIGH -> R.string.quality_option_high
+                        Rate.LOW -> R.string.rate_option_low
+                        Rate.MEDIUM -> R.string.rate_option_medium
+                        Rate.HIGH -> R.string.rate_option_high
                     }
                     EnhancedChip(
                         onClick = {
-                            selectedCompressionRate = it
+                            selectedCompressRate = it
                         },
-                        selected = selectedCompressionRate == it,
+                        selected = selectedCompressRate == it,
                         label = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -114,7 +114,7 @@ fun CompressOperation(
 
     ExecuteOperationBtn(
         onAction = {
-            if (selectedCompressionRate == null) {
+            if (selectedCompressRate == null) {
                 snackScope.launch {
                     snackbarHostState.showSnackbar(context.getString(R.string.no_compress_selected_err))
                 }
@@ -122,7 +122,7 @@ fun CompressOperation(
             }
             onAction(
                 OperationScreenAction.OnCompress(
-                    selectedCompressionRate!!
+                    selectedCompressRate!!
                 )
             )
         },

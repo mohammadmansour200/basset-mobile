@@ -6,7 +6,7 @@ import com.basset.core.navigation.OperationRoute
 import com.basset.home.data.preferences.LocalThemePreferencesDataSource
 import com.basset.home.domain.ThemePreferences
 import com.basset.home.presentation.ThemeViewModel
-import com.basset.operations.data.ai.MlKitBackgroundRemover
+import com.basset.operations.data.ai.TFLiteBackgroundRemover
 import com.basset.operations.data.media.LocalMediaDataSource
 import com.basset.operations.data.media.LocalMediaMetadataDataSource
 import com.basset.operations.data.media.LocalMediaPlaybackManager
@@ -46,7 +46,7 @@ val appModule = module {
     }
 
     single<BackgroundRemover> {
-        MlKitBackgroundRemover(context = androidContext())
+        TFLiteBackgroundRemover(context = androidContext())
     }
 
     viewModel { (pickedFile: OperationRoute) ->

@@ -18,7 +18,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        androidResources.localeFilters += listOf("en", "ar")
+        androidResources {
+            localeFilters += listOf("en", "ar")
+            noCompress += listOf("tflite")
+        }
 
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
@@ -43,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        mlModelBinding = true
     }
 }
 
@@ -51,8 +55,10 @@ dependencies {
     implementation(libs.compose.color.picker.android)
     implementation(libs.compose.color.picker)
 
-    // Subject segmentation
-    implementation(libs.play.services.mlkit.subject.segmentation)
+    // LiteRT
+    implementation(libs.litert)
+    implementation(libs.litert.support)
+    implementation(libs.litert.metadata)
 
     // Navigation 3
     implementation(libs.nav3.runtime)

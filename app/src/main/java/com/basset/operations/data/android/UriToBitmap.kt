@@ -14,7 +14,7 @@ suspend fun Uri.toBitmap(
     targetWidth: Int?,
     targetHeight: Int?,
     context: Context,
-    scaled: Boolean = true
+    scaled: Boolean = false
 ): Bitmap = withContext(Dispatchers.IO) {
     val uri = this@toBitmap
     val isScaled = scaled && targetWidth != null && targetHeight != null

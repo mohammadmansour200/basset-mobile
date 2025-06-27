@@ -1,6 +1,6 @@
 package com.basset.operations.domain.model
 
-enum class CompressionRate {
+enum class Rate {
     LOW,
     MEDIUM,
     HIGH

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,6 +48,7 @@ import coil3.compose.AsyncImage
 import com.basset.R
 import com.basset.core.presentation.modifier.ContainerShapeDefaults
 import com.basset.core.presentation.modifier.container
+import com.basset.operations.domain.model.Rate
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
 import com.godaddy.android.colorpicker.ClassicColorPicker
@@ -65,6 +67,7 @@ fun BgRemoveOperation(
     var selectedOption by remember { mutableIntStateOf(0) }
     var selectedColor by remember { mutableStateOf(HsvColor.from(Color.White)) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedBlurRate by remember { mutableStateOf<Rate>(Rate.LOW) }
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
@@ -117,7 +120,8 @@ fun BgRemoveOperation(
                     val options = listOf(
                         Pair(stringResource(R.string.none_background_option), 0),
                         Pair(stringResource(R.string.color_background_option), 1),
-                        Pair(stringResource(R.string.image_background_option), 2)
+                        Pair(stringResource(R.string.image_background_option), 2),
+                        Pair(stringResource(R.string.blurry_background_option), 3)
                     )
                     options.forEach { (label, index) ->
                         EnhancedChip(
@@ -195,6 +199,50 @@ fun BgRemoveOperation(
                                 )
                             }
                         }
+                        if (selectedOption == 3) {
+                            FlowRow(
+                                verticalArrangement = Arrangement.spacedBy(
+                                    space = 8.dp,
+                                    alignment = Alignment.CenterVertically
+                                ),
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    space = 8.dp,
+                                    alignment = Alignment.CenterHorizontally
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = 8.dp, vertical = 12.dp)
+                            ) {
+                                val options = Rate.entries.toTypedArray()
+                                options.forEach {
+                                    val localizedOption = when (it) {
+                                        Rate.LOW -> R.string.rate_option_low
+                                        Rate.MEDIUM -> R.string.rate_option_medium
+                                        Rate.HIGH -> R.string.rate_option_high
+                                    }
+                                    EnhancedChip(
+                                        onClick = {
+                                            selectedBlurRate = it
+                                        },
+                                        selected = selectedBlurRate == it,
+                                        label = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Text(text = stringResource(localizedOption))
+                                            }
+                                        },
+                                        selectedColor = MaterialTheme.colorScheme.tertiary,
+                                        contentPadding = PaddingValues(
+                                            horizontal = 16.dp,
+                                            vertical = 6.dp
+                                        )
+                                    )
+                                }
+                            }
+                        }
                     }
                     Spacer(Modifier.height(8.dp))
                 }
@@ -215,6 +263,7 @@ fun BgRemoveOperation(
             val background = when (selectedOption) {
                 1 -> selectedColor
                 2 -> selectedImageUri
+                3 -> selectedBlurRate
                 else -> null
             }
             onAction(OperationScreenAction.OnRemoveBackground(background))

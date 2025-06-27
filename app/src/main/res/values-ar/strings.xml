@@ -47,6 +47,7 @@
     <string name="none_background_option">بدون</string>
     <string name="color_background_option">لون</string>
     <string name="image_background_option">صورة</string>
+    <string name="blurry_background_option">ضبابية</string>
 
     <string name="no_format_selected_err">رجاءً اختر صيغة المطلوبة</string>
     <string name="format_card_title">الصيغة</string>
@@ -54,9 +55,9 @@
 
     <string name="no_compress_selected_err">رجاءً اختر درجة الضغط المطلوبة</string>
     <string name="compress_card_title">درجة الضغط</string>
-    <string name="quality_option_low">منخفضة</string>
-    <string name="quality_option_medium">متوسطة</string>
-    <string name="quality_option_high">عالية</string>
+    <string name="rate_option_low">منخفضة</string>
+    <string name="rate_option_medium">متوسطة</string>
+    <string name="rate_option_high">عالية</string>
 
     <string name="choose_image_label">اختر صورة</string>
     <string name="change_image_label">غير الصورة</string>
