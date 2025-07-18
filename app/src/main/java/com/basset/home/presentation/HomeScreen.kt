@@ -67,9 +67,8 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    var showBottomSheet by remember { mutableStateOf(false) }
     var currentBottomSheet: BottomSheetType? by remember { mutableStateOf(null) }
-    var pickedFile by remember { mutableStateOf<Uri?>(receivedUri) }
+    var pickedFile by remember { mutableStateOf(receivedUri) }
 
     val accentColor = if (isDarkMode(state.theme)) Color.White else Color.Black
 
@@ -79,7 +78,6 @@ fun HomeScreen(
                 var menuExpanded by remember { mutableStateOf(false) }
 
                 val onMenuItemClick: (BottomSheetType) -> Unit = { type ->
-                    showBottomSheet = true
                     currentBottomSheet = type
                     menuExpanded = false
                 }
@@ -165,15 +163,15 @@ fun HomeScreen(
         }
     }
 
-    if (showBottomSheet) {
+    if (currentBottomSheet != null) {
         ModalBottomSheet(
             onDismissRequest = {
-                showBottomSheet = false
+                currentBottomSheet = null
             },
         ) {
-            currentBottomSheet?.let {
+            currentBottomSheet?.let { type ->
                 SheetContent(
-                    bottomSheetType = it,
+                    bottomSheetType = type,
                     settingsState = state,
                     settingsOnAction = { viewModel.onAction(it) }
                 )

@@ -30,8 +30,6 @@ class LocalMediaMetadataDataSource(
                 return@withContext Metadata(
                     title = uri.getFileName(context),
                     fileSizeBytes = fileSizeBytes,
-                    artist = null,
-                    durationMs = null,
                     imageData = uri,
                     ext = ext
                 )
@@ -59,8 +57,6 @@ class LocalMediaMetadataDataSource(
     override suspend fun loadCompactMetadata(
         uri: Uri,
     ): Metadata = withContext(Dispatchers.IO) {
-        val retriever = MediaMetadataRetriever()
-
         val fileSizeBytes = context.contentResolver
             .query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)
             ?.use { cursor ->
@@ -70,19 +66,8 @@ class LocalMediaMetadataDataSource(
             }
         val ext = context.getUriExtension(uri)
 
-        retriever.setDataSource(context, uri)
-
-        val durationMs =
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.toLongOrNull()
-
-        retriever.release()
         Metadata(
-            title = "",
             fileSizeBytes = fileSizeBytes,
-            artist = null,
-            durationMs = durationMs,
-            imageData = null,
             ext = ext
         )
     }

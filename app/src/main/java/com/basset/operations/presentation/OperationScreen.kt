@@ -43,6 +43,8 @@ import com.basset.operations.presentation.components.FlexibleTopBar
 import com.basset.operations.presentation.components.FlexibleTopBarDefaults
 import com.basset.operations.presentation.components.MediaInfoCard
 import com.basset.operations.presentation.components.OperationScreenContent
+import com.basset.operations.presentation.components.StatusBottomSheetContent
+import com.basset.operations.presentation.components.StatusBottomSheetType
 import com.basset.operations.presentation.utils.ObserveAsEvents
 import com.basset.ui.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
@@ -61,17 +63,16 @@ fun OperationScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var showErrorBottomSheet by remember { mutableStateOf(false) }
-    var showSuccessBottomSheet by remember { mutableStateOf(false) }
+    var bottomSheetType: StatusBottomSheetType? by remember { mutableStateOf(null) }
 
     ObserveAsEvents(events = viewModel.events) {
-        when (it) {
+        bottomSheetType = when (it) {
             OperationScreenEvent.Error -> {
-                showErrorBottomSheet = true
+                StatusBottomSheetType.ERROR
             }
 
             OperationScreenEvent.Success -> {
-                showSuccessBottomSheet = true
+                StatusBottomSheetType.SUCCESS
             }
         }
     }
@@ -128,23 +129,17 @@ fun OperationScreen(
             }
         }) { innerPadding ->
 
-        if (showErrorBottomSheet) {
+        if (bottomSheetType != null) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    showErrorBottomSheet = false
+                    bottomSheetType = null
                 },
             ) {
-
-            }
-        }
-
-        if (showSuccessBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showSuccessBottomSheet = false
-                },
-            ) {
-
+                StatusBottomSheetContent(
+                    type = bottomSheetType!!,
+                    state = state,
+                    operationType = pickedFile.operationType,
+                )
             }
         }
 

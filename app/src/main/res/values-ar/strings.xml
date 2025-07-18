@@ -64,4 +64,17 @@
     <string name="selected_background_image_content_desc">صورة الخلفية المختارة</string>
     <string name="please_select_an_image_err">رجاءً اختر صورة</string>
     <string name="gif_not_supported_err">مع الأسف الشديد صيغة GIF غير مدعومة حاليًا</string>
+
+    <string name="operation_success">تمت العملية بنجاح! 🎉</string>
+    <string name="operation_success_compressed">تم تقليل المساحة من %1$s إلى %2$s</string>
+    <string name="operation_success_converted">تم تحويل الصيغة من %1$s إلى %2$s</string>
+    <string name="share_file">شارك الملف!</string>
+
+    <string name="operation_error_unknown_title">حدث خطأ غير معروف! 😢</string>
+    <string name="operation_error_input_file_title">هذا الملف غير موجود</string>
+    <string name="operation_error_input_file_desc">إما أنه قد تم حذفه أو أنه غير صالح. تأكد من صلاحية الملف.</string>
+    <string name="operation_error_output_file_title">حدث خطأ أثناء حفظ الملف</string>
+    <string name="operation_error_output_file_desc">إما أنه لا توجد مساحة متبقية على الجهاز أو لا توجد صلاحيات لحفظ الملف على وحدة التخزين.</string>
+    <string name="operation_error_invalid_format_title">صيغة الملف هذا غير مدعومة أو غير صالحة</string>
+    <string name="operation_error_detailed_desc">تفاصيل الخطأ</string>
 </resources>

@@ -98,6 +98,7 @@ class OperationScreenViewModel(
 
     private suspend fun handleError(operationError: OperationError, e: Throwable?, uri: Uri?) {
         uri?.let { mediaStoreManager.deleteMedia(uri) }
+        android.util.Log.e("OperationScreenViewModel", "Error: ${operationError.name}", e)
         _state.update {
             it.copy(
                 isOperating = false,
@@ -110,11 +111,12 @@ class OperationScreenViewModel(
 
     private suspend fun handleSuccess(uri: Uri) {
         mediaStoreManager.saveMedia(uri)
-        metadataDataSource.loadCompactMetadata(uri)
+        val metadata = metadataDataSource.loadCompactMetadata(uri)
         _state.update {
             it.copy(
                 isOperating = false,
-                outputedFile = uri
+                outputedFile = uri,
+                outputedFileMetadata = metadata
             )
         }
         _events.send(OperationScreenEvent.Success)
@@ -288,11 +290,6 @@ class OperationScreenViewModel(
             "jpeg",
             bitmap
         )
-
-        if (writtenBitmap.isFailure) {
-            handleError(OperationError.ERROR_IMAGE_PROCESSING, null, null)
-            return
-        }
 
         runFFmpeg(
             command = "-r 1 -loop 1 -i $cachedImageFile -vf \"scale=ceil(iw/2)*2:ceil(ih/2)*2\" -i $inputPath -acodec copy -r 1 -pix_fmt yuv420p -tune stillimage -shortest",

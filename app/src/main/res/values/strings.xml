@@ -64,4 +64,17 @@
     <string name="selected_background_image_content_desc">Selected Background Image</string>
     <string name="please_select_an_image_err">Please select an image</string>
     <string name="gif_not_supported_err">Sorry, GIFs aren\'t supported currently.</string>
+
+    <string name="operation_success">Operation successfully completed! 🎉</string>
+    <string name="operation_success_compressed">Compressed File size from %1$s to %2$s</string>
+    <string name="operation_success_converted">Converted File from %1$s to %2$s</string>
+    <string name="share_file">Share File!</string>
+
+    <string name="operation_error_unknown_title">Unknown error occurred! 😢</string>
+    <string name="operation_error_input_file_title">File not found</string>
+    <string name="operation_error_input_file_desc">Either it\'s deleted or corrupted. check file\'s validity.</string>
+    <string name="operation_error_output_file_title">Something went wrong while saving file</string>
+    <string name="operation_error_output_file_desc">Either there\'s no space left on device or no permissions to write to storage</string>
+    <string name="operation_error_invalid_format_title">This format isn\'t supported or invalid</string>
+    <string name="operation_error_detailed_desc">Error message</string>
 </resources>
