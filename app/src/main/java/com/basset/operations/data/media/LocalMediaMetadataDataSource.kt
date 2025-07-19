@@ -5,6 +5,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.basset.core.domain.model.MediaType
+import com.basset.core.utils.removeLastNchars
 import com.basset.operations.data.android.getFileName
 import com.basset.operations.data.android.getUriExtension
 import com.basset.operations.domain.MediaMetadataDataSource
@@ -49,9 +50,12 @@ class LocalMediaMetadataDataSource(
                 MediaType.AUDIO -> retriever.embeddedPicture
                 else -> null
             }
+            val stringBitrate =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+            val bitrate = stringBitrate?.removeLastNchars(3)?.toLongOrNull()
 
             retriever.release()
-            Metadata(title, artist, durationMs, fileSizeBytes, imageData, ext)
+            Metadata(title, artist, durationMs, fileSizeBytes, imageData, ext, bitrate)
         }
 
     override suspend fun loadCompactMetadata(

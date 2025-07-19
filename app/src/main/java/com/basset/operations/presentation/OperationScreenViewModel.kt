@@ -153,16 +153,22 @@ class OperationScreenViewModel(
 
         when (pickedFile.mediaType) {
             MediaType.VIDEO, MediaType.AUDIO -> {
+                val metadataBitrate = _state.value.metadata.bitrate
+
+                val lowCompressRate = metadataBitrate?.times(0.9)?.toLong()
+                val mediumCompressRate = metadataBitrate?.times(0.6)?.toLong()
+                val highCompressRate = metadataBitrate?.times(0.3)?.toLong()
+                
                 val videoCompressBitrate = when (rate) {
-                    Rate.LOW -> "2000k"
-                    Rate.MEDIUM -> "1000k"
-                    Rate.HIGH -> "500k"
+                    Rate.LOW -> "${lowCompressRate ?: 2000}k"
+                    Rate.MEDIUM -> "${mediumCompressRate ?: 1000}k"
+                    Rate.HIGH -> "${highCompressRate ?: 500}k"
                 }
 
                 val audioCompressBitrate = when (rate) {
-                    Rate.LOW -> "192k"
-                    Rate.MEDIUM -> "128k"
-                    Rate.HIGH -> "64k"
+                    Rate.LOW -> "${lowCompressRate ?: 192}k"
+                    Rate.MEDIUM -> "${mediumCompressRate ?: 128}k"
+                    Rate.HIGH -> "${highCompressRate ?: 64}k"
                 }
 
                 val inputPath =
