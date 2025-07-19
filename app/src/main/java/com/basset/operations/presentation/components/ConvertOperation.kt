@@ -59,9 +59,9 @@ import com.basset.core.utils.MimeTypeMap
 import com.basset.core.utils.isAudio
 import com.basset.core.utils.isImage
 import com.basset.core.utils.isVideo
-import com.basset.operations.data.android.getUriExtension
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
+import com.basset.operations.utils.getUriExtension
 import kotlinx.coroutines.launch
 
 @Composable

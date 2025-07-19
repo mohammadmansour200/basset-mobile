@@ -16,7 +16,6 @@ import com.arthenica.ffmpegkit.Log
 import com.arthenica.ffmpegkit.LogCallback
 import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
-import com.basset.operations.data.android.toBitmap
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
@@ -25,6 +24,7 @@ import com.basset.operations.domain.model.Rate
 import com.basset.operations.presentation.utils.parseFfmpegError
 import com.basset.operations.presentation.utils.progress
 import com.basset.operations.utils.FastBlur
+import com.basset.operations.utils.toBitmap
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import kotlinx.coroutines.Dispatchers
@@ -158,7 +158,7 @@ class OperationScreenViewModel(
                 val lowCompressRate = metadataBitrate?.times(0.9)?.toLong()
                 val mediumCompressRate = metadataBitrate?.times(0.6)?.toLong()
                 val highCompressRate = metadataBitrate?.times(0.3)?.toLong()
-                
+
                 val videoCompressBitrate = when (rate) {
                     Rate.LOW -> "${lowCompressRate ?: 2000}k"
                     Rate.MEDIUM -> "${mediumCompressRate ?: 1000}k"

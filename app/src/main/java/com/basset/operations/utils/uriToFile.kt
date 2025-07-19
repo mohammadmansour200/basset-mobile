@@ -1,9 +1,8 @@
-package com.basset.operations.data.android
+package com.basset.operations.utils
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.basset.core.utils.MimeTypeMap
 import java.io.File
 
 fun Context.uriToFile(uri: Uri) = with(contentResolver) {
@@ -19,9 +18,4 @@ fun Context.uriToFile(uri: Uri) = with(contentResolver) {
     }
     Log.d("uriToFile", outputFile.name)
     return@with outputFile
-}
-
-fun Context.getUriExtension(uri: Uri): String? {
-    val type = contentResolver.getType(uri) ?: return null
-    return MimeTypeMap.getExtensionFromMimeType(type)
 }

@@ -6,10 +6,10 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import com.basset.core.domain.model.MediaType
 import com.basset.core.utils.removeLastNchars
-import com.basset.operations.data.android.getFileName
-import com.basset.operations.data.android.getUriExtension
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.model.Metadata
+import com.basset.operations.utils.getFileName
+import com.basset.operations.utils.getUriExtension
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

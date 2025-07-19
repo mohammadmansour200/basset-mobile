@@ -1,4 +1,4 @@
-package com.basset.operations.data.android
+package com.basset.operations.utils
 
 import android.content.Context
 import android.graphics.Bitmap
