@@ -7,14 +7,14 @@ import com.basset.home.data.preferences.LocalThemePreferencesDataSource
 import com.basset.home.domain.ThemePreferences
 import com.basset.home.presentation.ThemeViewModel
 import com.basset.operations.data.ai.TFLiteBackgroundRemover
-import com.basset.operations.data.media.LocalMediaDataSource
+import com.basset.operations.data.media.LocalCuttingTimelineDataSource
 import com.basset.operations.data.media.LocalMediaMetadataDataSource
 import com.basset.operations.data.media.LocalMediaPlaybackManager
 import com.basset.operations.data.media.LocalMediaStoreManager
 import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
-import com.basset.operations.domain.cut_operation.MediaDataSource
+import com.basset.operations.domain.cut_operation.CuttingTimelineDataSource
 import com.basset.operations.domain.cut_operation.MediaPlaybackManager
 import com.basset.operations.presentation.OperationScreenViewModel
 import com.basset.operations.presentation.cut_operation.CutOperationViewModel
@@ -29,8 +29,8 @@ val appModule = module {
         LocalMediaPlaybackManager(player = get())
     }
 
-    single<MediaDataSource> {
-        LocalMediaDataSource(appContext = androidContext())
+    single<CuttingTimelineDataSource> {
+        LocalCuttingTimelineDataSource(appContext = androidContext())
     }
 
     single<ThemePreferences> {
@@ -63,7 +63,7 @@ val appModule = module {
         CutOperationViewModel(
             player = get(),
             mediaPlaybackManager = get(),
-            mediaDataSource = get()
+            cuttingTimelineDataSource = get()
         )
     }
 

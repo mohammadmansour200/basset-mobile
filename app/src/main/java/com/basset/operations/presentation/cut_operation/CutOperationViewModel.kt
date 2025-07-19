@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.basset.core.domain.model.MediaType
 import com.basset.operations.domain.cut_operation.CutOperationError
-import com.basset.operations.domain.cut_operation.MediaDataSource
+import com.basset.operations.domain.cut_operation.CuttingTimelineDataSource
 import com.basset.operations.domain.cut_operation.MediaPlaybackManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class CutOperationViewModel(
     val player: Player,
     private val mediaPlaybackManager: MediaPlaybackManager,
-    private val mediaDataSource: MediaDataSource
+    private val cuttingTimelineDataSource: CuttingTimelineDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(CutOperationState())
     val state: StateFlow<CutOperationState> = _state
@@ -47,7 +47,7 @@ class CutOperationViewModel(
                     when (action.mediaType) {
                         MediaType.AUDIO -> {
                             try {
-                                val result = mediaDataSource.loadAmplitudes(action.uri)
+                                val result = cuttingTimelineDataSource.loadAmplitudes(action.uri)
                                 _state.update { it.copy(amplitudes = result) }
                             } catch (_: Exception) {
                                 _events.send(CutOperationEvent.Error(CutOperationError.MEDIA_PREVIEW_LOADING))
@@ -56,7 +56,7 @@ class CutOperationViewModel(
 
                         else -> {
                             try {
-                                mediaDataSource.loadVideoPreviewFrames(action.uri) { bitmap ->
+                                cuttingTimelineDataSource.loadVideoPreviewFrames(action.uri) { bitmap ->
                                     _state.update { it.copy(videoFrames = it.videoFrames + bitmap) }
                                 }
                             } catch (_: Exception) {

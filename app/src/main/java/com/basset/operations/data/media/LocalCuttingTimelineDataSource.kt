@@ -5,9 +5,9 @@ import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Log
+import com.basset.operations.domain.cut_operation.CuttingTimelineDataSource
 import com.basset.operations.domain.cut_operation.MediaConstants.MAX_VIDEO_PREVIEW_IMAGES
 import com.basset.operations.domain.cut_operation.MediaConstants.VIDEO_FRAME_INTERVAL_PERCENTAGE
-import com.basset.operations.domain.cut_operation.MediaDataSource
 import com.basset.operations.utils.getFileName
 import com.basset.operations.utils.uriToFile
 import com.linc.amplituda.Amplituda
@@ -16,9 +16,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 
-class LocalMediaDataSource(
+class LocalCuttingTimelineDataSource(
     private val appContext: Context
-) : MediaDataSource {
+) : CuttingTimelineDataSource {
     override suspend fun loadAmplitudes(uri: Uri): List<Int> = withContext(Dispatchers.IO) {
         var inputFile: File? = null
         try {
@@ -66,7 +66,7 @@ class LocalMediaDataSource(
                     val timeUs = i * interval * 1000
                     val bitmap =
                         retriever.getFrameAtTime(
-                            timeUs.toLong(),
+                            timeUs,
                             MediaMetadataRetriever.OPTION_CLOSEST
                         )
                     if (bitmap != null) onThumbnailReady(bitmap)
