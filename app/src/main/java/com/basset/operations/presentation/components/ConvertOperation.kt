@@ -143,7 +143,10 @@ fun ConvertOperation(
                         )
                         val isDifferentMimeType = it != pickedFileMimeType
 
-                        isCorrectMediaType && isDifferentMimeType
+                        val isAudioToWebm =
+                            it == "video/webm" && pickedFile.mediaType == MediaType.AUDIO
+
+                        isCorrectMediaType && isDifferentMimeType && !isAudioToWebm
                     }
                     CompositionLocalProvider(
                         LocalLayoutDirection provides LayoutDirection.Ltr,

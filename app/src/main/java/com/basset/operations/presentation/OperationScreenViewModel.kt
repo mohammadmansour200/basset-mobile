@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 
 class OperationScreenViewModel(
@@ -272,27 +271,12 @@ class OperationScreenViewModel(
     }
 
     private suspend fun handleAudioToVideoConvert(outputExtension: String, image: Uri) {
-        val inputPath =
+        val inputImagePath = FFmpegKitConfig.getSafParameterForRead(appContext, image)
+        val inputAudioPath =
             FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
 
-        // For a certain reason FFmpeg only supports jpeg format
-        val cacheDir = appContext.cacheDir
-        val cachedImageFile = File(cacheDir, "temp.jpeg")
-
-        val bitmap = image.toBitmap(
-            targetWidth = null,
-            targetHeight = null,
-            context = appContext,
-            scaled = false
-        )
-        val writtenBitmap = mediaStoreManager.writeBitmap(
-            cachedImageFile.toUri(),
-            "jpeg",
-            bitmap
-        )
-
         runFFmpeg(
-            command = "-r 1 -loop 1 -i $cachedImageFile -vf \"scale=ceil(iw/2)*2:ceil(ih/2)*2\" -i $inputPath -acodec copy -r 1 -pix_fmt yuv420p -tune stillimage -shortest",
+            command = "-i $inputImagePath -i $inputAudioPath -pix_fmt yuv420p -tune stillimage -vf \"scale=1280:720,pad=ceil(iw/2)*2:ceil(ih/2)*2\"",
             null,
             outputExtension
         )
