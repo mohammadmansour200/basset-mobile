@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.basset.R
 import com.basset.core.domain.CoreConstants.AUDIO_MIME_TYPES
 import com.basset.core.domain.CoreConstants.IMAGE_MIME_TYPES
+import com.basset.core.domain.CoreConstants.PDF_MIME_TYPES
 import com.basset.core.domain.CoreConstants.VIDEO_MIME_TYPES
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.components.IconWithTooltip
@@ -116,7 +117,12 @@ fun HomeScreen(
                 FloatingActionButton(
                     onClick = {
                         launcher.launch(
-                            arrayOf(*IMAGE_MIME_TYPES, *AUDIO_MIME_TYPES, *VIDEO_MIME_TYPES)
+                            arrayOf(
+                                *IMAGE_MIME_TYPES,
+                                *AUDIO_MIME_TYPES,
+                                *VIDEO_MIME_TYPES,
+                                *PDF_MIME_TYPES
+                            )
                         )
                     }
                 ) {

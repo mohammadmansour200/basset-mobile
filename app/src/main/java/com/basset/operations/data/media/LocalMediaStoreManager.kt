@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import com.basset.core.utils.MimeTypeMap
 import com.basset.core.utils.isAudio
 import com.basset.core.utils.isImage
+import com.basset.core.utils.isPdf
 import com.basset.core.utils.isVideo
 import com.basset.operations.domain.MediaStoreManager
 import com.basset.operations.utils.getFileName
@@ -107,6 +108,35 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
 
                     if (isAndroidQOrLater) {
                         contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies")
+                    }
+
+                    return@withContext Result.success(
+                        contentResolver.insert(
+                            collectionUri,
+                            contentValues
+                        )
+                    )
+                }
+
+                extension.isPdf() -> {
+                    val collectionUri = if (isAndroidQOrLater) {
+                        MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                    } else {
+                        MediaStore.Files.getContentUri("external")
+                    }
+
+                    contentValues.put(
+                        MediaStore.Files.FileColumns.DISPLAY_NAME,
+                        displayName
+                    )
+
+                    contentValues.put(
+                        MediaStore.Files.FileColumns.MIME_TYPE,
+                        mimeType
+                    )
+
+                    if (isAndroidQOrLater) {
+                        contentValues.put(MediaStore.Files.FileColumns.RELATIVE_PATH, "Documents")
                     }
 
                     return@withContext Result.success(

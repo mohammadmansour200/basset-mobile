@@ -51,6 +51,9 @@ android {
 }
 
 dependencies {
+    // itext
+    implementation(libs.itext7.core)
+
     // Color picker
     implementation(libs.compose.color.picker.android)
     implementation(libs.compose.color.picker)

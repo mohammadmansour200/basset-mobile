@@ -27,6 +27,7 @@ import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.modifier.ContainerShapeDefaults
 import com.basset.core.presentation.modifier.container
 import com.basset.core.utils.isAudio
+import com.basset.core.utils.isPdf
 import com.basset.core.utils.isVideo
 
 data class OperationButtonData(val text: String, val icon: Int, val operationType: OperationType)
@@ -51,6 +52,7 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
         val mediaType = when {
             type!!.isVideo() -> MediaType.VIDEO
             type.isAudio() -> MediaType.AUDIO
+            type.isPdf() -> MediaType.PDF
             else -> MediaType.IMAGE
         }
 
@@ -117,6 +119,17 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                     )
                 )
             }
+
+            MediaType.PDF -> {
+                // Handle PDF files
+                listOf(
+                    OperationButtonData(
+                        stringResource(R.string.operation_compress),
+                        R.drawable.compress,
+                        operationType = OperationType.COMPRESS
+                    )
+                )
+            }
         }
 
 
@@ -134,7 +147,7 @@ fun OperationsButtons(uri: Uri, onGoToOperation: (OperationRoute) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .container(
-                        shape = ContainerShapeDefaults.shapeForIndex(i, 3),
+                        shape = ContainerShapeDefaults.shapeForIndex(i, actions.size),
                         color = MaterialTheme.colorScheme.surface,
                         resultPadding = 0.dp
                     ),

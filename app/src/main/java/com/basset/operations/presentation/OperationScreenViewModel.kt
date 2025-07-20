@@ -24,6 +24,7 @@ import com.basset.operations.domain.model.Rate
 import com.basset.operations.presentation.utils.parseFfmpegError
 import com.basset.operations.presentation.utils.progress
 import com.basset.operations.utils.FastBlur
+import com.basset.operations.utils.compressPdf
 import com.basset.operations.utils.toBitmap
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
@@ -53,10 +54,12 @@ class OperationScreenViewModel(
     private val _events = Channel<OperationScreenEvent>()
     val events = _events.receiveAsFlow()
 
+    private val pickedUri = pickedFile.uri.toUri()
+
     init {
         viewModelScope.launch {
             val metadata =
-                metadataDataSource.loadMetadata(pickedFile.uri.toUri(), pickedFile.mediaType)
+                metadataDataSource.loadMetadata(pickedUri, pickedFile.mediaType)
             _state.update { it.copy(metadata = metadata) }
         }
     }
@@ -102,7 +105,7 @@ class OperationScreenViewModel(
             it.copy(
                 isOperating = false,
                 operationError = operationError,
-                detailedErrorMessage = e?.localizedMessage
+                detailedErrorMessage = e?.message
             )
         }
         _events.send(OperationScreenEvent.Error)
@@ -139,7 +142,7 @@ class OperationScreenViewModel(
 
     private suspend fun handleCut(start: Double, end: Double) {
         val inputPath =
-            FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
+            FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
         runFFmpeg(
             command = "-ss $start -to $end -i $inputPath -c copy",
             outputName = null,
@@ -150,6 +153,12 @@ class OperationScreenViewModel(
     private suspend fun handleCompress(rate: Rate) {
         val outputExt =
             _state.value.metadata.ext.toString()
+
+        val imageQuality = when (rate) {
+            Rate.LOW -> 90
+            Rate.MEDIUM -> 75
+            Rate.HIGH -> 50
+        }
 
         when (pickedFile.mediaType) {
             MediaType.VIDEO, MediaType.AUDIO -> {
@@ -172,7 +181,7 @@ class OperationScreenViewModel(
                 }
 
                 val inputPath =
-                    FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
+                    FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
 
                 val command =
                     if (pickedFile.mediaType == MediaType.VIDEO) "-i $inputPath -b:v $videoCompressBitrate -b:a $audioCompressBitrate -preset ultrafast" else "-i $inputPath -b:a $audioCompressBitrate -preset ultrafast"
@@ -186,7 +195,7 @@ class OperationScreenViewModel(
 
             MediaType.IMAGE -> {
                 mediaStoreManager.createMediaUri(
-                    pickedFile.uri.toUri(),
+                    pickedUri,
                     name = null,
                     extension = outputExt
                 ).fold(onSuccess = { uri ->
@@ -196,18 +205,14 @@ class OperationScreenViewModel(
                     }
 
                     val bitmap =
-                        pickedFile.uri.toUri()
+                        pickedUri
                             .toBitmap(
                                 targetWidth = null,
                                 targetHeight = null,
                                 context = appContext,
                                 scaled = false
                             )
-                    val imageQuality = when (rate) {
-                        Rate.LOW -> 90
-                        Rate.MEDIUM -> 75
-                        Rate.HIGH -> 50
-                    }
+
                     mediaStoreManager.writeBitmap(
                         uri = uri,
                         extension = outputExt,
@@ -223,6 +228,31 @@ class OperationScreenViewModel(
                     return@fold
                 })
             }
+
+            MediaType.PDF -> {
+                mediaStoreManager.createMediaUri(
+                    pickedUri,
+                    name = null,
+                    extension = outputExt
+                ).fold(onSuccess = { uri ->
+                    if (uri == null) {
+                        handleError(OperationError.ERROR_INVALID_FORMAT, null, null)
+                        return@fold
+                    }
+
+                    compressPdf(
+                        context = appContext,
+                        inputUri = pickedUri,
+                        outputUri = uri,
+                        quality = imageQuality
+                    )
+
+                    handleSuccess(uri)
+                }, onFailure = {
+                    handleError(OperationError.ERROR_WRITING_OUTPUT, null, null)
+                    return@fold
+                })
+            }
         }
     }
 
@@ -231,7 +261,7 @@ class OperationScreenViewModel(
         when (pickedFile.mediaType) {
             MediaType.VIDEO, MediaType.AUDIO -> {
                 val inputPath =
-                    FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
+                    FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
                 runFFmpeg(
                     command = "-i $inputPath",
                     outputName = outputName,
@@ -239,9 +269,9 @@ class OperationScreenViewModel(
                 )
             }
 
-            MediaType.IMAGE -> {
+            else -> {
                 mediaStoreManager.createMediaUri(
-                    pickedFile.uri.toUri(),
+                    pickedUri,
                     name = outputName,
                     extension = outputExtension
                 ).fold(onSuccess = { uri ->
@@ -251,7 +281,7 @@ class OperationScreenViewModel(
                     }
 
                     val bitmap =
-                        pickedFile.uri.toUri()
+                        pickedUri
                             .toBitmap(
                                 targetWidth = null,
                                 targetHeight = null,
@@ -279,7 +309,7 @@ class OperationScreenViewModel(
     private suspend fun handleAudioToVideoConvert(outputExtension: String, image: Uri) {
         val inputImagePath = FFmpegKitConfig.getSafParameterForRead(appContext, image)
         val inputAudioPath =
-            FFmpegKitConfig.getSafParameterForRead(appContext, pickedFile.uri.toUri())
+            FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
 
         runFFmpeg(
             command = "-i $inputImagePath -i $inputAudioPath -pix_fmt yuv420p -tune stillimage -vf \"scale=1280:720,pad=ceil(iw/2)*2:ceil(ih/2)*2\"",
@@ -293,7 +323,7 @@ class OperationScreenViewModel(
         outputName: String?,
         outputExtension: String,
     ) = withContext(Dispatchers.IO) {
-        mediaStoreManager.createMediaUri(pickedFile.uri.toUri(), outputName, outputExtension)
+        mediaStoreManager.createMediaUri(pickedUri, outputName, outputExtension)
             .fold(onSuccess = { uri ->
                 if (uri == null) {
                     handleError(OperationError.ERROR_INVALID_FORMAT, null, null)
@@ -360,7 +390,7 @@ class OperationScreenViewModel(
         withContext(Dispatchers.IO) {
             _state.update { it.copy(isOperating = true) }
             mediaStoreManager.createMediaUri(
-                pickedFile.uri.toUri(),
+                pickedUri,
                 outputName,
                 outputExtension
             ).fold(onSuccess = { uri ->
@@ -369,8 +399,7 @@ class OperationScreenViewModel(
                     return@withContext
                 }
 
-                val pickedFileUri = pickedFile.uri.toUri()
-                val pickedFileBitmap = pickedFileUri.toBitmap(
+                val pickedFileBitmap = pickedUri.toBitmap(
                     targetWidth = null,
                     targetHeight = null,
                     context = appContext,

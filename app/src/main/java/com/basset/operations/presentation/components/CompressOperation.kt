@@ -126,7 +126,7 @@ fun CompressOperation(
                 )
             )
         },
-        isCancellable = pickedFile.mediaType != MediaType.IMAGE,
+        isCancellable = pickedFile.mediaType != MediaType.IMAGE && pickedFile.mediaType != MediaType.PDF,
         operationScreenState = operationScreenState,
         buttonLabel = stringResource(R.string.operation_compress_btn)
     )

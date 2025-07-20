@@ -9,7 +9,7 @@ fun Context.uriToFile(uri: Uri) = with(contentResolver) {
     val extension = getUriExtension(uri)
     val outputFile = File(
         cacheDir.path,
-        "amplituda.$extension"
+        "temp.$extension"
     )
     openInputStream(uri)?.use { inputStream ->
         outputFile.outputStream().use { outputStream ->

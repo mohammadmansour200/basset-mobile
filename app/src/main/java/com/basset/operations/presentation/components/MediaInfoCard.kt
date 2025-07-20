@@ -52,7 +52,7 @@ fun MediaInfoCard(
         label = "metadata_animation"
     ) { currentMetadata ->
         val uri = pickedFile.uri.toUri()
-        val durationFormatted = currentMetadata.durationMs?.formatDuration() ?: "--:--"
+        val durationFormatted = currentMetadata.durationMs?.formatDuration()
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -76,6 +76,7 @@ fun MediaInfoCard(
                         MediaType.AUDIO -> R.drawable.music_note
                         MediaType.IMAGE -> R.drawable.image
                         MediaType.VIDEO -> R.drawable.movie
+                        MediaType.PDF -> R.drawable.file
                     }
                     AsyncImage(
                         model = ImageRequest.Builder(context)
@@ -127,9 +128,9 @@ fun MediaInfoCard(
                         )
                     }
 
-                    if (pickedFile.mediaType != MediaType.IMAGE) {
+                    durationFormatted?.let {
                         Text(
-                            text = durationFormatted,
+                            text = it,
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(start = 12.dp)
                         )

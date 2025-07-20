@@ -27,11 +27,11 @@ class LocalMediaMetadataDataSource(
                     if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
                 }
             val ext = context.getUriExtension(uri)
-            if (mediaType == MediaType.IMAGE) {
+            if (mediaType == MediaType.IMAGE || mediaType == MediaType.PDF) {
                 return@withContext Metadata(
                     title = uri.getFileName(context),
                     fileSizeBytes = fileSizeBytes,
-                    imageData = uri,
+                    imageData = if (mediaType == MediaType.IMAGE) uri else null,
                     ext = ext
                 )
             }

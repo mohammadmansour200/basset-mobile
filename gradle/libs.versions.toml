@@ -4,6 +4,7 @@ amplituda = "2.3.0"
 coilCompose = "3.2.0"
 composeAudiowaveform = "1.1.1"
 composeColorPicker = "0.7.0"
+itext7Core = "8.0.5"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -25,6 +26,7 @@ kotlinxSerializationCore = "1.8.1"
 [libraries]
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
 compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPicker" }
+itext7-core = { module = "com.itextpdf:itext7-core", version.ref = "itext7Core" }
 litert = { module = "com.google.ai.edge.litert:litert", version.ref = "litert" }
 litert-support = { module = "com.google.ai.edge.litert:litert-support", version.ref = "litert" }
 litert-metadata = { module = "com.google.ai.edge.litert:litert-metadata", version.ref = "litert" }

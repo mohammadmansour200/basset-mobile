@@ -20,3 +20,10 @@ fun String.isImage(): Boolean {
     val mimeType = MimeTypeMap.getMimeTypeFromExtension(this)!!
     return mimeType.contains("image")
 }
+
+fun String.isPdf(): Boolean {
+    if (this.contains("/")) return this.contains("pdf")
+
+    val mimeType = MimeTypeMap.getMimeTypeFromExtension(this)!!
+    return mimeType.contains("pdf")
+}
