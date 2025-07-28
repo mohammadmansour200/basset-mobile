@@ -45,7 +45,7 @@ Keep in mind I wasn't able to test Basset across different screen resolutions an
 
 ## Contributing 🤝
 
-We welcome contributions! Please review our [Contribution Guidelines](https://github.com/mohammadmansour200/basset-mobile/blob/main/CONTRIBUTING.md) before submitting a pull request.
+We welcome contributions! Please review our [Contribution Guidelines](https://github.com/mohammadmansour200/basset-mobile/blob/master/CONTRIBUTING.md) before submitting a pull request.
 
 ## Localization 🌍
 
