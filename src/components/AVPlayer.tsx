@@ -1,7 +1,7 @@
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
-import { useIsFocused, useTheme } from "@react-navigation/native";
-import { useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import {useIsFocused, useTheme} from "@react-navigation/native";
+import {useRef, useState} from "react";
+import {useTranslation} from "react-i18next";
 import {
 	KeyboardAvoidingView,
 	Platform,
@@ -12,17 +12,18 @@ import {
 	View,
 	useWindowDimensions,
 } from "react-native";
-import Video, { type VideoRef } from "react-native-video";
-import { useAVStore } from "../stores/AVStore";
-import { useFilePathStore } from "../stores/filePathStore";
-import { getIsAudio } from "../utils/getIsAudio";
-import { getPercentage } from "../utils/getPercentage";
+import Video, {type VideoRef} from "react-native-video";
+import {useAVStore} from "../stores/AVStore";
+import {useFilePathStore} from "../stores/filePathStore";
+import {getIsAudio} from "../utils/getIsAudio";
+import {getPercentage} from "../utils/getPercentage";
 import formatTimestamp from "../utils/timestampFormatter";
 import unformatTimestamp from "../utils/timestampUnformatter";
 import AVControls from "./AVControls";
 import ExecuteBtn from "./ExecuteBtn";
 import FileNameInput from "./FileNameInput";
 import Seperator from "./Seperator";
+import {useActiveSwipeStore} from "../stores/activeSwipeStore";
 
 function AVPlayer() {
 	const [isPaused, setIsPaused] = useState(true);
@@ -32,10 +33,10 @@ function AVPlayer() {
 	]);
 	const [fileName, setFileName] = useState("");
 	const videoRef = useRef<VideoRef>(null);
-	const { t } = useTranslation();
+	const {t} = useTranslation();
 	const colors = useTheme().colors;
-	const { setAVDuration } = useAVStore();
-	const { inputFile } = useFilePathStore();
+	const {setAVDuration} = useAVStore();
+	const {inputFile} = useFilePathStore();
 	const screenIsFocused = useIsFocused();
 
 	const isAudio = getIsAudio(inputFile);
@@ -50,7 +51,7 @@ function AVPlayer() {
 						setAVCurrPosition(e.currentTime);
 					}}
 					paused={isPaused}
-					style={[styles.videoPlayer, { display: isAudio ? "none" : "flex" }]}
+					style={[styles.videoPlayer, {display: isAudio ? "none" : "flex"}]}
 					ref={videoRef}
 					viewType={1}
 					showNotificationControls
@@ -60,11 +61,11 @@ function AVPlayer() {
 						uri: inputFile?.uri,
 					}}
 				/>
-				<View style={{ alignItems: "center" }}>
+				<View style={{alignItems: "center"}}>
 					<Text
 						style={[
 							styles.outputDuration,
-							{ borderColor: colors.border, color: colors.text },
+							{borderColor: colors.border, color: colors.text},
 						]}
 					>
 						{t("tabs.cutOutputDuration")}:{" "}
@@ -88,7 +89,11 @@ function AVPlayer() {
 				<ExecuteBtn
 					fileName={fileName}
 					btnTitle={t("executeBtn.cutBtn")}
-					command={`-ss ${formatTimestamp(cutTimestamps[0])} -to ${formatTimestamp(cutTimestamps[1])} -i ${inputFile?.uri} -c copy`}
+					command={`-ss ${formatTimestamp(
+						cutTimestamps[0]
+					)} -to ${formatTimestamp(cutTimestamps[1])} -i ${
+						inputFile?.uri
+					} -c copy`}
 				/>
 			</KeyboardAvoidingView>
 		</ScrollView>
@@ -111,9 +116,10 @@ function TrimTimeline({
 	videoRef,
 	setAVCurrPosition,
 }: ITrimTimelineProps) {
-	const { AVDuration } = useAVStore();
+	const {AVDuration} = useAVStore();
 	const colors = useTheme().colors;
-	const { width } = useWindowDimensions();
+	const {width} = useWindowDimensions();
+	const {setActiveSwipe} = useActiveSwipeStore();
 
 	function onTimelineValuesChange(values: number[]) {
 		if (!videoRef) return;
@@ -165,6 +171,12 @@ function TrimTimeline({
 				strokeWidth={0.5}
 			/>
 			<MultiSlider
+				onValuesChangeStart={() => {
+					setActiveSwipe("trim");
+				}}
+				onValuesChangeFinish={() => {
+					setActiveSwipe(null);
+				}}
 				onValuesChange={onTimelineValuesChange}
 				min={0}
 				max={100}
@@ -206,10 +218,10 @@ function TrimTimeline({
 					textAlign="center"
 					style={[
 						styles.cutTimestampInput,
-						{ borderColor: colors.border, color: colors.text },
+						{borderColor: colors.border, color: colors.text},
 					]}
 				/>
-				<Text style={{ fontSize: 15, color: colors.text }}>:</Text>
+				<Text style={{fontSize: 15, color: colors.text}}>:</Text>
 				<TextInput
 					onChangeText={onEndTimestampInputChange}
 					defaultValue={formatTimestamp(cutTimestamps[1])}
@@ -217,7 +229,7 @@ function TrimTimeline({
 					cursorColor={colors.text}
 					style={[
 						styles.cutTimestampInput,
-						{ borderColor: colors.border, color: colors.text },
+						{borderColor: colors.border, color: colors.text},
 					]}
 				/>
 			</View>
