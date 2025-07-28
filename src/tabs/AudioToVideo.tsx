@@ -1,13 +1,13 @@
-import { useTheme } from "@react-navigation/native";
+import {useTheme} from "@react-navigation/native";
 import * as DocumentPicker from "expo-document-picker";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { G, Path, Svg } from "react-native-svg";
+import {useState} from "react";
+import {useTranslation} from "react-i18next";
+import {Pressable, StyleSheet, Text, View} from "react-native";
+import {G, Path, Svg} from "react-native-svg";
 import ExecuteBtn from "../components/ExecuteBtn";
 import FileNameInput from "../components/FileNameInput";
-import { useFilePathStore } from "../stores/filePathStore";
-import { getFileExt, getFileName } from "../utils/fileUtils";
+import {useFilePathStore} from "../stores/filePathStore";
+import {getFileExt, getFileName} from "../utils/fileUtils";
 
 function AudioToVideo() {
 	const [imageFilePath, setImageFilePath] = useState("");
@@ -15,9 +15,9 @@ function AudioToVideo() {
 
 	const colors = useTheme().colors;
 
-	const { inputFile } = useFilePathStore();
+	const {inputFile} = useFilePathStore();
 
-	const { t } = useTranslation();
+	const {t} = useTranslation();
 
 	async function onUploadImageBtnClick() {
 		const file = await DocumentPicker.getDocumentAsync({
@@ -32,21 +32,19 @@ function AudioToVideo() {
 	return (
 		<View style={styles.container}>
 			<Pressable
-				android_ripple={{ color: colors.text, radius: 105 }}
-				style={[styles.button, { backgroundColor: colors.border }]}
+				android_ripple={{color: colors.text, radius: 105}}
+				style={[styles.button, {backgroundColor: colors.border}]}
 				onPress={onUploadImageBtnClick}
 			>
 				{imageFilePath === "" ? (
 					<>
 						<ImageIcon />
-						<Text
-							style={{ fontWeight: "700", color: colors.text, fontSize: 15 }}
-						>
+						<Text style={{fontWeight: "700", color: colors.text, fontSize: 15}}>
 							{t("uploadPage.uploadFileLabel")}
 						</Text>
 					</>
 				) : (
-					<Text style={{ fontWeight: "500", color: "#3b82f6" }}>
+					<Text style={{fontWeight: "500", color: "#3b82f6"}}>
 						...{getFileName(imageFilePath).slice(20)}.
 						{getFileExt(imageFilePath)}
 					</Text>
@@ -58,7 +56,7 @@ function AudioToVideo() {
 				btnTitle={t("executeBtn.convertBtn")}
 				disabled={imageFilePath === ""}
 				outputFormat="mp4"
-				command={`-r 1 -loop 1 -i ${imageFilePath} -i ${inputFile?.uri} -acodec copy -r 1 -pix_fmt yuv420p -preset ultrafast -vf scale=-1:720 -tune stillimage -shortest`}
+				command={`-r 1 -loop 1 -i ${imageFilePath} -i ${inputFile?.uri} -c:a aac -b:a 192k -r 1 -pix_fmt yuv420p -preset ultrafast -vf scale="trunc(oh*a/2)*2:720" -tune stillimage -shortest`}
 			/>
 		</View>
 	);
