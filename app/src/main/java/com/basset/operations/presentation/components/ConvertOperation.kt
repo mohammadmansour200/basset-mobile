@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -207,11 +208,17 @@ fun ConvertOperation(
                                 snackbarHostState.showSnackbar(context.getString(R.string.gif_not_supported_err))
                             } else selectedImageUri = it
                         }
-                        Button(onClick = {
+                        Text(
+                            text = stringResource(R.string.still_image_label),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                        Button(modifier = Modifier.width(200.dp), onClick = {
                             launcher.launch("image/*")
                         }) {
                             Text(
-                                text = if (selectedImageUri == null) stringResource(R.string.choose_image_label) else stringResource(
+                                text = if (operationScreenState.outputAlbumArt == null) stringResource(
+                                    R.string.choose_image_label
+                                ) else stringResource(
                                     R.string.change_image_label
                                 )
                             )
@@ -235,6 +242,13 @@ fun ConvertOperation(
             }
         }
     }
+
+    OutputSettings(
+        onAction = { onAction(it) },
+        operationScreenState = operationScreenState,
+        isAudio = selectedFormat?.isAudio() == true,
+        snackbarHostState = snackbarHostState
+    )
 
     ExecuteOperationBtn(
         onAction = {

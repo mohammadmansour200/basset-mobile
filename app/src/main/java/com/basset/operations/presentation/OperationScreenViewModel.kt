@@ -10,10 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegKitConfig
-import com.arthenica.ffmpegkit.FFmpegSession
-import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback
-import com.arthenica.ffmpegkit.Log
-import com.arthenica.ffmpegkit.LogCallback
 import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
 import com.basset.operations.domain.BackgroundRemover
@@ -82,7 +78,6 @@ class OperationScreenViewModel(
             is OperationScreenAction.OnRemoveBackground -> {
                 safeExecute {
                     handleBgRemove(
-                        outputName = null,
                         outputExtension = _state.value.metadata.ext.toString(),
                         newBackground = action.background
                     )
@@ -94,6 +89,30 @@ class OperationScreenViewModel(
                     outputExtension = action.outputExtension,
                     image = action.image
                 )
+            }
+
+            is OperationScreenAction.OnSetOutputAlbumArt -> {
+                _state.update {
+                    it.copy(
+                        outputAlbumArt = action.album
+                    )
+                }
+            }
+
+            is OperationScreenAction.OnSetOutputAuthor -> {
+                _state.update {
+                    it.copy(
+                        outputAuthor = action.author
+                    )
+                }
+            }
+
+            is OperationScreenAction.OnSetOutputFilename -> {
+                _state.update {
+                    it.copy(
+                        outputFilename = action.filename
+                    )
+                }
             }
         }
     }
@@ -143,9 +162,18 @@ class OperationScreenViewModel(
     private suspend fun handleCut(start: Double, end: Double) {
         val inputPath =
             FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
+        val albumPath =
+            _state.value.outputAlbumArt?.let {
+                FFmpegKitConfig.getSafParameterForRead(
+                    appContext,
+                    it
+                )
+            }
+
+        val album =
+            if (_state.value.outputAlbumArt != null) "-i $albumPath -map 0:a -map 1:v -c copy -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
         runFFmpeg(
-            command = "-ss $start -to $end -i $inputPath -c copy",
-            outputName = null,
+            command = "-ss $start -to $end -i $inputPath $album -c copy",
             outputExtension = _state.value.metadata.ext.toString(),
         )
     }
@@ -182,13 +210,20 @@ class OperationScreenViewModel(
 
                 val inputPath =
                     FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
+                val albumPath =
+                    _state.value.outputAlbumArt?.let {
+                        FFmpegKitConfig.getSafParameterForRead(
+                            appContext,
+                            it
+                        )
+                    }
 
+                val albumArt =
+                    if (_state.value.outputAlbumArt != null) "-i $albumPath -map 0:a -map 1:v -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
                 val command =
-                    if (pickedFile.mediaType == MediaType.VIDEO) "-i $inputPath -b:v $videoCompressBitrate -b:a $audioCompressBitrate -preset ultrafast" else "-i $inputPath -b:a $audioCompressBitrate -preset ultrafast"
-
+                    if (pickedFile.mediaType == MediaType.VIDEO) "-i $inputPath -b:v $videoCompressBitrate -b:a $audioCompressBitrate -preset ultrafast" else "-i $inputPath $albumArt -b:a $audioCompressBitrate -preset ultrafast"
                 runFFmpeg(
                     command = command,
-                    outputName = null,
                     outputExtension = outputExt,
                 )
             }
@@ -196,7 +231,7 @@ class OperationScreenViewModel(
             MediaType.IMAGE -> {
                 mediaStoreManager.createMediaUri(
                     pickedUri,
-                    name = null,
+                    name = _state.value.outputFilename,
                     extension = outputExt
                 ).fold(onSuccess = { uri ->
                     if (uri == null) {
@@ -232,7 +267,7 @@ class OperationScreenViewModel(
             MediaType.PDF -> {
                 mediaStoreManager.createMediaUri(
                     pickedUri,
-                    name = null,
+                    name = _state.value.outputFilename,
                     extension = outputExt
                 ).fold(onSuccess = { uri ->
                     if (uri == null) {
@@ -257,14 +292,22 @@ class OperationScreenViewModel(
     }
 
     private suspend fun handleConvert(outputExtension: String) {
-        val outputName = null
         when (pickedFile.mediaType) {
             MediaType.VIDEO, MediaType.AUDIO -> {
                 val inputPath =
                     FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
+                val albumPath =
+                    _state.value.outputAlbumArt?.let {
+                        FFmpegKitConfig.getSafParameterForRead(
+                            appContext,
+                            it
+                        )
+                    }
+
+                val album =
+                    if (_state.value.outputAlbumArt != null) "-i $albumPath -map 0:a -map 1:v -c copy -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
                 runFFmpeg(
-                    command = "-i $inputPath",
-                    outputName = outputName,
+                    command = "-i $inputPath $album",
                     outputExtension = outputExtension
                 )
             }
@@ -272,7 +315,7 @@ class OperationScreenViewModel(
             else -> {
                 mediaStoreManager.createMediaUri(
                     pickedUri,
-                    name = outputName,
+                    name = _state.value.outputFilename,
                     extension = outputExtension
                 ).fold(onSuccess = { uri ->
                     if (uri == null) {
@@ -313,17 +356,15 @@ class OperationScreenViewModel(
 
         runFFmpeg(
             command = "-i $inputImagePath -i $inputAudioPath -pix_fmt yuv420p -tune stillimage -vf \"scale=1280:720,pad=ceil(iw/2)*2:ceil(ih/2)*2\"",
-            null,
             outputExtension
         )
     }
 
     private suspend fun runFFmpeg(
         command: String,
-        outputName: String?,
         outputExtension: String,
     ) = withContext(Dispatchers.IO) {
-        mediaStoreManager.createMediaUri(pickedUri, outputName, outputExtension)
+        mediaStoreManager.createMediaUri(pickedUri, _state.value.outputFilename, outputExtension)
             .fold(onSuccess = { uri ->
                 if (uri == null) {
                     handleError(OperationError.ERROR_INVALID_FORMAT, null, null)
@@ -335,44 +376,44 @@ class OperationScreenViewModel(
                     "format: ${outputExtension}, uri: $uri"
                 )
                 val outputPath = FFmpegKitConfig.getSafParameterForWrite(appContext, uri)
+                val titleMetadata =
+                    if (_state.value.outputFilename != null) "-metadata title=\"${_state.value.outputFilename}\"" else ""
+                val authorMetadata =
+                    if (_state.value.outputAuthor != null) "-metadata artist=\"${_state.value.outputAuthor}\"" else ""
 
                 FFmpegKit.executeAsync(
-                    "-y -protocol_whitelist saf,file,crypto $command $outputPath",
-                    object : FFmpegSessionCompleteCallback {
-                        override fun apply(session: FFmpegSession) {
-                            val returnCode = session.returnCode
-                            val logs = session.allLogsAsString
+                    "-y -protocol_whitelist saf,file,crypto $command $titleMetadata $authorMetadata $outputPath",
+                    { session ->
+                        val returnCode = session.returnCode
+                        val logs = session.allLogsAsString
 
-                            viewModelScope.launch {
-                                when {
-                                    returnCode.isValueSuccess -> {
-                                        handleSuccess(uri)
-                                    }
+                        viewModelScope.launch {
+                            when {
+                                returnCode.isValueSuccess -> {
+                                    handleSuccess(uri)
+                                }
 
-                                    returnCode.isValueCancel -> {
-                                        mediaStoreManager.deleteMedia(uri)
-                                        _state.update {
-                                            it.copy(
-                                                isOperating = false,
-                                            )
-                                        }
+                                returnCode.isValueCancel -> {
+                                    mediaStoreManager.deleteMedia(uri)
+                                    _state.update {
+                                        it.copy(
+                                            isOperating = false,
+                                        )
                                     }
+                                }
 
-                                    returnCode.isValueError -> {
-                                        val parsedError = parseFfmpegError(logs)
-                                        handleError(parsedError, null, uri)
-                                    }
+                                returnCode.isValueError -> {
+                                    val parsedError = parseFfmpegError(logs)
+                                    handleError(parsedError, null, uri)
                                 }
                             }
                         }
                     },
-                    object : LogCallback {
-                        override fun apply(log: Log?) {
-                            android.util.Log.d("ffmpeg-kit", log?.message.toString())
-                            val durationMs = _state.value.metadata.durationMs ?: 0L
-                            val progress = log?.progress(durationMs.div(1000))
-                            if (progress != null) _state.update { it.copy(progress = progress) }
-                        }
+                    { log ->
+                        android.util.Log.d("ffmpeg-kit", log?.message.toString())
+                        val durationMs = _state.value.metadata.durationMs ?: 0L
+                        val progress = log?.progress(durationMs.div(1000))
+                        if (progress != null) _state.update { it.copy(progress = progress) }
                     },
                     null
                 )
@@ -383,7 +424,6 @@ class OperationScreenViewModel(
     }
 
     private suspend fun handleBgRemove(
-        outputName: String?,
         outputExtension: String,
         newBackground: Any?
     ) =
@@ -391,7 +431,7 @@ class OperationScreenViewModel(
             _state.update { it.copy(isOperating = true) }
             mediaStoreManager.createMediaUri(
                 pickedUri,
-                outputName,
+                _state.value.outputFilename,
                 outputExtension
             ).fold(onSuccess = { uri ->
                 if (uri == null) {

@@ -176,11 +176,13 @@ fun BgRemoveOperation(
                                     snackbarHostState.showSnackbar(context.getString(R.string.gif_not_supported_err))
                                 } else selectedImageUri = it
                             }
-                            Button(onClick = {
+                            Button(modifier = Modifier.width(200.dp), onClick = {
                                 launcher.launch("image/*")
                             }) {
                                 Text(
-                                    text = if (selectedImageUri == null) stringResource(R.string.choose_image_label) else stringResource(
+                                    text = if (operationScreenState.outputAlbumArt == null) stringResource(
+                                        R.string.choose_image_label
+                                    ) else stringResource(
                                         R.string.change_image_label
                                     )
                                 )
@@ -249,6 +251,12 @@ fun BgRemoveOperation(
             }
         }
     }
+
+    OutputSettings(
+        onAction = { onAction(it) },
+        operationScreenState = operationScreenState,
+        isAudio = false
+    )
 
     ExecuteOperationBtn(
         buttonLabel = stringResource(R.string.operation_remove_background_btn),

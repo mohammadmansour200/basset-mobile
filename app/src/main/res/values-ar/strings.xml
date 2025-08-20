@@ -51,6 +51,7 @@
 
     <string name="no_format_selected_err">رجاءً اختر صيغة المطلوبة</string>
     <string name="format_card_title">الصيغة</string>
+    <string name="still_image_label">الصورة الثابتة</string>
     <string name="selected_stillimage_content_desc">الصورة الثابتة المختارة</string>
 
     <string name="no_compress_selected_err">رجاءً اختر درجة الضغط المطلوبة</string>
@@ -59,9 +60,14 @@
     <string name="rate_option_medium">متوسطة</string>
     <string name="rate_option_high">عالية</string>
 
+    <string name="output_settings_title">إعدادات الحفظ</string>
+    <string name="output_settings_media_title">اسم الملف</string>
+    <string name="output_settings_media_author">المؤلف</string>
+    <string name="output_settings_media_album">صورة الألبوم</string>
+
     <string name="choose_image_label">اختر صورة</string>
     <string name="change_image_label">غير الصورة</string>
-    <string name="selected_background_image_content_desc">صورة الخلفية المختارة</string>
+    <string name="selected_background_image_content_desc">الصورة المختارة</string>
     <string name="please_select_an_image_err">رجاءً اختر صورة</string>
     <string name="gif_not_supported_err">مع الأسف الشديد صيغة GIF غير مدعومة حاليًا</string>
 

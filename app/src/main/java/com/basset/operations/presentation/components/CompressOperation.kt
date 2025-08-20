@@ -112,6 +112,13 @@ fun CompressOperation(
         }
     }
 
+    OutputSettings(
+        onAction = { onAction(it) },
+        operationScreenState = operationScreenState,
+        isAudio = pickedFile.mediaType == MediaType.AUDIO,
+        snackbarHostState = snackbarHostState
+    )
+
     ExecuteOperationBtn(
         onAction = {
             if (selectedCompressRate == null) {

@@ -11,6 +11,9 @@ data class OperationScreenState(
     val progress: Float? = null,
     val outputedFile: Uri? = null,
     val metadata: Metadata = Metadata(),
+    val outputFilename: String? = null,
+    val outputAuthor: String? = null,
+    val outputAlbumArt: Uri? = null,
     val outputedFileMetadata: Metadata = Metadata(),
     val operationError: OperationError? = null,
     val detailedErrorMessage: String? = null

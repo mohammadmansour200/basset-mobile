@@ -49,6 +49,7 @@ import com.basset.core.presentation.utils.formatDuration
 import com.basset.operations.presentation.OperationScreenAction
 import com.basset.operations.presentation.OperationScreenState
 import com.basset.operations.presentation.components.ExecuteOperationBtn
+import com.basset.operations.presentation.components.OutputSettings
 import com.basset.operations.presentation.cut_operation.components.PlayPauseButton
 import com.basset.operations.presentation.cut_operation.components.PlaybackSpeedPopUpButton
 import com.basset.operations.presentation.cut_operation.components.RangeSelectorField
@@ -189,6 +190,13 @@ fun CutOperation(
             state = state
         )
     }
+
+    OutputSettings(
+        onAction = { onAction(it) },
+        operationScreenState = operationScreenState,
+        isAudio = pickedFile.mediaType == MediaType.AUDIO,
+        snackbarHostState = snackbarHostState
+    )
 
     ExecuteOperationBtn(
         onAction = {

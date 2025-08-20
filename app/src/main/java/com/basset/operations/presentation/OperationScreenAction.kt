@@ -17,4 +17,10 @@ sealed interface OperationScreenAction {
         OperationScreenAction
 
     data class OnRemoveBackground(val background: Any?) : OperationScreenAction
+
+    data class OnSetOutputFilename(val filename: String) : OperationScreenAction
+
+    data class OnSetOutputAuthor(val author: String) : OperationScreenAction
+
+    data class OnSetOutputAlbumArt(val album: Uri) : OperationScreenAction
 }

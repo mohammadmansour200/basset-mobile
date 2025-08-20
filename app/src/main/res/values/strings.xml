@@ -50,6 +50,7 @@
 
     <string name="no_format_selected_err">Please select a format</string>
     <string name="format_card_title">Format</string>
+    <string name="still_image_label">Still Image</string>
     <string name="selected_stillimage_content_desc">Selected Still Image</string>
 
     <string name="no_compress_selected_err">Please select a Compression Rate</string>
@@ -59,9 +60,14 @@
     <string name="rate_option_medium">Medium</string>
     <string name="rate_option_high">High</string>
 
+    <string name="output_settings_title">Output Settings</string>
+    <string name="output_settings_media_title">Filename</string>
+    <string name="output_settings_media_author">Author</string>
+    <string name="output_settings_media_album">Album Image</string>
+
     <string name="choose_image_label">Choose Image</string>
     <string name="change_image_label">Change Image</string>
-    <string name="selected_background_image_content_desc">Selected Background Image</string>
+    <string name="selected_background_image_content_desc">Selected Image</string>
     <string name="please_select_an_image_err">Please select an image</string>
     <string name="gif_not_supported_err">Sorry, GIFs aren\'t supported currently.</string>
 
