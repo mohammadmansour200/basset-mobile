@@ -1,9 +1,14 @@
 package com.basset.operations.presentation
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
+import android.os.Build
+import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
@@ -24,6 +29,7 @@ import com.basset.operations.utils.compressPdf
 import com.basset.operations.utils.toBitmap
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +56,12 @@ class OperationScreenViewModel(
     private val _events = Channel<OperationScreenEvent>()
     val events = _events.receiveAsFlow()
 
+    private val deferred = CompletableDeferred<Boolean>()
+
     private val pickedUri = pickedFile.uri.toUri()
+
+    private val isAndroidQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
 
     init {
         viewModelScope.launch {
@@ -151,6 +162,24 @@ class OperationScreenViewModel(
                     operationError = null,
                 )
             }
+
+            val isWriteGranted =
+                ContextCompat.checkSelfPermission(
+                    appContext,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) ==
+                        PackageManager.PERMISSION_GRANTED
+
+            if (!isWriteGranted && !isAndroidQOrLater) {
+                _events.send(OperationScreenEvent.PermissionRequired(deferred))
+                val granted = deferred.await()
+
+                if (!granted) {
+                    handleError(operationError = OperationError.ERROR_WRITING_OUTPUT, null, null)
+                    return@launch
+                }
+            }
+
             try {
                 operationBlock()
             } catch (e: Throwable) {
@@ -160,6 +189,9 @@ class OperationScreenViewModel(
     }
 
     private suspend fun handleCut(start: Double, end: Double) {
+        val outputExt =
+            _state.value.metadata.ext.toString()
+
         val inputPath =
             FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
         val albumPath =
@@ -171,10 +203,10 @@ class OperationScreenViewModel(
             }
 
         val album =
-            if (_state.value.outputAlbumArt != null) "-i $albumPath -map 0:a -map 1:v -c copy -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
+            if (_state.value.outputAlbumArt != null && outputExt == "mp3") "-i $albumPath -map 0:a -map 1:v -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
         runFFmpeg(
             command = "-ss $start -to $end -i $inputPath $album -c copy",
-            outputExtension = _state.value.metadata.ext.toString(),
+            outputExtension = outputExt,
         )
     }
 
@@ -219,7 +251,7 @@ class OperationScreenViewModel(
                     }
 
                 val albumArt =
-                    if (_state.value.outputAlbumArt != null) "-i $albumPath -map 0:a -map 1:v -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
+                    if (_state.value.outputAlbumArt != null && outputExt == "mp3") "-i $albumPath -map 0:a -map 1:v -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
                 val command =
                     if (pickedFile.mediaType == MediaType.VIDEO) "-i $inputPath -b:v $videoCompressBitrate -b:a $audioCompressBitrate -preset ultrafast" else "-i $inputPath $albumArt -b:a $audioCompressBitrate -preset ultrafast"
                 runFFmpeg(
@@ -305,7 +337,7 @@ class OperationScreenViewModel(
                     }
 
                 val album =
-                    if (_state.value.outputAlbumArt != null) "-i $albumPath -map 0:a -map 1:v -c copy -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
+                    if (_state.value.outputAlbumArt != null && outputExtension == "mp3") "-i $albumPath -map 0:a -map 1:v -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
                 runFFmpeg(
                     command = "-i $inputPath $album",
                     outputExtension = outputExtension
@@ -371,11 +403,14 @@ class OperationScreenViewModel(
                     return@withContext
                 }
 
-                android.util.Log.d(
+                Log.d(
                     "ffmpeg-kit",
                     "format: ${outputExtension}, uri: $uri"
                 )
-                val outputPath = FFmpegKitConfig.getSafParameterForWrite(appContext, uri)
+                val outputPath = if (isAndroidQOrLater) FFmpegKitConfig.getSafParameterForWrite(
+                    appContext,
+                    uri
+                ) else uri.path
                 val titleMetadata =
                     if (_state.value.outputFilename != null) "-metadata title=\"${_state.value.outputFilename}\"" else ""
                 val authorMetadata =

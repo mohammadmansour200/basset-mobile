@@ -3,7 +3,9 @@ package com.basset.operations.data.media
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
+import androidx.core.net.toFile
 import com.basset.core.domain.model.MediaType
 import com.basset.core.utils.removeLastNchars
 import com.basset.operations.domain.MediaMetadataDataSource
@@ -61,14 +63,17 @@ class LocalMediaMetadataDataSource(
     override suspend fun loadCompactMetadata(
         uri: Uri,
     ): Metadata = withContext(Dispatchers.IO) {
-        val fileSizeBytes = context.contentResolver
+        val isAndroidQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+        val fileSizeBytes = if (isAndroidQOrLater) context.contentResolver
             .query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)
             ?.use { cursor ->
                 val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
                 cursor.moveToFirst()
                 if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
-            }
-        val ext = context.getUriExtension(uri)
+            } else uri.toFile().length()
+        
+        val ext = if (isAndroidQOrLater) context.getUriExtension(uri) else uri.toFile().extension
 
         Metadata(
             fileSizeBytes = fileSizeBytes,

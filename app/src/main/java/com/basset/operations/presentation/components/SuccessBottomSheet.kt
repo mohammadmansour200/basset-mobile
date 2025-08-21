@@ -2,6 +2,7 @@ package com.basset.operations.presentation.components
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.text.format.Formatter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import com.basset.R
 import com.basset.core.domain.model.OperationType
 import com.basset.core.utils.MimeTypeMap
@@ -104,9 +107,18 @@ fun SuccessBottomSheet(
                 .padding(horizontal = 16.dp),
             onClick = {
                 outputedFile?.let {
+                    val isAndroidQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
                     val sendIntent = Intent().apply {
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_STREAM, it)
+                        putExtra(
+                            Intent.EXTRA_STREAM,
+                            if (isAndroidQOrLater) it else FileProvider.getUriForFile(
+                                context,
+                                "${context.packageName}.fileprovider",
+                                it.toFile()
+                            )
+                        )
                         type = MimeTypeMap.getMimeTypeFromExtension(outputedFileMetadata.ext ?: "")
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }

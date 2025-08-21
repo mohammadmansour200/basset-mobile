@@ -6,7 +6,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
+import androidx.core.net.toUri
 import com.basset.core.utils.MimeTypeMap
 import com.basset.core.utils.isAudio
 import com.basset.core.utils.isImage
@@ -16,6 +18,7 @@ import com.basset.operations.domain.MediaStoreManager
 import com.basset.operations.utils.getFileName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.io.IOException
 
 class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
@@ -35,119 +38,102 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
 
             if (isAndroidQOrLater) {
                 contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1)
-            }
 
-            when {
-                extension.isAudio() -> {
-                    val collectionUri = if (isAndroidQOrLater) {
-                        MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    } else {
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                    }
-
-                    contentValues.put(
-                        MediaStore.Audio.Media.DISPLAY_NAME,
-                        displayName
-                    )
-
-                    contentValues.put(MediaStore.Audio.Media.MIME_TYPE, mimeType)
-
-                    if (isAndroidQOrLater) {
+                when {
+                    extension.isAudio() -> {
+                        val collectionUri =
+                            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                        contentValues.put(
+                            MediaStore.Audio.Media.DISPLAY_NAME,
+                            displayName
+                        )
+                        contentValues.put(MediaStore.Audio.Media.MIME_TYPE, mimeType)
                         contentValues.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music")
-                    }
-                    return@withContext Result.success(
-                        contentResolver.insert(
-                            collectionUri,
-                            contentValues
+
+                        return@withContext Result.success(
+                            contentResolver.insert(
+                                collectionUri,
+                                contentValues
+                            )
                         )
-                    )
-                }
-
-                extension.isImage() -> {
-                    val collectionUri = if (isAndroidQOrLater) {
-                        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    } else {
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     }
 
-                    contentValues.put(
-                        MediaStore.Images.Media.DISPLAY_NAME,
-                        displayName
-                    )
-
-                    contentValues.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
-
-                    if (isAndroidQOrLater) {
+                    extension.isImage() -> {
+                        val collectionUri =
+                            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                        contentValues.put(
+                            MediaStore.Images.Media.DISPLAY_NAME,
+                            displayName
+                        )
+                        contentValues.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
                         contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures")
-                    }
 
-                    return@withContext Result.success(
-                        contentResolver.insert(
-                            collectionUri,
-                            contentValues
+                        return@withContext Result.success(
+                            contentResolver.insert(
+                                collectionUri,
+                                contentValues
+                            )
                         )
-                    )
-                }
-
-                extension.isVideo() -> {
-                    val collectionUri = if (isAndroidQOrLater) {
-                        MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    } else {
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                     }
 
-                    contentValues.put(
-                        MediaStore.Video.Media.DISPLAY_NAME,
-                        displayName
-                    )
-
-                    contentValues.put(
-                        MediaStore.Video.Media.MIME_TYPE,
-                        mimeType
-                    )
-
-                    if (isAndroidQOrLater) {
+                    extension.isVideo() -> {
+                        val collectionUri =
+                            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                        contentValues.put(
+                            MediaStore.Video.Media.DISPLAY_NAME,
+                            displayName
+                        )
+                        contentValues.put(
+                            MediaStore.Video.Media.MIME_TYPE,
+                            mimeType
+                        )
                         contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies")
-                    }
 
-                    return@withContext Result.success(
-                        contentResolver.insert(
-                            collectionUri,
-                            contentValues
+                        return@withContext Result.success(
+                            contentResolver.insert(
+                                collectionUri,
+                                contentValues
+                            )
                         )
-                    )
-                }
-
-                extension.isPdf() -> {
-                    val collectionUri = if (isAndroidQOrLater) {
-                        MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                    } else {
-                        MediaStore.Files.getContentUri("external")
                     }
 
-                    contentValues.put(
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        displayName
-                    )
-
-                    contentValues.put(
-                        MediaStore.Files.FileColumns.MIME_TYPE,
-                        mimeType
-                    )
-
-                    if (isAndroidQOrLater) {
+                    extension.isPdf() -> {
+                        val collectionUri =
+                            MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                        contentValues.put(
+                            MediaStore.Files.FileColumns.DISPLAY_NAME,
+                            displayName
+                        )
+                        contentValues.put(
+                            MediaStore.Files.FileColumns.MIME_TYPE,
+                            mimeType
+                        )
                         contentValues.put(MediaStore.Files.FileColumns.RELATIVE_PATH, "Documents")
+
+                        return@withContext Result.success(
+                            contentResolver.insert(
+                                collectionUri,
+                                contentValues
+                            )
+                        )
                     }
 
-                    return@withContext Result.success(
-                        contentResolver.insert(
-                            collectionUri,
-                            contentValues
-                        )
-                    )
+                    else -> throw IllegalArgumentException("Invalid type")
                 }
+            } else {
+                val directory = when {
+                    extension.isAudio() -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+                    extension.isImage() -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    extension.isVideo() -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+                    extension.isPdf() -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                    else -> null
+                }
+                val file = File(directory, displayName)
+                file.createNewFile()
 
-                else -> return@withContext Result.failure(Exception("Invalid file format"))
+                return@withContext Result.success(
+                    file.toUri()
+                )
             }
         }
 
@@ -192,6 +178,11 @@ class LocalMediaStoreManager(private val context: Context) : MediaStoreManager {
 
     override suspend fun deleteMedia(uri: Uri): Unit =
         withContext(Dispatchers.IO) {
-            context.contentResolver.delete(uri, null, null)
+            if (isAndroidQOrLater) {
+                context.contentResolver.delete(uri, null, null)
+            } else {
+                val file = File(uri.path!!)
+                file.delete()
+            }
         }
 }

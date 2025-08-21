@@ -10,7 +10,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.basset.kotlin"
+        applicationId = "com.basset"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

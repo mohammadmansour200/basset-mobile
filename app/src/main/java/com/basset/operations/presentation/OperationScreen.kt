@@ -1,5 +1,8 @@
 package com.basset.operations.presentation
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +50,7 @@ import com.basset.operations.presentation.components.StatusBottomSheetContent
 import com.basset.operations.presentation.components.StatusBottomSheetType
 import com.basset.operations.presentation.utils.ObserveAsEvents
 import com.basset.ui.theme.AppTheme
+import kotlinx.coroutines.CompletableDeferred
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -61,22 +65,33 @@ fun OperationScreen(
         koinViewModel(parameters = { parametersOf(pickedFile) })
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    var lastDeferred by remember { mutableStateOf<CompletableDeferred<Boolean>?>(null) }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        lastDeferred?.complete(granted)
+    }
 
     var bottomSheetType: StatusBottomSheetType? by remember { mutableStateOf(null) }
 
     ObserveAsEvents(events = viewModel.events) {
-        bottomSheetType = when (it) {
+        when (it) {
             OperationScreenEvent.Error -> {
-                StatusBottomSheetType.ERROR
+                bottomSheetType = StatusBottomSheetType.ERROR
             }
 
             OperationScreenEvent.Success -> {
-                StatusBottomSheetType.SUCCESS
+                bottomSheetType = StatusBottomSheetType.SUCCESS
+            }
+
+            is OperationScreenEvent.PermissionRequired -> {
+                lastDeferred = it.deferred
+                permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
