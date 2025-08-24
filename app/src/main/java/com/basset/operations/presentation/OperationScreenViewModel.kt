@@ -387,7 +387,7 @@ class OperationScreenViewModel(
             FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
 
         runFFmpeg(
-            command = "-i $inputImagePath -i $inputAudioPath -pix_fmt yuv420p -tune stillimage -vf \"scale=1280:720,pad=ceil(iw/2)*2:ceil(ih/2)*2\"",
+            command = "-i $inputImagePath -i $inputAudioPath -c:v libx264 -c:a aac -pix_fmt yuv420p -tune stillimage -vf \"scale=1280:-1,pad=ceil(iw/2)*2:ceil(ih/2)*2\"",
             outputExtension
         )
     }
