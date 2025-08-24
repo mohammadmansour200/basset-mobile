@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Basset</string>
-
     <string name="more_options">More options</string>
     <string name="file_upload_fab">Upload file</string>
     <string name="app_logo">App\'s logo</string>
+    <string name="hint_1">Formats determine how files are saved. Each format has its own distinguishing features in terms of quality, file size, or compatibility with applications; anyways, I recommend using mp4, mp3 and png unless you have a different purpose.</string>
+    <string name="hint_2">All operations are performed internally using your device, without the need of internet connection, and no data of any kind is collected.</string>
+    <string name="hint_3">سبحان الله وبحمده، سبحان الله العظيم</string>
+    <string name="hint_4">اللهم صلِّ وسلم على نبينا محمد</string>
     <string name="settings_menu_item">Settings</string>
     <string name="about_menu_item">About</string>
 
@@ -12,11 +15,8 @@
     <string name="settings_theme_system_option">System default</string>
     <string name="settings_theme_light_option">Light</string>
     <string name="settings_theme_dark_option">Dark</string>
-
     <string name="settings_action_toast">Reopen app to see changes</string>
-
-    <string name="settings_dynamic_color_label">Personalize colors (Dynamic Colors)</string>
-
+    <string name="settings_dynamic_color_label">Match device colors</string>
     <string name="settings_lang_label">App Language</string>
     <string name="settings_lang_alert_title">Choose language</string>
 
@@ -34,8 +34,8 @@
     <string name="playpause_button_play">Play</string>
     <string name="playpause_button_pause">Pause</string>
     <string name="playback_speed">Playback Speed</string>
-    <string name="start_time">Start of Selection</string>
-    <string name="end_time">End of Selection</string>
+    <string name="start_time">Start</string>
+    <string name="end_time">End</string>
     <string name="error_media_preview_loading">Failed to load timeline preview.</string>
     <string name="error_wrong_start_cut_range_position">Start of selection must be before end of selection.</string>
     <string name="error_wrong_end_cut_range_position">End of selection must be after start of selection.</string>
@@ -61,7 +61,7 @@
     <string name="rate_option_high">High</string>
 
     <string name="output_settings_title">Output Settings</string>
-    <string name="output_settings_media_title">Filename</string>
+    <string name="output_settings_media_title">Title</string>
     <string name="output_settings_media_author">Author</string>
     <string name="output_settings_media_album">Album Image</string>
 

@@ -3,6 +3,10 @@
     <string name="app_name">بسيط</string>
     <string name="more_options">المزيد من الخيارات</string>
     <string name="file_upload_fab">رفع الملف</string>
+    <string name="hint_1">تحدد الصيغة كيف يتم حفظ الملف. كل صيغة ولها ما يميزها من حيث الجودة، حجم الملف، أو التوافق مع تطبيقات معينة؛ على كل حال: أنصح باستخدام mp4 للفيديوهات وmp3 للصوتيات وpng للصور إلا إذا كان لك غرض آخر.</string>
+    <string name="hint_2">كل العمليات تتم داخليًا باستخدام جهازك، وبلا حاجة للاتصال بالإنترنت، ولا يتم جمع أي شكل من أشكال البيانات.</string>
+    <string name="hint_3">سبحان الله وبحمده، سبحان الله العظيم</string>
+    <string name="hint_4">اللهم صلِّ وسلم على نبينا محمد</string>
     <string name="app_logo">شعار التطبيق</string>
     <string name="settings_menu_item">الإعدادات</string>
     <string name="about_menu_item">عن التطبيق</string>
@@ -12,11 +16,8 @@
     <string name="settings_theme_system_option">الوضع الافتراضي للنظام</string>
     <string name="settings_theme_light_option">فاتح</string>
     <string name="settings_theme_dark_option">داكن</string>
-
     <string name="settings_action_toast">أعد تشغيل التطبيق لتظهر التغييرات</string>
-
-    <string name="settings_dynamic_color_label">تخصيص الألوان (الألوان الديناميكية)</string>
-
+    <string name="settings_dynamic_color_label">مطابقة ألوان الجهاز</string>
     <string name="settings_lang_label">لغة التطبيق</string>
     <string name="settings_lang_alert_title">المظهر</string>
 
@@ -35,8 +36,8 @@
     <string name="playpause_button_play">تشغيل</string>
     <string name="playpause_button_pause">إيقاف</string>
     <string name="playback_speed">سرعة التشغيل</string>
-    <string name="start_time">بداية التحديد</string>
-    <string name="end_time">نهاية التحديد</string>
+    <string name="start_time">البداية</string>
+    <string name="end_time">النهاية</string>
     <string name="error_media_preview_loading">فشل في تحميل معاينة المخطط الزمني.</string>
     <string name="error_wrong_start_cut_range_position">يجب أن يكون بداية التحديد قبل نهاية التحديد.</string>
     <string name="error_wrong_end_cut_range_position">يجب أن يكون نهاية التحديد بعد بداية التحديد.</string>

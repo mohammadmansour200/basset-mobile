@@ -52,6 +52,7 @@ import com.basset.core.domain.CoreConstants.VIDEO_MIME_TYPES
 import com.basset.core.navigation.OperationRoute
 import com.basset.core.presentation.components.IconWithTooltip
 import com.basset.home.presentation.components.BottomSheetType
+import com.basset.home.presentation.components.HintCard
 import com.basset.home.presentation.components.OperationsButtons
 import com.basset.home.presentation.components.SheetContent
 import com.basset.ui.theme.AppTheme
@@ -148,6 +149,7 @@ fun HomeScreen(
                 tint = accentColor,
                 modifier = Modifier.size(200.dp)
             )
+            HintCard()
         }
 
         pickedFile?.let {
