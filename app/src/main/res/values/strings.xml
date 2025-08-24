@@ -20,6 +20,12 @@
     <string name="settings_lang_label">App Language</string>
     <string name="settings_lang_alert_title">Choose language</string>
 
+    <string name="about_email_title">Contact Me</string>
+    <string name="about_email_description">Send feedback, report bugs, or ask questions via email</string>
+    <string name="about_github_title">Source Code</string>
+    <string name="about_github_description">Licensed under GNU GPLv3; You can use, study, share, and improve the source code at your will.</string>
+    <string name="about_prayer_note">Don’t forget to pray for us and our parents.</string>
+
     <string name="operation_alert_title">Choose operation</string>
     <string name="operation_compress">Compress</string>
     <string name="operation_compress_btn">Compress</string>

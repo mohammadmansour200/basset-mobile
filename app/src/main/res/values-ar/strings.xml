@@ -21,6 +21,12 @@
     <string name="settings_lang_label">لغة التطبيق</string>
     <string name="settings_lang_alert_title">المظهر</string>
 
+    <string name="about_email_title">تواصل معي</string>
+    <string name="about_email_description">أرسل الملاحظات أو تقارير الأعطال أو الاستفسارات عبر البريد الإلكتروني</string>
+    <string name="about_github_title">الكود المصدري</string>
+    <string name="about_github_description">مرخص بموجب رخصة GNU GPLv3؛ يمكنك استخدام الكود المصدري، دراسته، مشاركته، وتحسينه بحرية.</string>
+    <string name="about_prayer_note">لا تنسوا الدعاء لنا ولوالدينا</string>
+
     <string name="operation_alert_title">اختيار العملية</string>
     <string name="operation_compress">ضغط (تقليل المساحة)</string>
     <string name="operation_compress_btn">ضغط</string>
