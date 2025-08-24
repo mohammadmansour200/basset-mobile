@@ -490,13 +490,13 @@ class OperationScreenViewModel(
                 when (newBackground) {
                     is HsvColor -> canvas.drawColor(newBackground.toColorInt())
                     is Uri -> {
-                        val backgroundBitmap = newBackground.toBitmap(
+                        val newBackgroundBitmap = newBackground.toBitmap(
                             targetWidth = foregroundBitmap.width,
                             targetHeight = foregroundBitmap.height,
                             context = appContext
                         )
                         canvas.drawBitmap(
-                            backgroundBitmap,
+                            newBackgroundBitmap,
                             0f,
                             0f,
                             null
@@ -516,7 +516,7 @@ class OperationScreenViewModel(
                     }
 
                     else -> {
-                        if (newBackground != null) RuntimeException("Background can only be HsvColor, Uri and null")
+                        if (newBackground != null) throw RuntimeException("Background can only be HsvColor, Uri and null")
                     }
                 }
 
