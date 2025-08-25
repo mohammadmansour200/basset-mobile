@@ -9,6 +9,15 @@ android {
     namespace = "com.basset"
     compileSdk = 36
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getenv("SIGNING_KEYSTORE_PATH") ?: "keystore.jks")
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+        }
+    }
+
     defaultConfig {
         applicationId = "com.basset.app"
         minSdk = 24
@@ -22,10 +31,6 @@ android {
             localeFilters += listOf("en", "ar")
             noCompress += listOf("tflite")
         }
-
-        ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
-        }
     }
 
     buildTypes {
@@ -35,19 +40,41 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
         mlModelBinding = true
         buildConfig = true
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk = false
+        }
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val abiFilter = outputImpl.getFilter(com.android.build.OutputFile.ABI)
+
+            outputImpl.outputFileName = "basset-${abiFilter}_v$versionName.apk"
+        }
     }
 }
 
