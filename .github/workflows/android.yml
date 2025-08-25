@@ -30,11 +30,6 @@ jobs:
           echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
         shell: bash
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew build
-
       - name: Set environment variables for signing
         run: |
           echo "SIGNING_KEYSTORE_PATH=$(pwd)/keystore.jks" >> $GITHUB_ENV
@@ -43,7 +38,9 @@ jobs:
           echo "SIGNING_STORE_PASSWORD=${{ secrets.SIGNING_STORE_PASSWORD }}" >> $GITHUB_ENV
         shell: bash
 
-      - name: Build release APKs (all ABIs + universal)
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build release APKs
         run: ./gradlew clean assembleRelease
 
       - name: Upload APKs to GitHub Release
