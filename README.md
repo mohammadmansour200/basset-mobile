@@ -17,9 +17,7 @@ Simplicity and ease ✨ - Speed ⚡ - Privacy 🔏
 
 ## Demo 📷
 
-<img src="https://i.imgur.com/cJiiX1w.png" width=300> <img src="https://i.imgur.com/VKgYFky.png" width=300>
-<img src="https://i.imgur.com/52nOKoG.png" width=300>
-<img src="https://i.imgur.com/3IDcuWR.png" width=300>
+<img src="https://i.imgur.com/kaJQdo6.png" width=300> <img src="https://i.imgur.com/tpkt7ui.png" width=300> <img src="https://i.imgur.com/KQM132x.png" width=300>
 
 ## Features 🌟
 
