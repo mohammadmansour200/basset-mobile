@@ -76,7 +76,6 @@ fun MediaInfoCard(
                         MediaType.AUDIO -> R.drawable.music_note
                         MediaType.IMAGE -> R.drawable.image
                         MediaType.VIDEO -> R.drawable.movie
-                        MediaType.PDF -> R.drawable.file
                     }
                     AsyncImage(
                         model = ImageRequest.Builder(context)

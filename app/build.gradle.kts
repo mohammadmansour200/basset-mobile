@@ -29,7 +29,6 @@ android {
 
         androidResources {
             localeFilters += listOf("en", "ar")
-            noCompress += listOf("tflite")
         }
     }
 
@@ -79,18 +78,6 @@ android {
 }
 
 dependencies {
-    // itext
-    implementation(libs.itext7.core)
-
-    // Color picker
-    implementation(libs.compose.color.picker.android)
-    implementation(libs.compose.color.picker)
-
-    // LiteRT
-    implementation(libs.litert)
-    implementation(libs.litert.support)
-    implementation(libs.litert.metadata)
-
     // Navigation 3
     implementation(libs.nav3.runtime)
     implementation(libs.nav3.ui)

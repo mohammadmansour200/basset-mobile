@@ -32,8 +32,6 @@
     <string name="operation_compress_btn">ضغط</string>
     <string name="operation_convert">تحويل الصيغة</string>
     <string name="operation_convert_btn">تحويل</string>
-    <string name="operation_remove_background">إزالة الخلفية</string>
-    <string name="operation_remove_background_btn">إزالة</string>
     <string name="operation_cut">قص</string>
 
     <string name="back_btn">الرجوع للخلف</string>
@@ -49,12 +47,6 @@
     <string name="error_wrong_end_cut_range_position">يجب أن يكون نهاية التحديد بعد بداية التحديد.</string>
     <string name="error_cut_range_exceeds_duration">نطاق القص يتجاوز مدة الوسائط.</string>
     <string name="cancel_operation_label">إلغاء</string>
-
-    <string name="background_card_title">الخلفية</string>
-    <string name="none_background_option">بدون</string>
-    <string name="color_background_option">لون</string>
-    <string name="image_background_option">صورة</string>
-    <string name="blurry_background_option">ضبابية</string>
 
     <string name="no_format_selected_err">رجاءً اختر صيغة المطلوبة</string>
     <string name="format_card_title">الصيغة</string>

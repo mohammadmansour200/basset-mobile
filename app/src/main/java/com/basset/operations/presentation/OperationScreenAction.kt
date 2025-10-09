@@ -16,8 +16,6 @@ sealed interface OperationScreenAction {
     data class OnAudioToVideoConvert(val image: Uri, val outputExtension: String) :
         OperationScreenAction
 
-    data class OnRemoveBackground(val background: Any?) : OperationScreenAction
-
     data class OnSetOutputFilename(val filename: String) : OperationScreenAction
 
     data class OnSetOutputAuthor(val author: String) : OperationScreenAction

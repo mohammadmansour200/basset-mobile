@@ -3,13 +3,10 @@ package com.basset.operations.presentation
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,18 +14,13 @@ import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegKitConfig
 import com.basset.core.domain.model.MediaType
 import com.basset.core.navigation.OperationRoute
-import com.basset.operations.domain.BackgroundRemover
 import com.basset.operations.domain.MediaMetadataDataSource
 import com.basset.operations.domain.MediaStoreManager
 import com.basset.operations.domain.model.OperationError
 import com.basset.operations.domain.model.Rate
 import com.basset.operations.presentation.utils.parseFfmpegError
 import com.basset.operations.presentation.utils.progress
-import com.basset.operations.utils.FastBlur
-import com.basset.operations.utils.compressPdf
 import com.basset.operations.utils.toBitmap
-import com.godaddy.android.colorpicker.HsvColor
-import com.godaddy.android.colorpicker.toColorInt
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -44,7 +36,6 @@ class OperationScreenViewModel(
     context: Context,
     val mediaStoreManager: MediaStoreManager,
     val metadataDataSource: MediaMetadataDataSource,
-    val backgroundRemover: BackgroundRemover,
     val pickedFile: OperationRoute
 ) :
     ViewModel() {
@@ -84,15 +75,6 @@ class OperationScreenViewModel(
                 handleConvert(
                     outputExtension = action.outputExtension
                 )
-            }
-
-            is OperationScreenAction.OnRemoveBackground -> {
-                safeExecute {
-                    handleBgRemove(
-                        outputExtension = _state.value.metadata.ext.toString(),
-                        newBackground = action.background
-                    )
-                }
             }
 
             is OperationScreenAction.OnAudioToVideoConvert -> safeExecute {
@@ -295,31 +277,6 @@ class OperationScreenViewModel(
                     return@fold
                 })
             }
-
-            MediaType.PDF -> {
-                mediaStoreManager.createMediaUri(
-                    pickedUri,
-                    name = _state.value.outputFilename,
-                    extension = outputExt
-                ).fold(onSuccess = { uri ->
-                    if (uri == null) {
-                        handleError(OperationError.ERROR_INVALID_FORMAT, null, null)
-                        return@fold
-                    }
-
-                    compressPdf(
-                        context = appContext,
-                        inputUri = pickedUri,
-                        outputUri = uri,
-                        quality = imageQuality
-                    )
-
-                    handleSuccess(uri)
-                }, onFailure = {
-                    handleError(OperationError.ERROR_WRITING_OUTPUT, null, null)
-                    return@fold
-                })
-            }
         }
     }
 
@@ -457,81 +414,4 @@ class OperationScreenViewModel(
                 return@withContext
             })
     }
-
-    private suspend fun handleBgRemove(
-        outputExtension: String,
-        newBackground: Any?
-    ) =
-        withContext(Dispatchers.IO) {
-            _state.update { it.copy(isOperating = true) }
-            mediaStoreManager.createMediaUri(
-                pickedUri,
-                _state.value.outputFilename,
-                outputExtension
-            ).fold(onSuccess = { uri ->
-                if (uri == null) {
-                    handleError(OperationError.ERROR_INVALID_FORMAT, null, null)
-                    return@withContext
-                }
-
-                val pickedFileBitmap = pickedUri.toBitmap(
-                    targetWidth = null,
-                    targetHeight = null,
-                    context = appContext,
-                )
-
-                val (backgroundBitmap, foregroundBitmap) = backgroundRemover.processImage(
-                    pickedFileBitmap
-                )
-
-                val finalResult = createBitmap(pickedFileBitmap.width, pickedFileBitmap.height)
-                val canvas = Canvas(finalResult)
-                // Background
-                when (newBackground) {
-                    is HsvColor -> canvas.drawColor(newBackground.toColorInt())
-                    is Uri -> {
-                        val newBackgroundBitmap = newBackground.toBitmap(
-                            targetWidth = foregroundBitmap.width,
-                            targetHeight = foregroundBitmap.height,
-                            context = appContext
-                        )
-                        canvas.drawBitmap(
-                            newBackgroundBitmap,
-                            0f,
-                            0f,
-                            null
-                        )
-                    }
-
-                    is Rate -> {
-                        val blurRadius = when (newBackground) {
-                            Rate.LOW -> 25
-                            Rate.MEDIUM -> 50
-                            Rate.HIGH -> 75
-                        }
-                        // Credit: https://github.com/wasabeef/glide-transformations
-                        val bitmap = FastBlur.blur(backgroundBitmap, blurRadius, true)
-
-                        canvas.drawBitmap(bitmap as Bitmap, 0f, 0f, null)
-                    }
-
-                    else -> {
-                        if (newBackground != null) throw RuntimeException("Background can only be HsvColor, Uri and null")
-                    }
-                }
-
-                canvas.drawBitmap(foregroundBitmap, 0f, 0f, null) // Foreground
-
-                mediaStoreManager.writeBitmap(uri, outputExtension, finalResult)
-                    .onFailure {
-                        handleError(OperationError.ERROR_WRITING_OUTPUT, null, uri)
-                        return@withContext
-                    }
-                handleSuccess(uri)
-
-            }, onFailure = {
-                handleError(OperationError.ERROR_WRITING_OUTPUT, null, null)
-                return@withContext
-            })
-        }
 }

@@ -31,8 +31,6 @@
     <string name="operation_compress_btn">Compress</string>
     <string name="operation_convert">Convert</string>
     <string name="operation_convert_btn">Convert</string>
-    <string name="operation_remove_background">Remove Background</string>
-    <string name="operation_remove_background_btn">Remove</string>
     <string name="operation_cut">Cut</string>
     <string name="back_btn">Go back</string>
     <string name="preview_image">Preview Image</string>
@@ -47,12 +45,6 @@
     <string name="error_wrong_end_cut_range_position">End of selection must be after start of selection.</string>
     <string name="error_cut_range_exceeds_duration">Cut range exceeds media duration.</string>
     <string name="cancel_operation_label">Cancel</string>
-
-    <string name="background_card_title">Background</string>
-    <string name="none_background_option">None</string>
-    <string name="color_background_option">Color</string>
-    <string name="image_background_option">Image</string>
-    <string name="blurry_background_option">Blurry</string>
 
     <string name="no_format_selected_err">Please select a format</string>
     <string name="format_card_title">Format</string>

@@ -29,11 +29,11 @@ class LocalMediaMetadataDataSource(
                     if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
                 }
             val ext = context.getUriExtension(uri)
-            if (mediaType == MediaType.IMAGE || mediaType == MediaType.PDF) {
+            if (mediaType == MediaType.IMAGE) {
                 return@withContext Metadata(
                     title = uri.getFileName(context),
                     fileSizeBytes = fileSizeBytes,
-                    imageData = if (mediaType == MediaType.IMAGE) uri else null,
+                    imageData = uri,
                     ext = ext
                 )
             }
@@ -72,7 +72,7 @@ class LocalMediaMetadataDataSource(
                 cursor.moveToFirst()
                 if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
             } else uri.toFile().length()
-        
+
         val ext = if (isAndroidQOrLater) context.getUriExtension(uri) else uri.toFile().extension
 
         Metadata(

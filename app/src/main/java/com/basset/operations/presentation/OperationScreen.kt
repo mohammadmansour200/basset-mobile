@@ -129,7 +129,6 @@ fun OperationScreen(
                             val localizedTitle = when (pickedFile.operationType) {
                                 OperationType.COMPRESS -> R.string.operation_compress
                                 OperationType.CONVERT -> R.string.operation_convert
-                                OperationType.BG_REMOVE -> R.string.operation_remove_background
                                 OperationType.CUT -> R.string.operation_cut
                             }
                             Text(

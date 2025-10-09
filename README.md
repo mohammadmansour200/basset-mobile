@@ -21,7 +21,6 @@ Simplicity and ease ✨ - Speed ⚡ - Privacy 🔏
 
 ## Features 🌟
 
-- 🤖 **AI background removing**
 - ✂️ **Media cutting and trimming**
 - 🔄 **Media conversion**
 - 📉 **Media compression**
@@ -40,7 +39,7 @@ Simplicity and ease ✨ - Speed ⚡ - Privacy 🔏
 
 ## Localization 🌍
 
-Currently, Basset supports Arabic, Portuguese, and English. We encourage you to contribute
+Currently, Basset supports Arabic and English. We encourage you to contribute
 additional languages by submitting a pull request.
 
 ## Contact 📧
