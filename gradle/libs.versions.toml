@@ -1,21 +1,18 @@
 [versions]
-agp = "8.10.1"
+agp = "8.12.2"
 amplituda = "2.3.0"
 coilCompose = "3.2.0"
 composeAudiowaveform = "1.1.1"
-composeColorPicker = "0.7.0"
-itext7Core = "8.0.5"
 kotlin = "2.0.21"
-coreKtx = "1.16.0"
+coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesAndroid = "1.10.2"
-lifecycleRuntimeKtx = "2.9.1"
+lifecycleRuntimeKtx = "2.9.3"
 activityCompose = "1.10.1"
-composeBom = "2025.06.00"
-litert = "1.3.0"
-media3 = "1.7.1"
+composeBom = "2025.08.01"
+media3 = "1.8.0"
 appcompat = "1.7.1"
 koin = "4.0.4"
 smartExceptionJava = "0.2.1"
@@ -24,12 +21,6 @@ lifecycleViewmodelNav3 = "1.0.0-alpha01"
 kotlinxSerializationCore = "1.8.1"
 
 [libraries]
-compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
-compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPicker" }
-itext7-core = { module = "com.itextpdf:itext7-core", version.ref = "itext7Core" }
-litert = { module = "com.google.ai.edge.litert:litert", version.ref = "litert" }
-litert-support = { module = "com.google.ai.edge.litert:litert-support", version.ref = "litert" }
-litert-metadata = { module = "com.google.ai.edge.litert:litert-metadata", version.ref = "litert" }
 nav3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
 nav3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }

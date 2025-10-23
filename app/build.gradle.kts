@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.basset.app"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 3
         versionName = "3.0.0"
 
@@ -97,7 +97,7 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
 
     // FFmpegKIT
-    implementation(files("../app/libs/ffmpeg-kit-full-gpl.aar"))
+    implementation(files("../app/libs/ffmpeg-kit.aar"))
     implementation(libs.smart.exception.java)
 
     implementation(libs.kotlinx.coroutines.android)
