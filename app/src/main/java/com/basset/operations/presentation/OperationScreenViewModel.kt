@@ -203,18 +203,28 @@ class OperationScreenViewModel(
         }
 
         when (pickedFile.mediaType) {
-            MediaType.VIDEO, MediaType.AUDIO -> {
+            MediaType.VIDEO -> {
+                val scaleFactor = when (rate) {
+                    Rate.LOW -> 0.75
+                    Rate.MEDIUM -> 0.5
+                    Rate.HIGH -> 0.33
+                }
+                val videoScaleFilter = "scale=-2:trunc(ih*${scaleFactor}/2)*2"
+
+                val inputPath = FFmpegKitConfig.getSafParameterForRead(appContext, pickedUri)
+
+                runFFmpeg(
+                    command = "-i $inputPath -vf $videoScaleFilter -preset ultrafast",
+                    outputExtension = outputExt,
+                )
+            }
+
+            MediaType.AUDIO -> {
                 val metadataBitrate = _state.value.metadata.bitrate
 
                 val lowCompressRate = metadataBitrate?.times(0.9)?.toLong()
                 val mediumCompressRate = metadataBitrate?.times(0.6)?.toLong()
                 val highCompressRate = metadataBitrate?.times(0.3)?.toLong()
-
-                val videoCompressBitrate = when (rate) {
-                    Rate.LOW -> "${lowCompressRate ?: 2000}k"
-                    Rate.MEDIUM -> "${mediumCompressRate ?: 1000}k"
-                    Rate.HIGH -> "${highCompressRate ?: 500}k"
-                }
 
                 val audioCompressBitrate = when (rate) {
                     Rate.LOW -> "${lowCompressRate ?: 192}k"
@@ -234,10 +244,8 @@ class OperationScreenViewModel(
 
                 val albumArt =
                     if (_state.value.outputAlbumArt != null && outputExt == "mp3") "-i $albumPath -map 0:a -map 1:v -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\"" else ""
-                val command =
-                    if (pickedFile.mediaType == MediaType.VIDEO) "-i $inputPath -b:v $videoCompressBitrate -b:a $audioCompressBitrate -preset ultrafast" else "-i $inputPath $albumArt -b:a $audioCompressBitrate -preset ultrafast"
                 runFFmpeg(
-                    command = command,
+                    command = "-i $inputPath $albumArt -b:a $audioCompressBitrate -preset ultrafast",
                     outputExtension = outputExt,
                 )
             }
