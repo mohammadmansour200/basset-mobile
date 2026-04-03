@@ -1,9 +1,8 @@
 # Privacy Policy for Basset
 
-**Last Updated:** October 31, 2025
+**Last Updated:** April 3, 2026
 
-Thank you for using Basset! This privacy policy explains how our application handles your data. Our
-core principle is simple: **we do not collect any of your personal data.**
+This Privacy Policy governs the manner in which Basset ("the App") is provided by Mohammad Abdul-Tawab to users.
 
 Basset is a free, open-source media toolkit for Android that performs all operations entirely on
 your device.
