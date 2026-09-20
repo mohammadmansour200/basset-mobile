@@ -22,8 +22,8 @@ android {
         applicationId = "com.basset.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 5
-        versionName = "3.1.0"
+        versionCode = 6
+        versionName = "3.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
