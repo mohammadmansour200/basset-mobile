@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.basset.app"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 5
         versionName = "3.1.0"
 
